@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/layout/template.xhtml">
+
+	<ui:define name="page-header">
+		<h1>
+			<h:outputText value="#{messages['unidades.title']}" title="#{messages['unidades.title']}" />
+		</h1>
+		<h2>
+			<h:outputText value="#{messages['unidadmedida.creacion']}" title="#{messages['unidadmedida.creacion']}" rendered="#{unidadMedida.unidadMedidaEdit.cod == null}" />
+			<h:outputText value="#{messages['unidadmedida.modificacion']}" title="#{messages['unidadmedida.modificacion']}" rendered="#{unidadMedida.unidadMedidaEdit.cod != null}" />
+		</h2>
+	</ui:define>
+	<ui:define name="body">
+		<p:panel>
+			<h:form id="formEditUnidadMedida">
+				<div class="p-grid ui-fluid">
+					<div class="p-col-12 p-md-3">
+						<p:outputLabel for="descUnidadMedida" value="#{messages['table.header.description']}:" title="#{messages['table.header.description']}" />
+						<br/>
+						<p:inputText id="descUnidadMedida" label="#{unidadMedida.unidadMedidaEdit.descripcion}" value="#{unidadMedida.unidadMedidaEdit.descripcion}"
+									 title="#{unidadMedida.unidadMedidaEdit.descripcion}" required="true" maxlength="40" />
+						<p:message for="descUnidadMedida" />
+					</div>
+					<div class="p-col-6 p-md-1">
+							<p:outputLabel for="abrevUnidadMedida" value="#{messages['unidad.abreviatura']}" title="#{messages['unidad.abreviatura']}" />
+							<br/>
+							<p:inputText id="abrevUnidadMedida" title="#{unidadMedida.unidadMedidaEdit.abreviatura}" label="#{unidadMedida.unidadMedidaEdit.abreviatura}" 
+										 value="#{unidadMedida.unidadMedidaEdit.abreviatura}" required="true" maxlength="10" />
+							<p:message for="abrevUnidadMedida" />
+					</div>
+				</div>
+				<br/>
+				<div class="p-grid">
+					<div class="p-col-12">
+						<p:commandButton action="#{unidadMedida.crearUnidadMedida}" title="#{messages['label.save']}" label="#{messages['label.save']}" 
+										 value="#{messages['label.save']}" icon="fa fa-save" ajax="true" process="@form" update="@form, :messages" 
+										 rendered="#{unidadMedida.unidadMedidaEdit.cod == null}"/>
+						<p:commandButton action="#{unidadMedida.modificarUnidadMedida}" title="#{messages['label.save']}" label="#{messages['label.save']}"
+										 value="#{messages['label.save']}" icon="fa fa-save" ajax="true" process="@form" update="@form, :messages" 
+										 rendered="#{unidadMedida.unidadMedidaEdit.cod != null}"/>
+						<p:commandButton action="#{unidadMedida.cancelarEdicionUnidadMedida}" icon="fa fa-reply" title="#{messages['value.return']}"
+										 label="#{messages['value.return']}" value="#{messages['value.return']}" process="@this" ajax="false" immediate="true" />
+					</div>
+				</div>
+			</h:form>
+			<p:tabView rendered="#{unidadMedida.unidadMedidaEdit.cod != null}">
+	        	<p:tab title="#{messages['unidadmedida.productos']}" ariaLabel="#{messages['unidadmedida.productos']}">
+		   			<h:outputFormat title="#{messages['manytoone.empty.table.femenino2']}" value="#{messages['manytoone.empty.table.femenino2']}" 
+		   							rendered="#{empty unidadMedida.unidadMedidaEdit.productos}">
+						<f:param value="#{messages['producto.plural']}" />
+						<f:param value="#{messages['unidadmedida.title']}" />
+					</h:outputFormat> 
+					<div class="p-grid">
+						<div class="p-col-6">
+							<p:dataTable value="#{unidadMedida.unidadMedidaEdit.productos}"	var="pr" rowHover="true" rows="25" paginator="true" paginatorAlwaysVisible="false" 
+										 rendered="#{not empty unidadMedida.unidadMedidaEdit.productos}"
+										 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+										 rowsPerPageTemplate="10,25,50" paginatorPosition="bottom" tableStyleClass="tablaAuto fuente08" sortBy="#{pr.descripcion}">
+								<p:column headerText="#{messages['fungible.producto']}" sortBy="#{pr.descripcion}">
+									<h:outputText value="#{pr.descripcion}" title="#{pr.descripcion}"/>
+								</p:column>
+								<p:column headerText="#{messages['producto.tipo']}" styleClass="centrado" sortBy="#{pr.tipo}">
+									<h:outputText value="#{unidadMedida.getDescripcionTipoProducto(pr.tipo)}" title="#{unidadMedida.getDescripcionTipoProducto(pr.tipo)}"/>
+								</p:column>
+							</p:dataTable>
+						</div>
+					</div>		
+				</p:tab>
+			</p:tabView>
+		</p:panel>						
+	</ui:define>
+</ui:composition>
+
+</html>

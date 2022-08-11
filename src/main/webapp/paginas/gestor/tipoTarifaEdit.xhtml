@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/layout/template.xhtml">
+
+	<ui:define name="page-header">
+		<h1>
+			<h:outputText value="#{messages['listado.tipotarifa']}" />
+		</h1>
+		<h2>
+			<h:outputText value="#{messages['tipotarifa.creacion']}" rendered="#{tipoTarifa.tipoTarifaEdit.cod == null}" />
+			<h:outputText value="#{messages['tipotarifa.modificacion']}" rendered="#{tipoTarifa.tipoTarifaEdit.cod != null}" />
+		</h2>
+	</ui:define>
+	<ui:define name="body">
+		<p:panel>
+			<h:form id="formEditTipoTarifa">
+				<div class="p-grid">
+					<div class="p-col-12 p-md-3">
+							<p:outputLabel for="descTipoTarifa" value="#{messages['tipotarifa.descripcion']}" />
+							<p:inputText id="descTipoTarifa" value="#{tipoTarifa.tipoTarifaEdit.descripcion}" required="true" maxlength="50" />
+							<p:message for="descTipoTarifa" />
+					</div>
+				</div>
+				<br/>
+				<div class="p-grid">
+					<div class="p-col-12">
+						<p:commandButton action="#{tipoTarifa.crearTipoTarifa}" value="#{messages['label.save']}" icon="fa fa-save" ajax="true" process="@form" update="@form, :messages" 
+										 rendered="#{tipoTarifa.tipoTarifaEdit.cod == null}"/>
+						<p:commandButton action="#{tipoTarifa.modificarTipoTarifa}" value="#{messages['label.save']}" icon="fa fa-save" ajax="true" process="@form" update="@form, :messages" 
+										 rendered="#{tipoTarifa.tipoTarifaEdit.cod != null}"/>
+						<p:commandButton action="#{tipoTarifa.cancelarEdicionTipoTarifa}" icon="fa fa-reply" value="#{messages['value.return']}" process="@this" ajax="false" immediate="true" />
+					</div>
+				</div>
+			</h:form>
+			<div class="p-grid">
+					<p:tabView>
+			        	<p:tab title="#{messages['tipotarifa.tarifas']}">
+				   			<h:outputFormat value="#{messages['manytoone.empty.table.femenino1']}" rendered="#{empty tipoTarifa.tipoTarifaEdit.tarifas}">
+								<f:param value="#{messages['tarifa.plural']}" />
+								<f:param value="#{messages['tipotarifa.title']}" />
+							</h:outputFormat> 
+				   			<p:dataTable id="tarifasTipo" var="tar" value="#{tipoTarifa.tipoTarifaEdit.tarifas}" rowHover="true" rendered="#{not empty tipoTarifa.tipoTarifaEdit.tarifas}"
+				   						 rows="25" paginator="true" paginatorAlwaysVisible="false" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+										 rowsPerPageTemplate="10,25,50" paginatorPosition="bottom" tableStyleClass="tablaAuto fuente08">
+				   				<p:column headerText="#{messages['tarifa.title']}" sortBy="#{tar.descripcion}">
+				   					<h:outputText value="#{tar.descripcion}" />
+				   				</p:column>	
+				   				<p:column headerText="#{messages['tarifa.cantidadinicial']}" sortBy="#{tar.id.cantidadInicial}" styleClass="derecha">
+				   					<h:outputText value="#{tar.id.cantidadInicial}" />
+				   				</p:column>	
+				   				<p:column headerText="#{messages['tarifa.tarifajusto']}" sortBy="#{tar.codTarifaJusto}">
+				   					<h:outputText value="#{tar.codTarifaJusto}" />
+				   				</p:column>	
+				   			</p:dataTable>
+						</p:tab>
+						<p:tab title="#{messages['tipotarifa.entidadespagadoras']}">
+				   			<h:outputFormat value="#{messages['manytoone.empty.table.femenino1']}" rendered="#{empty tipoTarifa.tipoTarifaEdit.entidadPagadoras}">
+								<f:param value="#{messages['entidadpagadora.plural']}" />
+								<f:param value="#{messages['tipotarifa.title']}" />
+							</h:outputFormat> 
+				   			<p:dataTable id="entidadesPagadorasTipo" var="ep" value="#{tipoTarifa.tipoTarifaEdit.entidadPagadoras}" rowHover="true" rendered="#{not empty tipoTarifa.tipoTarifaEdit.entidadPagadoras}"
+				   						 rows="25" paginator="true" paginatorAlwaysVisible="false" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+										 rowsPerPageTemplate="10,25,50" paginatorPosition="bottom" tableStyleClass="tablaAuto fuente08">
+				   				<p:column headerText="#{messages['entidadespagadoras.nombre']}" sortBy="#{ep.nombre}">
+				   					<h:outputText value="#{ep.nombre}" />
+				   				</p:column>	
+				   				<p:column headerText="#{messages['entidadespagadoras.cif']}" sortBy="#{ep.cif}">
+									<h:outputText value="#{ep.cif}" />
+								</p:column>
+								<p:column headerText="#{messages['entidadespagadoras.unidad.corto']}" sortBy="#{ep.unidadAdministrativa}">
+									<h:outputText value="#{ep.unidadAdministrativa}" />
+								</p:column>
+								<p:column headerText="#{messages['entidadespagadoras.email']}" sortBy="#{ep.email}">
+									<a href="mailto:#{ep.email}"> 
+										<h:outputText value="#{ep.email}" />
+									</a>
+								</p:column>
+								<p:column headerText="#{messages['entidadespagadoras.telefono']}" sortBy="#{ep.telefono}" >
+									<h:outputText value="#{ep.telefono}" />
+								</p:column>
+				   			</p:dataTable>
+						</p:tab>
+					</p:tabView>
+			</div>		
+		</p:panel>						
+	</ui:define>
+</ui:composition>
+
+</html>

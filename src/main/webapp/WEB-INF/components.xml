@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<components xmlns="http://jboss.org/schema/seam/components"
+	xmlns:async="http://jboss.org/schema/seam/async" xmlns:bpm="http://jboss.org/schema/seam/bpm"
+	xmlns:core="http://jboss.org/schema/seam/core" xmlns:document="http://jboss.org/schema/seam/document"
+	xmlns:drools="http://jboss.org/schema/seam/drools" xmlns:excel="http://jboss.org/schema/seam/excel"
+	xmlns:framework="http://jboss.org/schema/seam/framework"
+	xmlns:international="http://jboss.org/schema/seam/international"
+	xmlns:mail="http://jboss.org/schema/seam/mail" xmlns:persistence="http://jboss.org/schema/seam/persistence"
+	xmlns:remoting="http://jboss.org/schema/seam/remoting" xmlns:security="http://jboss.org/schema/seam/security"
+	xmlns:transaction="http://jboss.org/schema/seam/transaction" xmlns:web="http://jboss.org/schema/seam/web"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fdw-web="http://www.um.es/atica/seam/web"
+	xmlns:fdw-cas="http://www.um.es/atica/seam/web/cas" xmlns:fdw-control="http://www.um.es/atica/seam/web/control"
+	xsi:schemaLocation="http://jboss.org/schema/seam/async http://jboss.org/schema/seam/async-2.3.xsd
+				 http://jboss.org/schema/seam/bpm http://jboss.org/schema/seam/bpm-2.3.xsd
+				 http://jboss.org/schema/seam/core http://jboss.org/schema/seam/core-2.3.xsd
+				 http://jboss.org/schema/seam/components http://jboss.org/schema/seam/components-2.3.xsd
+				 http://jboss.org/schema/seam/document http://jboss.org/schema/seam/document-2.3.xsd
+                 http://jboss.org/schema/seam/drools http://jboss.org/schema/seam/drools-2.3.xsd
+				 http://jboss.org/schema/seam/excel http://jboss.org/schema/seam/excel-2.3.xsd
+				 http://jboss.org/schema/seam/framework http://jboss.org/schema/seam/framework-2.3.xsd
+				 http://jboss.org/schema/seam/international http://jboss.org/schema/seam/international-2.3.xsd
+				 http://jboss.org/schema/seam/persistence http://jboss.org/schema/seam/persistence-2.3.xsd
+                 http://jboss.org/schema/seam/mail http://jboss.org/schema/seam/mail-2.3.xsd
+                 http://jboss.org/schema/seam/persistence http://jboss.org/schema/seam/persistence-2.3.xsd
+                 http://jboss.org/schema/seam/remoting http://jboss.org/schema/seam/remoting-2.3.xsd
+				 http://jboss.org/schema/seam/security http://jboss.org/schema/seam/security-2.3.xsd
+                 http://jboss.org/schema/seam/transaction http://jboss.org/schema/seam/transaction-2.3.xsd
+				 http://jboss.org/schema/seam/web http://jboss.org/schema/seam/web-2.3.xsd">
+
+	<web:rewrite-filter view-mapping="*.seam" />
+
+	
+	<core:init jndi-pattern="@jndiPattern@" debug="@debug.seam@"
+		transaction-management-enabled="false" />
+
+	<core:manager concurrent-request-timeout="5000"
+		conversation-timeout="120000" conversation-id-parameter="cid"
+		parent-conversation-id-parameter="pid" uri-encoding="UTF-8" />
+
+	<!-- <core:resource-loader> <core:bundle-names> <value>messages</value> 
+		<value>accesibility_templates</value> </core:bundle-names> </core:resource-loader> -->
+	<international:locale-config
+		default-locale="es_ES" supported-locales="es es_ES en" />
+
+	<persistence:managed-persistence-context
+		name="entityManager" auto-create="true" persistence-unit-jndi-name="@puName@"
+		class="es.um.atica.seam.persistence.ManagedPersistenceContext" />
+
+	<transaction:ejb-transaction />
+
+	<security:identity authenticate-method="#{authenticator.authenticate}"
+		remember-me="false" />
+
+	<event type="org.jboss.seam.security.notLoggedIn">
+		<action execute="#{redirect.captureCurrentView}" />
+	</event>
+	<event type="org.jboss.seam.security.loginSuccessful">
+		<action execute="#{redirect.returnToCapturedView}" />
+	</event>
+
+	<mail:mail-session host="smtp.um.es" port="25" />
+	<document:document-store use-extensions="true"
+		error-page="/paginas/documentMissing.seam" />
+
+	<!-- Exception handling -->
+	<web:exception-filter url-pattern="*.seam"
+		installed="true" />
+
+	<!-- Conversation propagation with redirects -->
+	<web:redirect-filter url-pattern="*.seam"
+		installed="true" />
+
+	<!-- Identity Logging -->
+	<web:logging-filter url-pattern="*.seam" installed="true" />
+
+	<!-- Character encoding -->
+	<web:character-encoding-filter encoding="UTF-8"
+		override-client="true" installed="true" url-pattern="*.seam" />
+
+	<web:cache-control-filter name="imageCacheControlFilter"
+		regex-url-pattern=".*(\.gif|\.png|\.jpg|\.jpeg)|.*(\.gif\.seam|\.png\.seam|\.jpg\.seam|\.jpeg\.seam)"
+		value="@imageCacheTimeout@" />
+
+	<web:cache-control-filter name="textCacheControlFilter"
+		regex-url-pattern=".*(\.css|\.js)|.*(\.css\.seam|\.js\.seam)" value="@textCacheTimeout@" />
+
+	<!-- EXAMPLE: Other Servlet can access Seam context <web:context-filter 
+		name="_NOMBRE_SERVLET_" url-pattern="/_MAPEO_SERVLET_/*" /> -->
+	<web:context-filter name="soapServices" url-pattern="/services/*" />
+	<web:context-filter name="restServices" url-pattern="/rest/*" />
+	<web:context-filter name="primefacesResources"
+		url-pattern="/javax.faces.resource/dynamiccontent.properties.seam" />
+
+	<!-- No se utiliza el fileupload de Seam -->
+	<web:multipart-filter installed="false" disabled="true" />
+
+	<fdw-web:primefaces-file-upload-filter
+		installed="true" disabled="false" regex-url-pattern="/paginas/.*\.seam" />
+
+	<!-- Invalidar La Sesion si Abandonamos HTTPS <web:session invalidate-on-scheme-change="true" 
+		/> -->
+
+	<!-- Manejar Metodos Asincronos con Quartz <async:quartz-dispatcher default-jobs-group="@defaultJobsGroup@" 
+		default-triggers-group="@defaultTriggersGroup@" wait-for-jobs-to-complete="true" 
+		/> -->
+	<!-- Manejar Metodos Asincronos con Timer Service de EJB 3 <async:timer-service-dispatcher 
+		/> -->
+
+	<!-- Duplicate Request Control Filter <fdw-control:duplicate-request-control-filter 
+		disabled="false" time-interval="1000" url-pattern="*.seam"/> -->
+
+	<!-- Concurrent Request Control Filter <fdw-control:concurrent-request-control-filter 
+		disabled="false" max-concurrent-request="2" wait-timeout="250" filter-session="true" 
+		url-pattern="*.seam"/> -->
+
+	<!-- Traffic Control Filter <fdw-control:traffic-control-filter disabled="false" 
+		max-request="150" wait-timeout="1000" retries="5" url-pattern="*.seam" /> -->
+
+	<!-- Raw Document Access Control Filter <fdw-control:raw-document-access-control-filter 
+		disabled="false" regex-url-pattern=".*\.page\.xml|/layout/.*" /> -->
+	<!-- CAS - SSO -->
+	<fdw-cas:cas-client3-http-servlet-request-wrapper-filter
+		disabled="@cas.filter.disabled@" regex-url-pattern="/paginas/.*\.seam" />
+
+	<!-- NORMAL -->
+	<fdw-cas:cas-client3-authentication-filter
+		disabled="@cas.filter.disabled@" casServerLoginUrl="@cas.login.url@"
+		serverName="@cas.server.name@" regex-url-pattern="/paginas/.*\.seam" />
+
+	<fdw-cas:cas-client3-ticket-validator-filter
+		disabled="@cas.filter.disabled@" casServerUrlPrefix="@cas.server.url@"
+		serverName="@cas.server.name@" redirectAfterValidation="false"
+		regex-url-pattern="/paginas/.*\.seam" />
+
+	<!-- SAML <fdw-cas:cas-client3-saml-authentication-filter disabled="@cas.filter.disabled@" 
+		casServerLoginUrl="@cas.login.url@" serverName="@cas.server.name@" regex-url-pattern="/paginas/.*\.seam" 
+		/> <fdw-cas:cas-client3-saml-ticket-validator-filter disabled="@cas.filter.disabled@" 
+		casServerUrlPrefix="@cas.server.url@" serverName="@cas.server.name@" redirectAfterValidation="false" 
+		regex-url-pattern="/paginas/.*\.seam" /> -->
+	<!-- PROXY TICKET <fdw-cas:cas-client3-proxy-receiving-ticket-validation-filter 
+		disabled="@cas.filter.disabled@" casServerUrlPrefix="@cas.server.url@" serverName="@cas.server.name@" 
+		proxyCallbackUrl="@cas.server.name@/@cas.application.contextroot@/proxyCallback" 
+		proxyReceptorUrl="/@cas.application.contextroot@/proxyCallback" url-pattern="proxyCallback" 
+		/> -->
+	<!-- FIN CAS - SSO -->
+
+	<remoting:remoting debug="@debug.seam@" />
+
+	<!-- Gestion de Roles y Usuarios <security:jpa-identity-store user-class="es.um.atica.sai.security.authorization.entities.Usuarios" 
+		role-class="es.um.atica.sai.security.authorization.entities.Roles" /> -->
+	<component name="defaultDataSource"
+		class="es.um.atica.seam.components.ContextVariableFromJndiLookup">
+		<property name="jndiPath">jdbc/Sai DataSource</property>
+		<property name="classType">javax.sql.DataSource</property>
+	</component>
+
+	<component name="applicationName"
+		class="es.um.atica.seam.components.ContextVariableFromJndiLookup">
+		<property name="jndiPath">java:app/AppName</property>
+		<property name="classType">java.lang.String</property>
+	</component>
+	
+</components>

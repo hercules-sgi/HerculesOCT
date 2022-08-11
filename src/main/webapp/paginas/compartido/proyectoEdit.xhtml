@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/layout/template.xhtml">
+	<ui:define name="page-header">
+		<h1>
+			<h:outputText value="#{messages['proyectos.title']}"/>
+		</h1>
+		<h2>
+			<h:outputText value="#{proyectoEdit.proyectoEdit.cod==null ? messages['proyectos.subtitle.alta'] : proyectoEdit.getSubtitulo()}" />
+		</h2>
+	</ui:define>
+
+	<ui:define name="body">
+		<p:panel>
+			<h:form id="formProyectoEdit">
+				<div class="p-grid ui-fluid">
+					<!-- Nombre del proyecto -->
+					<s:div styleClass="p-col-2 p-md-2" rendered="#{(proyectoEdit.proyectoEdit.cod == null and identity.tienePerfil('SUPERVISOR')) or (proyectoEdit.proyectoEdit.cod != null and identity.tienePerfilEnServicio('SUPERVISOR',proyectoEdit.proyectoEdit.servicio.cod))}">
+						<p:outputLabel for="nombre" value="#{messages['proyecto.nombre']}:" />
+						<br/>							
+						<p:inputText id="nombre" value="#{proyectoEdit.proyectoEdit.nombre}" title="#{messages['proyecto.nombre']}" required="true" maxlength="100"/>
+						<p:message for="nombre" />			   							
+					</s:div>
+					<s:div styleClass="p-col-2 p-md-2" rendered="#{proyectoEdit.proyectoEdit.cod != null and !identity.tienePerfilEnServicio('SUPERVISOR',proyectoEdit.proyectoEdit.servicio.cod)}">
+						<p:outputLabel value="#{messages['proyecto.nombre']}:" />
+						<br/>							
+						<h:outputText value="#{proyectoEdit.proyectoEdit.nombre}" title="#{messages['proyecto.nombre']}" styleClass="margen5"/>
+					</s:div>
+
+					<!-- Servicio  -->
+					<s:div styleClass="p-col-2 p-md-2" rendered="#{proyectoEdit.proyectoEdit.cod == null and identity.tienePerfil('SUPERVISOR')}">
+						<p:outputLabel for="servicio" value="#{messages['label.servicio']}:" />
+						<br/>
+						<p:selectOneMenu id="servicio" value="#{proyectoEdit.proyectoEdit.servicio}" title="#{messages['label.servicio']}" required="true">
+							<f:selectItem itemLabel="#{messages['servicio.seleccion']}" itemValue="" />
+							<f:selectItems value="#{proyectoEdit.listaServicios}" var="ser" itemLabel="#{ser.nombre}" itemValue="#{ser}" />
+							<p:ajax event="valueChange" listener="#{proyectoEdit.seleccionadoServicio()}" update="oPanelUsuarioIr"/>
+							<s:convertEntity />
+						</p:selectOneMenu>
+						<p:message for="servicio"/>
+					</s:div>
+					<s:div styleClass="p-col-2 p-md-2" rendered="#{proyectoEdit.proyectoEdit.cod != null}">
+						<p:outputLabel value="#{messages['label.servicio']}:" />
+						<br/>
+						<h:outputText value="#{proyectoEdit.proyectoEdit.servicio.nombre}" styleClass="margen5"/>
+					</s:div>	
+
+					<!-- Usuario IR -->
+					<s:div styleClass="p-col-2 p-md-2" rendered="#{proyectoEdit.proyectoEdit.cod == null and identity.tienePerfil('SUPERVISOR')}">
+						<p:outputPanel id="oPanelUsuarioIr">
+							<p:outputLabel for="usuarioIr" value="#{messages['proyecto.ir']}:" />
+							<br/>
+							<p:selectOneMenu id="usuarioIr" value="#{proyectoEdit.proyectoEdit.usuarioIr}" title="#{messages['proyecto.ir']}"
+											 filter="true" filterMatchMode="contains" required="true">
+								<f:selectItem itemLabel="#{messages['usuario.perfil.ir.seleccion']}" itemValue="" />
+								<f:selectItems value="#{proyectoEdit.listaUsuariosIr}" var="ir" itemLabel="#{ir.datosUsuario.nombreCompleto}" itemValue="#{ir}" />
+								<s:convertEntity />
+							</p:selectOneMenu>
+							<p:message for="usuarioIr" />
+						</p:outputPanel>
+					</s:div>
+					<s:div styleClass="p-col-2 p-md-2" rendered="#{proyectoEdit.proyectoEdit.cod != null}">
+						<p:outputLabel value="#{messages['proyecto.ir']}:" />
+						<br/>
+						<h:outputText value="#{proyectoEdit.proyectoEdit.usuarioIr.datosUsuario.nombreCompleto}" title="#{messages['proyecto.ir']}" styleClass="margen5"/>
+					</s:div>	
+
+					<!-- Fecha de alta -->
+					<s:div styleClass="p-col-2 p-md-2" rendered="#{proyectoEdit.proyectoEdit.cod != null}">
+						<p:outputLabel value="#{messages['proyecto.fechaalta']}:" />
+						<br/>
+						<h:outputText value="#{proyectoEdit.proyectoEdit.fechaAlta}" styleClass="margen5">
+							<s:convertDateTime pattern="dd/MM/yyyy"/>
+						</h:outputText>
+					</s:div>
+
+					<!-- Fecha de caducidad	-->
+					<s:div class="p-col-2 p-md-2" rendered="#{(proyectoEdit.proyectoEdit.cod == null and identity.tienePerfil('SUPERVISOR')) or (proyectoEdit.proyectoEdit.cod != null and identity.tienePerfilEnServicio('SUPERVISOR',proyectoEdit.proyectoEdit.servicio.cod))}">
+						<p:outputLabel for="fechaCaducidad" value="#{messages['proyecto.fechacaducidad']}:"/>
+						<br/>
+						<p:calendar id="fechaCaducidad" value="#{proyectoEdit.proyectoEdit.fechaCaducidad}" title="#{messages['proyecto.fechacaducidad']}" 
+									label="#{messages['proyecto.fechacaducidad']}" pattern="dd/MM/yyyy" maxlength="10" size="10" mask="99/99/9999" locale="es" />
+						<p:message for="fechaCaducidad"/> 			
+					</s:div>
+					<s:div styleClass="p-col-2 p-md-2" rendered="#{proyectoEdit.proyectoEdit.cod != null and !identity.tienePerfilEnServicio('SUPERVISOR',proyectoEdit.proyectoEdit.servicio.cod)}">
+						<p:outputLabel value="#{messages['proyecto.fechacaducidad']}:" />
+						<br/>
+						<h:outputText value="#{proyectoEdit.proyectoEdit.fechaCaducidad}" title="#{messages['proyecto.fechacaducidad']}" styleClass="margen5">
+							<s:convertDateTime pattern="dd/MM/yyyy"/>
+						</h:outputText>	
+					</s:div>
+					<!-- Total consumido -->
+					<s:div styleClass="p-col-1 p-md-1" rendered="#{proyectoEdit.proyectoEdit.cod != null}">
+						<p:outputLabel value="#{messages['proyecto.totalconsumido']}:" />
+						<br/>
+						<h:outputText value="#{proyectoEdit.formatCantidad(proyectoEdit.totalConsumidoProyecto)}" styleClass="margen5"/>
+					</s:div>
+				</div>
+				<br/>
+				<div class="p-grid">
+					<div class="p-col-12">
+						<p:commandButton id="buttonGuardar" value="#{messages['label.save']}" action="#{proyectoEdit.guardar()}" process="@form"
+									     ariaLabel="#{messages['label.save']}" title="#{messages['label.save']}" update="@form :messages" icon="fa fa-floppy-o" 
+									     rendered="#{(proyectoEdit.proyectoEdit.cod == null and identity.tienePerfil('SUPERVISOR')) or (proyectoEdit.proyectoEdit.cod != null and identity.tienePerfilEnServicio('SUPERVISOR',proyectoEdit.proyectoEdit.servicio.cod))}"/>
+						<p:commandButton id="buttonVolver" value="#{messages['value.return']}" action="#{proyectoEdit.volver}" process="@this" 
+										 ariaLabel="#{messages['value.return']}" title="#{messages['value.return']}" icon="fa fa-reply"/>
+					</div>
+				</div>
+			</h:form>
+			
+			<p:tabView id="tabViewAsociacionesProyecto" rendered="#{proyectoEdit.proyectoEdit.cod != null}">
+				<p:tab title="#{messages['proyecto.productos']}">
+					<h:form id="formListadoProductos"> 
+						<div class="p-grid">
+							<div class="col-md-8">
+								<p:dataTable id="tableProductos" value="#{proyectoEdit.listaProductosProyecto}" var="pp" emptyMessage="#{messages['proyecto.productos.empty']}" 
+											 reflow="true" tableStyleClass="tablaAuto fuente08" styleClass="header-right" rowHover="true">
+									<f:facet name="header">
+										<p:commandLink action="#{proyectoEdit.establecerProyectoProductoCreate}" oncomplete="PF('dlgAddProducto').show();" update=":tabViewAsociacionesProyecto:formAddProducto" 
+													   title="#{messages['proyecto.producto.add']}" ariaLabel="#{messages['proyecto.producto.add']}" styleClass="enlaceTexto"
+													   rendered="#{identity.tienePerfilEnServicio('SUPERVISOR',proyectoEdit.proyectoEdit.servicio.cod)}" 
+													    onsuccess="saveLastFocus(event);">
+											<em class="fa fa-plus"/>#{' '} 
+											<h:outputText styleClass="enlaceAdd" title="#{messages['proyecto.producto.add']}" value="#{messages['proyecto.producto.add']}" />
+										</p:commandLink>
+									</f:facet>
+									<p:column headerText="#{messages['producto.title']}" sortBy="#{pp.producto.descripcion}">
+										<h:outputText value="#{pp.producto.descripcion}" title="#{messages['producto.title']}" />
+										<s:fragment id="frProductoBaja" rendered="#{pp.producto.estado == 'BAJA'}">
+											<br/>
+											<h:outputText value="#{messages['proyecto.producto.baja']}" styleClass="fuenteSmall textoAlerta negrita"/>
+										</s:fragment>
+									</p:column>
+									<p:column headerText="#{messages['producto.tipo']}" styleClass="centrado" sortBy="#{pp.producto.tipo}">
+										<h:outputText value="#{proyectoEdit.getDescripcionTipo(pp.producto.tipo)}" />
+									</p:column>
+									<p:column headerText="#{messages['proyecto.producto.cantidad']}" sortBy="#{pp.cantidad}" styleClass="derecha">
+										<h:outputText value="#{proyectoEdit.formatCantidad(pp.cantidad)}" title="#{messages['proyecto.producto.cantidad']}" />	
+									</p:column>
+									<p:column headerText="#{messages['proyecto.totalconsumido']}" styleClass="derecha">
+										<h:outputText value="#{proyectoEdit.formatCantidad(proyectoEdit.getCantidadConsumidaByProyectoProducto(pp))}" title="#{messages['proyecto.totalconsumido']}" />	
+									</p:column>
+									<p:column headerText="#{messages['proyecto.producto.disponible']}" styleClass="derecha">
+										<h:outputText value="#{proyectoEdit.formatCantidad(proyectoEdit.getCantidadDisponibleByProyectoProducto(pp))}" title="#{messages['proyecto.totalconsumido']}" />	
+									</p:column>
+									
+									<p:column headerText="#{messages['value.action']}" rendered="#{identity.tienePerfilEnServicio('SUPERVISOR',proyectoEdit.proyectoEdit.servicio.cod)}" styleClass="centrado">
+										<div class="p-grid p-justify-center">
+											<div class="p-col">
+												<p:commandLink action="#{proyectoEdit.establecerProyectoProductoEdit(pp)}" process="@this"
+										  					   oncomplete="PF('dlgAddProducto').show();" update=":tabViewAsociacionesProyecto:formAddProducto"
+										  					   ariaLabel="#{messages['value.edit']}" title="#{messages['value.edit']}" onsuccess="saveLastFocus(event);">
+													<em class="fa fa-pencil-square-o fuente17" />
+												</p:commandLink>
+											</div>
+											<div class="p-col">	
+												<p:commandLink action="#{proyectoEdit.eliminarProyectoProducto(pp)}" process="@this" update="@form, :messages"
+													   		   ariaLabel="#{messages['value.delete']}" title="#{messages['value.delete']}">
+													<em class="fa fa-trash fuente17"/>									
+													<p:confirm header="#{messages['application.deleting.confirm.title']}" message="#{messages['proyecto.producto.eliminar.confirm']}" icon="ui-icon-alert"/>														
+												</p:commandLink>
+											</div>
+										</div>		
+									</p:column>
+								</p:dataTable>
+							</div>
+						</div>
+					</h:form>
+					<h:form id="formAddProducto">
+						<p:dialog id="dlgAddProducto" header="#{proyectoEdit.proyectoProductoEdit.cod == null ? messages['proyecto.producto.add'] : messages['proyecto.producto.edit']}" 
+								  widgetVar="dlgAddProducto" modal="true" width="60%" onHide="goToLastFocus();">
+							<s:div styleClass="p-grid ui-fluid" rendered="#{proyectoEdit.proyectoProductoEdit.cod == null}">
+								<div class="p-col-4 p-md-4 ">
+									<p:outputLabel for="tipo" value="#{messages['producto.tipo']}:"/>
+									<br/>
+									<p:selectOneMenu id="tipo" value="#{proyectoEdit.tipo}" title="#{messages['producto.tipo']}" required="true">
+										<f:selectItem itemLabel="#{messages['producto.tipo.seleccion']}" itemValue="" />
+										<f:selectItem itemLabel="#{proyectoEdit.getDescripcionTipo('F')}" itemValue="F" />
+										<f:selectItem itemLabel="#{proyectoEdit.getDescripcionTipo('P')}" itemValue="P" />
+										<f:selectItem itemLabel="#{proyectoEdit.getDescripcionTipo('R')}" itemValue="R" />
+										<p:ajax event="valueChange" update="oPanelProducto" listener="#{proyectoEdit.seleccionadoTipo}" />
+									</p:selectOneMenu>
+								</div>	
+								<div class="p-col-6 p-md-6">
+									<p:outputPanel id="oPanelProducto">
+										<p:outputLabel for="producto" value="#{messages['proyecto.producto']}:" />
+										<br/>
+										<p:selectOneMenu id="producto" value="#{proyectoEdit.proyectoProductoEdit.producto}"
+														 title="#{messages['proyecto.producto']}" required="true" filter="true" filterMatchMode="contains">
+											<f:selectItem itemLabel="#{messages['proyecto.producto.seleccion']}" itemValue="" />
+											<f:selectItems value="#{proyectoEdit.listaProductosAdd}" var="pro" itemLabel="#{pro.descripcion}" itemValue="#{pro}" />
+											<s:convertEntity />
+										</p:selectOneMenu>
+										<p:message for="producto" />
+									</p:outputPanel>
+								</div>
+							</s:div>
+							<s:div styleClass="p-grid" rendered="#{proyectoEdit.proyectoProductoEdit.cod != null}">
+								<div class="p-col-12 p-md-12">
+									<p:outputLabel value="#{messages['proyecto.producto']}:" />
+									<br/>
+									<h:outputText value="#{proyectoEdit.proyectoProductoEdit.producto.descripcion} (#{proyectoEdit.getDescripcionTipo(proyectoEdit.proyectoProductoEdit.producto.tipo)})" styleClass="margen5"/>
+								</div>
+							</s:div>		
+							<div class="p-grid ui-fluid">
+								<div class="p-col-2 p-md-2">
+									<p:outputLabel for="cantidad" value="#{messages['proyecto.producto.cantidad']}:" />
+									<br/>
+									<p:inputNumber id="cantidad" value="#{proyectoEdit.proyectoProductoEdit.cantidad}" maxlength="13" decimalPlaces="2" 
+												   title="#{messages['proyecto.producto.cantidad']}" required="true">
+										<f:validateDoubleRange minimum="0.01" maximum="9999999999.99"/>
+									</p:inputNumber>
+									<p:message for="cantidad" />													
+								</div>
+							</div>	
+							<br/>
+							<div class="p-grid">
+								<div class="p-col-12">
+									<p:commandButton icon="fa fa-save" action="#{proyectoEdit.guardarProyectoProducto}" oncomplete="comprobarArgsModal(xhr, status, args, 'dlgAddProducto');" process="@form"
+													 update="@form :tabViewAsociacionesProyecto:formListadoProductos :messages" value="#{messages['label.save']}" title="#{messages['label.save']}" />
+									<p:commandButton icon="fa fa-times" type="button" value="#{messages['label.cancel']}" title="#{messages['label.cancel']}"
+													 process="@this" ariaLabel="#{messages['label.cancel']}" onclick="PF('dlgAddProducto').hide();" />
+								</div>
+							</div>
+						</p:dialog>
+					</h:form>
+				</p:tab>
+				<p:tab title="#{messages['proyecto.consumos']}" rendered="#{identity.tienePerfilEnServicio('SUPERVISOR',proyectoEdit.proyectoEdit.servicio.cod)}">
+					<h:form id="formListadoConsumos">
+						<p:dataTable id="tablaConsumos" value="#{proyectoEdit.listaConsumosProyecto}" var="_con" emptyMessage="#{messages['proyecto.consumos.empty']}"
+								 	 tableStyleClass="tablaAuto fuente08" reflow="true" rowHover="true" paginator="true" sortBy="#{_con.fechaSolicitud}" sortOrder="DESCENDING"					
+								 	 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								 	 paginatorPosition="bottom"	paginatorAlwaysVisible="true" currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}"					 
+								 	 rowsPerPageTemplate="10, 25, 50" rows="25" summary="#{messages['proyecto.consumos']}" >
+							<p:column headerText="#{messages['solicitudes.codigo']}" sortBy="#{_con.cod}" styleClass="centrado" >
+								<h:outputText value="#{_con.cod}" />
+								<s:fragment rendered="#{_con.consumoPadre != null}">
+									<br/>
+									<h:outputText value="Padre: " styleClass="fuente09"/>
+									<h:outputText process="@this" value="#{_con.consumoPadre.cod}" styleClass="fuente09"/>
+								</s:fragment>
+							</p:column>
+							<p:column headerText="#{messages['solicitudes.tipo']}" sortBy="#{_con.tipo}" styleClass="centrado" >
+								<h:outputText value="#{proyectoEdit.getDescripcionTipo(_con.tipo)}"/>
+							</p:column>
+							<p:column headerText="#{messages['solicitudes.fechasolicitud.corto']}" sortBy="#{_con.fechaSolicitud}" styleClass="centrado">
+								<h:outputText value="#{_con.fechaSolicitud}">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy HH:mm" />
+								</h:outputText>
+							</p:column>
+							<p:column headerText="#{messages['solicitudes.interno']}" sortBy="#{_con.interno}" styleClass="centrado">
+								<h:outputText value="#{_con.interno}"/>
+							</p:column>
+							<p:column headerText="#{messages['solicitudes.solicitante']}" sortBy="#{_con.usuarioSolicitante.datosUsuario.nombreCompleto}" styleClass="centrado">
+								<h:outputText value="#{_con.usuarioSolicitante.datosUsuario.nombreCompleto}"/>
+							</p:column>
+							<p:column headerText="#{messages['proyecto.ir']}" sortBy="#{_con.usuarioIrAsociado.datosUsuario.nombreCompleto}">
+								<h:outputText value="#{_con.usuarioIrAsociado.datosUsuario.nombreCompleto}"/>
+							</p:column>
+							<p:column headerText="#{messages['solicitudes.tecnicoasignado']}" styleClass="centrado">
+								<h:outputText value="#{_con.usuarioTecnicoAsignado.datosUsuario.nombreCompleto}" rendered="#{_con.tipo != 'F'}" />
+								<h:outputText value="-" rendered="#{_con.tipo=='F'}" />
+							</p:column>
+							<p:column headerText="#{messages['solicitudes.estado']}" styleClass="centrado negrita #{proyectoEdit.colorEstado(_con)}">
+								<h:outputText value="#{_con.estado}" />
+							</p:column>
+							<p:column headerText="#{messages['solicitudes.consumoCantidad']}" styleClass="derecha" sortBy="#{_con.cantidad}">
+								<h:outputText value="#{proyectoEdit.formatCantidad(_con.cantidad)}" rendered="#{_con.cantidad != null}" title="#{messages['solicitudes.consumoCantidad']}" >
+									<f:convertNumber pattern="#0.00"/>
+								</h:outputText>
+							</p:column>
+							<p:column headerText="#{messages['solicitudes.producto']}" styleClass="centrado" sortBy="#{_con.producto.descripcion}">
+								<h:outputText value="#{_con.producto.descripcion}"  />
+								<s:fragment rendered="#{empty _con.producto.tarifas and _con.producto.facturable == 'SI'}">
+									<br/>
+									<h:outputText value="#{messages['producto.sintarifas']}" styleClass="fuenteSmall textoAlerta negrita"/>
+								</s:fragment>	
+							</p:column>
+						</p:dataTable>	
+					</h:form>
+				</p:tab>	
+			</p:tabView>									
+		</p:panel>	
+		<h:form id="formConfirm">
+			<p:confirmDialog id="confirm" global="true" showEffect="fade" hideEffect="fade" >
+   				<p:commandButton title="Si" label="Si" ariaLabel="Si" value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton title="No" label="No" ariaLabel="No" value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+		</h:form>	
+	</ui:define>
+</ui:composition>
+
+</html>

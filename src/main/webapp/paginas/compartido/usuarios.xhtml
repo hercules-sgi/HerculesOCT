@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/layout/template.xhtml">
+
+	<ui:define name="page-header">
+		<h1>
+			<h:outputText value="#{messages['listado.usuarios']}" />
+		</h1>
+		<h2>
+			<h:outputText value="#{messages['listado.usuarios.subtitle']}" />
+		</h2>
+	</ui:define>
+	<ui:define name="body">
+		<p:panel>
+			<h:form id="formBuscarUsuarios">
+				<div class="p-grid ui-fluid">
+					<div class="p-col-12 p-md-2 p-lg-1">
+						<p:outputLabel title="#{messages['table.dni']}:" value="#{messages['table.dni']}:" for="dniBuscar" />
+						<br/>
+						<p:inputText id="dniBuscar" title="#{usuarios.dniBuscar}" label="#{usuarios.dniBuscar}"  value="#{usuarios.dniBuscar}" maxlength="8"/>
+					</div>
+					<div class="p-col-12 p-md-3 p-lg-2">
+						<p:outputLabel value="#{messages['table.nombre']}:" title="#{messages['table.nombre']}:" for="nombreBuscar" />
+						<br/>
+						<p:inputText id="nombreBuscar" value="#{usuarios.nombreBuscar}" title="#{usuarios.nombreBuscar}" label="#{usuarios.nombreBuscar}" maxlength="80" />
+					</div>
+					<div class="p-col-12 p-md-3 p-lg-2">
+						<p:outputLabel title="#{messages['table.email']}:" value="#{messages['table.email']}:" for="emailBuscar" />
+						<br/>
+						<p:inputText id="emailBuscar" title="#{usuarios.emailBuscar}" label="#{usuarios.emailBuscar}" value="#{usuarios.emailBuscar}" maxlength="50" />
+					</div>
+					<div class="p-col-12 p-md-2 p-lg-1">
+						<p:outputLabel value="#{messages['table.estado']}:" title="#{messages['table.estado']}:"  for="estadoBuscar" />
+						<br/>
+						<p:selectOneMenu id="estadoBuscar" value="#{usuarios.estadoBuscar}" styleClass="ancho100">
+							<f:selectItem itemLabel="#{messages['generico.cualquiera']}" itemValue="" />
+							<f:selectItem itemLabel="#{messages['label.estado.alta']}" itemValue="ALTA" />
+							<f:selectItem itemLabel="#{messages['label.estado.baja']}" itemValue="BAJA" />
+							<f:selectItem itemLabel="#{messages['label.estado.pendiente']}" itemValue="PEND" />
+						</p:selectOneMenu>
+					</div>
+					<div class="p-col-12 p-md-2">
+						<p:outputLabel value="#{messages['usuario.perfil.buscar']}:" title="#{messages['usuario.perfil.buscar']}:"  for="tagPerfilBuscar" />
+						<br/>
+						<p:selectOneMenu id="tagPerfilBuscar" value="#{usuarios.tagPerfilBuscar}" styleClass="ancho100">
+							<f:selectItem itemLabel="#{messages['generico.cualquiera']}" itemValue="" />
+							<f:selectItems value="#{usuarios.getListaPerfilesPuedeFiltrar()}" var="perfil" itemLabel="#{perfil.nombre}" itemValue="#{perfil.tag}"/>
+ 						</p:selectOneMenu>
+					</div>
+				</div>
+				<br/>
+				<div class="p-grid">
+					<div class="p-col-12">
+						<p:commandButton value="#{messages['value.search']}" title="#{messages['value.search']}" ariaLabel="#{messages['value.search']}"
+										 action="#{usuarios.buscar()}" update=":formListadoUsuarios" icon="fa fa-search" />
+						<p:commandButton value="#{messages['value.reset']}" icon="fa fa-fw fa-eraser" ariaLabel="#{messages['value.reset']}"
+										 title="#{messages['value.reset']}" action="#{usuarios.limpiarBusqueda()}" update=":formListadoUsuarios @form" />
+					</div>
+				</div>
+			</h:form>
+
+			<h:form id="formListadoUsuarios">
+				<p:dataTable id="listaUsuarios" var="duv" value="#{usuarios.usuariosLdm}" reflow="true" first="#{usuarios.first}" rows="#{usuarios.pageSize}"
+ 							 lazy="true" paginator="true" paginatorAlwaysVisible="false" emptyMessage="#{messages['label.datatable.empty']}"
+							 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							 rowsPerPageTemplate="10,25,50" paginatorPosition="bottom" currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}"
+							 tableStyleClass="tablaAuto fuente08" rowHover="true" styleClass="header-right" sortBy="#{duv.nombre_completo}">
+					<f:facet name="header">
+						<p:commandLink action="#{usuarioEdit.establecerUsuarioCreate()}" title="#{messages['add.usuario']}" ariaLabel="#{messages['add.usuario']}"
+									   rendered="#{identity.tienePerfil('SUPERVISOR') or identity.tienePerfil('IR')}" styleClass="enlaceTexto">
+							<em class="fa fa-plus"/>#{' '} 
+							<h:outputText styleClass="enlaceAdd" value="#{messages['add.usuario']}" title="#{messages['add.usuario']}" />
+						</p:commandLink>
+					</f:facet>
+					<p:column headerText="#{messages['table.dni']}" ariaHeaderText="#{messages['table.dni']}" sortBy="#{duv.dni}" styleClass="centrado">
+						<h:outputText value="#{duv.dni}" title="#{duv.dni}" />
+					</p:column>
+					<p:column headerText="#{messages['table.nombre']}" ariaHeaderText="#{messages['table.nombre']}" sortBy="#{duv.nombre_completo}">
+						<h:outputText value="#{duv.nombreCompleto}" title="#{duv.nombreCompleto}" />
+					</p:column>
+					<p:column headerText="#{messages['table.email']}" ariaHeaderText="#{messages['table.email']}" sortBy="#{duv.email}">
+						<h:outputText value="#{duv.email}" title="#{duv.email}" />
+					</p:column>
+					<p:column headerText="#{messages['table.telefono']}" ariaHeaderText="#{messages['table.telefono']}"  styleClass="centrado">
+						<h:outputText value="#{duv.telefono}" title="#{duv.telefono}" />
+					</p:column>
+					<p:column headerText="#{messages['table.estado']}" ariaHeaderText="#{messages['table.estado']}" styleClass="centrado">
+						<h:outputText value="#{duv.usuario.estado}" title="#{duv.usuario.estado}"/>
+					</p:column>
+					<p:column headerText="#{messages['usuario.caduca']}" ariaHeaderText="#{messages['usuario.caduca']}" styleClass="centrado">
+						<h:outputText value="#{duv.usuario.caduca}" title="#{duv.usuario.caduca}">
+							<s:convertDateTime pattern="dd/MM/yyyy" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="#{messages['usuario.perfiles']}" ariaHeaderText="#{messages['usuario.perfiles']}">
+						<p:dataList id="dataListPerfiles" styleClass="listaSinBorde fuente09" value="#{usuarios.getListaPerfiles(duv.usuario)}" 
+									var="descripcionPerfil" rendered="#{not empty usuarios.getListaPerfiles(duv.usuario)}" >
+							#{descripcionPerfil}
+						</p:dataList>
+						<s:div styleClass="centrado" rendered="#{empty usuarios.getListaPerfiles(duv.usuario)}">
+							<h:outputText value="#{messages['usuario.sinperfil']}" 
+							title="#{messages['usuario.sinperfil']}" styleClass="textoAlerta" />
+						</s:div>
+					</p:column>
+					<p:column ariaHeaderText="#{messages['value.action']}" headerText="#{messages['value.action']}" styleClass="centrado">
+						<div class="p-grid p-justify-center">
+							<s:div styleClass="p-col" rendered="#{identity.tienePerfil('GESTOR')}">
+								<p:commandLink id="suplantarUsuario" title="#{messages['usuario.suplantar']}" 
+											   ariaLabel="#{messages['usuario.suplantar']}"
+											   action="#{usuarios.suplantarUsuario(duv.usuario)}"											   
+											   rendered="#{identity.tienePerfil('GESTOR')}">
+									<em class="fa fa-user-secret fuente17" />
+								</p:commandLink>
+							</s:div>
+							<div class="p-col">
+								<p:commandLink id="editarUsuario" title="#{messages['usuario.editar']}" 
+											   ariaLabel="#{messages['usuario.editar']}"											   
+											   action="#{usuarioEdit.establecerUsuarioEdit(duv.usuario)}"
+											   rendered="#{identity.tienePerfil('SUPERVISOR') or identity.tienePerfil('IR')}">
+									<em class="fa fa-pencil-square-o fuente17" />
+								</p:commandLink>
+							</div>
+						</div>
+					</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:panel>
+	</ui:define>
+</ui:composition>
+
+</html>

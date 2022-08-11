@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/layout/template.xhtml">
+	<ui:define name="page-header">
+		<h1>
+			<h:outputText value="#{messages['usuariospendientes.panel']}" />
+		</h1>
+		<h2>
+			<h:outputText value="#{messages['usuariospendientes.subtitle']}" />
+		</h2>
+	</ui:define>
+
+	<ui:define name="body">
+		<p:panel>
+			<h:form id="formFiltrarUsuarios">
+				<div class="p-grid ui-fluid">
+					<div class="p-col-12 p-md-2 p-lg-1">
+						<p:outputLabel value="#{messages['table.dni']}:" for="dniFiltrar" />
+						<br/>
+						<p:inputText id="dniFiltrar" value="#{usuariosPendientes.dniFiltrar}" maxlength="8"/>
+					</div>
+					<div class="p-col-12 p-md-3">
+						<p:outputLabel value="#{messages['table.nombre']}:" for="nombreFiltrar" />
+						<br/>
+						<p:inputText id="nombreFiltrar" value="#{usuariosPendientes.nombreFiltrar}" maxlength="80" />
+					</div>
+					<div class="p-col-12 p-md-2">
+						<p:outputLabel value="#{messages['table.email']}:" for="emailFiltrar" />
+						<br/>
+						<p:inputText id="emailFiltrar" value="#{usuariosPendientes.emailFiltrar}" maxlength="50" />
+					</div>
+					<div class="p-col-12 p-md-2 p-lg-1">
+						<p:outputLabel for="fechaCaducaDesdeFiltrar" value="#{messages['usuariospendientes.fechacaducadesde']}:" />
+						<br/>
+						<p:calendar id="fechaCaducaDesdeFiltrar" value="#{usuariosPendientes.fechaCaducaDesdeFiltrar}" 
+									pattern="dd/MM/yyyy" mask="99/99/9999" locale="es" size="10" maxlength="10"/>
+						<p:message for="fechaCaducaDesdeFiltrar"/>			
+					</div>
+					<div class="p-col-12 p-md-2 p-lg-1">
+						<p:outputLabel for="fechaCaducaHastaFiltrar" value="#{messages['usuariospendientes.fechacaducahasta']}:" />
+						<br/>
+						<p:calendar id="fechaCaducaHastaFiltrar" value="#{usuariosPendientes.fechaCaducaHastaFiltrar}" 
+									pattern="dd/MM/yyyy" mask="99/99/9999" locale="es" size="10" maxlength="10"/>
+						<p:message for="fechaCaducaHastaFiltrar"/>			
+					</div>	
+				</div>	
+				<br/>			
+				<div class="p-grid">
+					<div class="p-col-12">
+						<p:commandButton id="filtrarButton" value="#{messages['value.filter']}" title="#{messages['value.search']}" process="@form"
+										 action="#{usuariosPendientes.filtrar()}" update="formUsuariosPendientes" icon="fa fa-filter" />
+						<p:commandButton id="limparButton" value="#{messages['value.reset']}" icon="fa fa-fw fa-eraser"
+										 title="#{messages['value.reset']}" action="#{usuariosPendientes.limpiar()}" update=":formUsuariosPendientes @form" />
+					</div>
+				</div>
+			</h:form>
+		
+			<h:form id="formUsuariosPendientes">				
+				<p:dataTable id="dataTableUsuariosPendientes" var="_usuario" emptyMessage="#{messages['usuariospendientes.empty']}"
+							 value="#{usuariosPendientes.listaUsuariosPendientes}" reflow="true" paginator="true" rows="10" paginatorAlwaysVisible="false"
+							 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							 rowsPerPageTemplate="10,25,50" paginatorPosition="bottom" currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}"
+							 tableStyleClass="tablaAuto fuente08" rowHover="true" sortBy="#{_usuario.caduca}">
+					<p:column headerText="#{messages['table.dni']}" sortBy="#{_usuario.dni}" styleClass="centrado">
+						<h:outputText value="#{_usuario.dni}" />
+					</p:column>
+					<p:column headerText="#{messages['table.nombre']}" sortBy="#{_usuario.datosUsuario.nombreCompleto}">
+						<h:outputText value="#{_usuario.datosUsuario.nombreCompleto}" />
+					</p:column>
+					<p:column headerText="#{messages['table.email']}" sortBy="#{_usuario.datosUsuario.email}">
+						<h:outputText value="#{_usuario.datosUsuario.email}" />
+					</p:column>
+					<p:column headerText="#{messages['table.telefono']}"  styleClass="centrado">
+						<h:outputText value="#{_usuario.datosUsuario.telefono}" />
+					</p:column>
+					<p:column headerText="#{messages['table.estado']}" sortBy="#{_usuario.estado}" styleClass="centrado">
+						<h:outputText value="#{_usuario.estado}" />
+					</p:column>
+					<p:column headerText="#{messages['usuario.caduca']}" sortBy="#{_usuario.caduca}" styleClass="centrado">
+						<h:outputText value="#{_usuario.caduca}">
+							<s:convertDateTime pattern="dd/MM/yyyy" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="#{messages['value.action']}" styleClass="centrado">
+						<div class="p-grid p-justify-center">
+							<p:commandLink id="linkSetUsuario" title="#{messages['usuariospendientes.validar']}" ariaLabel="#{messages['usuariospendientes.validar']}"
+										   action="#{usuariosPendientes.establecerUsuarioEdit(_usuario)}"
+										   update=":formValidacion" oncomplete="PF('validacionDialog').show();">
+								<em class="fa fa-check-square fuente17" />
+							</p:commandLink>
+						</div>
+					</p:column>
+				</p:dataTable>
+			</h:form>
+			<h:form id="formValidacion" styleClass="editFundeweb">		
+				<p:dialog id="validacionDialog" header="#{messages['usuariospendientes.validar']}" focus="botonValidarUsuario"
+					  	  widgetVar="validacionDialog" modal="true" responsive="true" width="50%" closable="false">	
+					<div class="p-grid ui-fluid">
+						<div class="p-col-12 p-md-4">
+							<p:outputLabel for="nuevaCaducidad" value="#{messages['usuariospendientes.nuevacaducidad']}:"/>
+							<br/>
+							<p:calendar id="nuevaCaducidad" value="#{usuariosPendientes.usuarioEdit.caduca}" pattern="dd/MM/yyyy" 
+										locale="es" mindate="#{usuariosPendientes.minCaducidad}" maxdate="#{usuariosPendientes.maxCaducidad}"
+										mask="99/99/9999" required="true" readonlyInput="true" size="10" maxlength="10"/>
+							<p:message for="nuevaCaducidad"/>			
+						</div>
+					</div>
+					<br/>
+					<div class="p-grid">
+						<div class="p-col-12">
+							<p:commandButton id="botonValidarUsuario" value="#{messages['usuariospendientes.validar.boton']}" title="#{messages['usuariospendientes.validar']}" 
+										     icon="fa fa-check-square" action="#{usuariosPendientes.validarUsuario}" update="@form, :messages, :formUsuariosPendientes" 
+										     process="@form" oncomplete="comprobarArgsModal(xhr, status, args, 'validacionDialog'); haCambiado=false;">
+								<p:confirm header="#{messages['usuariospendientes.validar.confirm.title']}" message="#{messages['usuariospendientes.validar.confirm']}"  icon="ui-icon-alert"/>
+							</p:commandButton>
+							<p:commandButton id="botonCancelarValidarUsuario" value="#{messages['label.cancel']}" title="#{messages['label.cancel']}" icon="fa fa-times"  
+											 process="@this" onclick="PF('validacionDialog').hide(); haCambiado=false;"/>
+						</div>	
+					</div>
+				</p:dialog>
+			</h:form>			
+		</p:panel>
+		<h:form id="formConfirm">
+			<p:confirmDialog id="dialogoConfirmacion" global="true" showEffect="fade" hideEffect="fade" responsive="true">
+				<p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" process="@form" />
+				<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+		</h:form>
+	</ui:define>
+
+</ui:composition>
+</html>

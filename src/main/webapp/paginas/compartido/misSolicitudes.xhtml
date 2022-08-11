@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:composition template="/layout/template.xhtml">
+		<ui:define name="page-header">
+			<s:fragment rendered="#{misSolicitudes.presupuestoBuscar == 'NO'}">
+				<h1>
+					<h:outputText value="#{messages['solicitudes.titulo']}" title="#{messages['solicitudes.titulo']}"/>
+				</h1>
+				<h2>
+					<h:outputText value="#{messages['solicitudes.subtitulo']}" title="#{messages['solicitudes.subtitulo']}"/>
+				</h2>
+			</s:fragment>
+			<s:fragment rendered="#{misSolicitudes.presupuestoBuscar == 'SI'}">
+				<h1>
+					<h:outputText value="#{messages['presupuestos.titulo']}" title="#{messages['presupuestos.titulo']}"/>
+				</h1>
+				<h2>
+					<h:outputText value="#{messages['presupuestos.subtitulo']}" title="#{messages['presupuestos.subtitulo']}"/>
+				</h2>
+			</s:fragment>
+		</ui:define>
+		<ui:define name="body">
+			<p:panel>
+				<h:form id="formBusqueda">
+					<div class="p-grid ui-fluid">
+						<div class="p-col-12 p-md-2 p-lg-1" >
+							<p:outputLabel for="codigoBuscar" value="#{messages['solicitudes.codigo']}:"/>
+							<br/>
+							<p:inputText id="codigoBuscar" value="#{misSolicitudes.codigoBuscar}" label="#{misSolicitudes.codigoBuscar}" title="#{messages['solicitudes.codigo']}" maxlength="19"/>
+						</div>
+						<s:div styleClass="p-col-12 p-md-2 p-lg-2" rendered="#{misSolicitudes.presupuestoBuscar == 'NO'}">
+							<p:outputLabel for="tipoBuscar" value="#{messages['solicitudes.tipo']}:"/>
+							<br/>
+							<p:selectOneMenu id="tipoBuscar" value="#{misSolicitudes.tipoBuscar}" title="#{messages['solicitudes.tipo']}" >
+								<f:selectItem itemLabel="#{messages['generico.cualquiera']}" itemValue="" />
+								<f:selectItem itemLabel="#{misSolicitudes.getDescripcionTipoConsumo('F')}" itemValue="F" />
+								<f:selectItem itemLabel="#{misSolicitudes.getDescripcionTipoConsumo('P')}" itemValue="P" />
+								<f:selectItem itemLabel="#{misSolicitudes.getDescripcionTipoConsumo('R')}" itemValue="R" />
+								<p:ajax event="valueChange" update="@form" listener="#{misSolicitudes.seleccionadoTipo}" />
+							</p:selectOneMenu>
+						</s:div>
+						<s:div styleClass="p-col-12 p-md-4 p-lg-3" rendered="#{identity.tienePerfil('SUPERVISOR') or identity.tienePerfil('IR')}">
+							<p:outputLabel for="solicitanteBuscar" value="#{messages['solicitudes.usuarioSolicitante']}:"/>
+							<br/>
+							<p:selectOneMenu id="solicitanteBuscar" filter="true" filterMatchMode="contains"
+											 value="#{misSolicitudes.solicitanteBuscar}" title="#{messages['solicitudes.usuarioSolicitante']}">
+								<f:selectItem itemLabel="#{messages['generico.cualquiera']}" itemValue="" />
+								<f:selectItems var="_usuario" itemLabel="#{_usuario.datosUsuario.nombreCompleto}"
+											   itemValue="#{_usuario}" value="#{misSolicitudes.listaSolicitantes}" />
+								<s:convertEntity />
+								<p:ajax event="valueChange" process="@this"/>
+							</p:selectOneMenu>
+						</s:div>
+						<s:div styleClass="p-col-12 p-md-3 p-lg-2" >
+							<p:outputLabel for="servicioBuscar" value="#{messages['solicitudes.servicio']}:"/>
+							<br/>
+							<p:selectOneMenu id="servicioBuscar" value="#{misSolicitudes.servicioBuscar}" title="#{messages['solicitudes.servicio']}">
+								<f:selectItem itemLabel="#{messages['generico.cualquiera']}" itemValue="" />
+								<f:selectItems value="#{misSolicitudes.listaServicios}" var="_ser" itemLabel="#{_ser.nombre}" itemValue="#{_ser}" />
+								<p:ajax event="valueChange" update="@form" listener="#{misSolicitudes.seleccionadoServicio}" />
+								<s:convertEntity />
+							</p:selectOneMenu>
+						</s:div>
+						<s:fragment rendered="#{misSolicitudes.tipoBuscar != null and misSolicitudes.presupuestoBuscar == 'NO'}">
+							<s:div styleClass="p-col-12 p-md-3 p-lg-2" rendered="#{misSolicitudes.tipoBuscar == 'P' or misSolicitudes.tipoBuscar == 'R'}">
+								<p:outputLabel for="estadoBuscarPR" value="#{messages['solicitudes.estado']}:" />
+								<br/>
+								<p:selectOneMenu id="estadoBuscarPR" value="#{misSolicitudes.estadoBuscar}" title="#{messages['solicitudes.estado']}">
+									<f:selectItem itemLabel="#{messages['generico.cualquiera']}" itemValue="" />
+									<f:selectItem itemLabel="Pendiente" itemValue="Pendiente" />
+									<f:selectItem itemLabel="Pendiente validación ir" itemValue="Pend validacion ir"/>
+									<f:selectItem itemLabel="Aceptado" itemValue="Aceptado" />
+									<f:selectItem itemLabel="Rechazado" itemValue="Rechazado" />
+									<f:selectItem itemLabel="Anulado" itemValue="Anulado" />
+									<f:selectItem itemLabel="Finalizado" itemValue="Finalizado" />
+								</p:selectOneMenu>
+							</s:div>
+							<s:div styleClass="p-col-12 p-md-3 p-lg-2" rendered="#{misSolicitudes.tipoBuscar == 'F'}">
+								<p:outputLabel for="estadoF" value="#{messages['solicitudes.estado']}:" />
+								<br/>
+								<p:selectOneMenu id="estadoF" value="#{misSolicitudes.estadoBuscar}" title="#{messages['solicitudes.estado']}" rendered="#{misSolicitudes.tipoBuscar == 'F'}">
+									<f:selectItem itemLabel="#{messages['generico.cualquiera']}" itemValue="" />
+									<f:selectItem itemLabel="Pendiente" itemValue="Pendiente" />
+									<f:selectItem itemLabel="Finalizado" itemValue="Finalizado" />						
+								</p:selectOneMenu>
+							</s:div>
+						</s:fragment>
+						<s:div styleClass="p-col-12 p-md-3 p-lg-2" rendered="#{misSolicitudes.presupuestoBuscar == 'SI'}">
+							<p:outputLabel for="estadoPresupuestoBuscar" value="#{messages['solicitudes.estado']}:" />
+							<br/>
+							<p:selectOneMenu id="estadoPresupuestoBuscar" value="#{misSolicitudes.estadoPresupuestoBuscar}" title="#{messages['solicitudes.estado']}">
+								<f:selectItem itemLabel="#{messages['generico.cualquiera']}" itemValue="" />
+								<f:selectItem itemLabel="Solicitado" itemValue="Solicitado" />
+								<f:selectItem itemLabel="Enviado a IR" itemValue="Enviado a IR"/>
+								<f:selectItem itemLabel="Aceptado por IR" itemValue="Aceptado por IR" />
+								<f:selectItem itemLabel="Rechazado por IR" itemValue="Rechazado por IR" />
+								<f:selectItem itemLabel="Anulado por usuario" itemValue="Anulado por usuario" />
+								<f:selectItem itemLabel="Anulado por ACTI" itemValue="Anulado por ACTI" />
+							</p:selectOneMenu>
+						</s:div>
+						<s:div styleClass="p-col-12 p-md-6 p-lg-4" rendered="#{misSolicitudes.servicioBuscar != null}">
+							<p:outputLabel for="productoBuscar" value="#{messages['solicitudes.producto']}:"/>
+							<br/>
+							<p:selectOneMenu id="productoBuscar" filter="true" filterMatchMode="contains" value="#{misSolicitudes.productoBuscar}" title="#{messages['solicitudes.producto']}">
+								<f:selectItem itemLabel="#{messages['generico.cualquiera']}" itemValue="" />
+								<f:selectItems value="#{misSolicitudes.listaProductos}" var="_prod" 
+											   itemLabel="#{_prod.descripcion}" itemValue="#{_prod}" />
+								<s:convertEntity />
+							</p:selectOneMenu>
+						</s:div>
+						<s:div styleClass="p-col-12 p-md-2 p-lg-2" rendered="#{misSolicitudes.presupuestoBuscar == 'NO' and misSolicitudes.servicioBuscar != null and (identity.tienePerfilEnServicio('SUPERVISOR',misSolicitudes.servicioBuscar.cod) or identity.tienePerfilEnServicio('TECNICO',misSolicitudes.servicioBuscar.cod))}">
+							<p:outputLabel for="consumoInternoBuscar" value="#{messages['solicitudes.consumo']}:" />
+							<br/>
+							<p:selectOneMenu id="consumoInternoBuscar" value="#{misSolicitudes.consumoInternoBuscar}" title="#{messages['solicitudes.consumo']}">
+								<f:selectItem itemLabel="#{messages['generico.cualquiera']}" itemValue="" />
+								<f:selectItem itemLabel="Si" itemValue="SI" />
+								<f:selectItem itemLabel="No" itemValue="NO" />
+							</p:selectOneMenu>
+						</s:div>
+						<s:fragment rendered="#{misSolicitudes.servicioBuscar!=null and identity.tienePerfilEnServicio('SUPERVISOR',misSolicitudes.servicioBuscar.cod)}">
+							<div class="p-col-12 p-md-4 p-lg-3">
+								<p:outputLabel for="irAsignadoBuscar" value="#{messages['solicitudes.investigadorAsignado']}:" />
+								<br/>
+								<p:selectOneMenu id="irAsignadoBuscar" filter="true" filterMatchMode="contains"
+									 			 value="#{misSolicitudes.irAsignadoBuscar}" title="#{messages['solicitudes.investigadorAsignado']}">
+									<f:selectItem itemLabel="#{messages['generico.cualquiera']}" itemValue="" />
+									<f:selectItems var="_ir" itemLabel="#{_ir.datosUsuario.nombreCompleto}"
+												   itemValue="#{_ir}" value="#{misSolicitudes.listaIrs}" />
+									<s:convertEntity />
+								</p:selectOneMenu>
+							</div>
+							<s:div styleClass="p-col-12 p-md-4 p-lg-3" rendered="#{misSolicitudes.tipoBuscar == 'P' or misSolicitudes.tipoBuscar == 'R'}">
+								<p:outputLabel for="tecnicoAsignadoBuscar" value="#{messages['solicitudes.tecnicoAsignado']}:"/>
+								<br/>
+								<p:selectOneMenu id="tecnicoAsignadoBuscar" filter="true" filterMatchMode="contains" title="#{messages['solicitudes.tecnicoAsignado']}"
+											 	 value="#{misSolicitudes.tecnicoAsignadoBuscar}" label="#{misSolicitudes.tecnicoAsignadoBuscar}">
+									<f:selectItem itemLabel="#{messages['generico.cualquiera']}" itemValue="" />
+									<f:selectItems var="_tec" itemLabel="#{_tec.datosUsuario.nombreCompleto}"
+												   itemValue="#{_tec}" value="#{misSolicitudes.listaTecnicos}" />
+									<s:convertEntity />
+								</p:selectOneMenu>
+							</s:div>
+						</s:fragment>
+					</div>	
+					<s:div styleClass="p-grid ui-fluid" >
+						<div class="p-col-1 p-col-align-end">
+							<p:outputLabel value="#{messages['solicitudes.fechasolicitud']}:" />
+						</div>
+						<div class="p-col-12 p-md-1">
+							<p:outputLabel for="fechaDesdeBuscar" value="#{messages['solicitudes.fechadesde']}"/>
+							<p:calendar id="fechaDesdeBuscar" title="#{messages['solicitudes.fechadesde']}" label="#{messages['solicitudes.fechadesde']}"
+							 			value="#{misSolicitudes.fechaSolicitudDesdeBuscar}" pattern="dd/MM/yyyy" mask="99/99/9999" locale="es" size="10" maxlength="10"/>
+							<p:message for="fechaDesdeBuscar"/> 			
+						</div>
+						<div class="p-col-12 p-md-1">
+							<p:outputLabel for="fechaHastaBuscar" value="#{messages['solicitudes.fechahasta']}"/>
+							<p:calendar id="fechaHastaBuscar" title="#{messages['solicitudes.fechahasta']}" label="#{messages['solicitudes.fechahasta']}"
+										value="#{misSolicitudes.fechaSolicitudHastaBuscar}" pattern="dd/MM/yyyy" mask="99/99/9999" locale="es" size="10" maxlength="10"/>
+							<p:message for="fechaHastaBuscar"/>			
+						</div>
+						<s:fragment rendered="#{misSolicitudes.presupuestoBuscar == 'NO' and misSolicitudes.tipoBuscar =='P'}">
+							<div class="p-col-1 p-col-align-end p-offset-1">
+								<p:outputLabel value="#{messages['solicitudes.fecharesolucion']}:" />
+							</div>
+							<div class="p-col-12 p-md-1">
+								<p:outputLabel for="fechaResDesdeBuscar" value="#{messages['solicitudes.fechadesde']}"/>
+								<p:calendar id="fechaResDesdeBuscar" title="#{messages['solicitudes.fechadesde.resolucion']}" label="#{messages['solicitudes.fechadesde.resolucion']}"
+											value="#{misSolicitudes.fechaResolucionDesdeBuscar}" pattern="dd/MM/yyyy" mask="99/99/9999" locale="es" size="10" maxlength="10" />
+								<p:message for="fechaResDesdeBuscar"/>			
+							</div>
+							<div class="p-col-12 p-md-1">
+								<p:outputLabel for="fechaResHastaBuscar" value="#{messages['solicitudes.fechahasta']}"  />
+								<p:calendar id="fechaResHastaBuscar" title="#{messages['solicitudes.fechahasta.resolucion']}" label="#{messages['solicitudes.fechahasta.resolucion']}"
+								 			value="#{misSolicitudes.fechaResolucionHastaBuscar}" pattern="dd/MM/yyyy" mask="99/99/9999" locale="es" size="10" maxlength="10"/>
+								 <p:message for="fechaResHastaBuscar"/>			
+							</div>
+						</s:fragment>
+						<s:fragment rendered="#{misSolicitudes.tipoBuscar =='R'}">
+							<div class="p-col-1 p-col-align-end p-offset-1">
+								<p:outputLabel value="#{messages['solicitudes.fechareservas']}:" />
+							</div>
+							<div class="p-col-12 p-md-1">
+								<p:outputLabel for="fechaReservasDesdeBuscar" value="#{messages['solicitudes.fechadesde']}"/>
+								<p:calendar id="fechaReservasDesdeBuscar" title="#{messages['solicitudes.fechadesde.reservas']}" label="#{messages['solicitudes.fechadesde.reservas']}"
+											value="#{misSolicitudes.fechaReservasDesdeBuscar}" pattern="dd/MM/yyyy" mask="99/99/9999" locale="es" size="10" maxlength="10"/>
+								<p:message for="fechaReservasDesdeBuscar"/>			
+							</div>
+							<div class="p-col-12 p-md-1">
+								<p:outputLabel for="fechaReservasHastaBuscar" value="#{messages['solicitudes.fechahasta']}" />
+								<p:calendar id="fechaReservasHastaBuscar" title="#{messages['solicitudes.fechahasta.reservas']}" label="#{messages['solicitudes.fechahasta.reservas']}"
+											value="#{misSolicitudes.fechaReservasHastaBuscar}" pattern="dd/MM/yyyy" mask="99/99/9999" locale="es" size="10" maxlength="10"/>
+								<p:message for="fechaReservasHastaBuscar"/>								
+							</div>
+						</s:fragment>
+					</s:div>
+					<s:div styleClass="p-grid" rendered="#{misSolicitudes.servicioBuscar != null and misSolicitudes.servicioBuscar.solicitudVisible=='SI' and identity.tienePerfilEnServicio('TECNICO',misSolicitudes.servicioBuscar.cod) and !identity.tienePerfilEnServicio('SUPERVISOR',misSolicitudes.servicioBuscar.cod)}"> 	
+						<div class="p-col-12">
+							<p:selectBooleanCheckbox id="consultarTodasParaTecnico" value="#{misSolicitudes.consultarTodasParaTecnico}" 
+													 itemLabel="#{messages['solicitudes.tecnico.consultartodas']}" styleClass="negrita"/>
+						</div>
+					</s:div>
+					<br/>
+					<s:div styleClass="p-grid" >
+						<div class="p-col-12">
+							<p:commandButton id="buttonBuscar" action="#{misSolicitudes.buscar}" value="#{messages['value.search']}" 
+											 update="@form :formListado" icon="fa fa-search" title="#{messages['solicitudes.buscar']}" ariaLabel="#{messages['solicitudes.buscar']}"/>
+							<p:commandButton id="buttonLimpiar" action="#{misSolicitudes.limpiarBusqueda}" value="#{messages['value.reset']}" 
+											 update="@form :formListado" icon="fa fa-eraser" title="#{messages['value.reset']}" ariaLabel="#{messages['value.reset']}"/>
+						</div>
+					</s:div>
+				</h:form>
+				<h:form id="formListado">
+					<p:dataTable id="dataTableConsumos" value="#{misSolicitudes.consumosLdm}" var="_con" emptyMessage="#{messages['consumos.listado.empty']}"
+								 tableStyleClass="tablaAuto fuente08" reflow="true" rowHover="true" 
+								 paginator="true" first="#{misSolicitudes.first}" rows="#{misSolicitudes.pageSize}" sortBy="#{_con.fechaSolicitud}" sortOrder="DESCENDING"					
+								 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								 paginatorPosition="bottom"	paginatorAlwaysVisible="true" currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}"					 
+								 lazy="true" rowsPerPageTemplate="10, 25, 50" summary="#{messages['solicitudes.listado']}" >
+						<p:ajax event="page" listener="#{misSolicitudes.onPageChange}"/>
+						<p:column headerText="#{messages['solicitudes.codigo']}" sortBy="#{_con.cod}" styleClass="centrado" >
+							<h:outputText value="#{_con.cod}" />
+							<br/>
+							<h:outputText value="#{misSolicitudes.getDescripcionTipoConsumo(_con)}" styleClass="fuente09 negrita"/>
+							<s:fragment rendered="#{_con.consumoPadre != null}">
+								<br/>
+								<h:outputText value="Padre: " styleClass="fuente09"/>
+								<p:commandLink process="@this" value="#{_con.consumoPadre.cod}" styleClass="enlaceTexto fuente09"
+							  				   action="#{solicitudPrestaciones.establecerPrestacionEdit(_con.consumoPadre)}" ariaLabel="#{messages['solicitudes.prestacionEdit']} #{_con.consumoPadre.cod}" title="#{messages['solicitudes.prestacionEdit']} #{_con.consumoPadre.cod}"/>
+							</s:fragment>
+						</p:column>
+						<p:column headerText="#{messages['solicitudes.fechasolicitud.corto']}" sortBy="#{_con.fechaSolicitud}" styleClass="centrado">
+							<h:outputText value="#{_con.fechaSolicitud}">
+								<f:convertDateTime type="date" pattern="dd/MM/yyyy HH:mm" />
+							</h:outputText>
+						</p:column>
+						<p:column headerText="#{messages['solicitudes.fecharesolucion.corto']}" rendered="#{misSolicitudes.presupuestoBuscar == 'NO' and (misSolicitudes.tipoBuscar=='P' or misSolicitudes.tipoBuscar==null)}" sortBy="#{_con.fechaResolucion}" styleClass="centrado">
+							<h:outputText value="#{_con.fechaResolucion}" rendered="#{_con.tipo=='P'}">
+								<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+							</h:outputText>
+							<h:outputText value="-" rendered="#{_con.tipo!='P'}" title="-"/>
+						</p:column>
+						<p:column headerText="#{messages['solicitudes.interno']}" rendered="#{misSolicitudes.presupuestoBuscar == 'NO' and (identity.tienePerfil('SUPERVISOR') or identity.tienePerfil('TECNICO'))}" sortBy="#{_con.interno}" styleClass="centrado">
+							<h:outputText value="#{_con.interno}" rendered="#{identity.tienePerfilEnServicio('SUPERVISOR',_con.producto.servicio.cod) or identity.tienePerfilEnServicio('TECNICO',_con.producto.servicio.cod)}"/>
+							<h:outputText value="-" rendered="#{!identity.tienePerfilEnServicio('SUPERVISOR',_con.producto.servicio.cod) and !identity.tienePerfilEnServicio('TECNICO',_con.producto.servicio.cod)}"/>
+						</p:column>
+						<p:column headerText="#{messages['solicitudes.solicitante']}" sortBy="#{_con.usuarioSolicitante.datosUsuario.nombreCompleto}" styleClass="centrado">
+							<h:outputText value="#{misSolicitudes.getNombreFormateado(_con.usuarioSolicitante.datosUsuario.nombreCompleto)}"/>
+						</p:column>
+						<p:column headerText="#{messages['solicitudes.usuario']}" sortBy="#{_con.usuarioIrAsociado.datosUsuario.nombreCompleto}">
+							<h:outputText value="#{misSolicitudes.getNombreFormateado(_con.usuarioIrAsociado.datosUsuario.nombreCompleto)}"/>
+						</p:column>
+						<p:column headerText="#{messages['solicitudes.tecnicoasignado']}" rendered="#{misSolicitudes.tipoBuscar == 'P' or misSolicitudes.tipoBuscar == 'R' or misSolicitudes.tipoBuscar == null}" styleClass="centrado">
+							<h:outputText value="#{misSolicitudes.getNombreFormateado(_con.usuarioTecnicoAsignado.datosUsuario.nombreCompleto)}" rendered="#{_con.tipo != 'F'}" />
+							<h:outputText value="-" rendered="#{_con.tipo=='F'}" />
+						</p:column>
+						<p:column headerText="#{messages['solicitudes.estado']}" styleClass="centrado negrita #{misSolicitudes.colorEstado(_con)}" rendered="#{misSolicitudes.presupuestoBuscar == 'NO'}">
+							<h:outputText value="#{misSolicitudes.getDescripcionEstadoConsumo(_con)}"/>
+						</p:column>
+						<p:column headerText="#{messages['solicitudes.estado']}" styleClass="centrado negrita #{misSolicitudes.colorEstadoPresupuesto(_con)}" rendered="#{misSolicitudes.presupuestoBuscar == 'SI'}">
+							<h:outputText value="#{_con.estadoPresupuesto}" />
+						</p:column>
+						<p:column headerText="#{messages['solicitudes.servicio']}" styleClass="centrado">
+							<h:outputText value="#{_con.producto.servicio.nombre}" />
+						</p:column>
+						<p:column headerText="#{messages['solicitudes.producto']}" styleClass="centrado">
+							<h:outputText title="#{misSolicitudes.formatCantidad(_con.cantidad)} x " value="#{misSolicitudes.formatCantidad(_con.cantidad)} x " rendered="#{_con.cantidad != null}">
+								<f:convertNumber pattern="#0.00"/>
+							</h:outputText>
+							<h:outputText value="#{_con.producto.descripcion}" />
+							<s:fragment rendered="#{_con.proyecto != null}">
+								<br/>	
+								<h:outputText value="#{_con.proyecto.nombre}" styleClass="fuente09"/>						
+							</s:fragment>
+							<s:fragment rendered="#{empty _con.producto.tarifas and _con.producto.facturable == 'SI'}">
+								<br/>
+								<h:outputText value="#{messages['producto.sintarifas']}" styleClass="fuente09 textoAlerta negrita"/>
+							</s:fragment>	
+						</p:column>
+						<p:column headerText="#{messages['entidadpagadora.title.corto']}" >
+							<h:outputText value="#{misSolicitudes.getDescripcionEntidad(_con.entidadPagadora)}" rendered="#{_con.entidadPagadora != null}"/>
+						</p:column>
+						<p:column headerText="#{messages['solicitudes.reservas.corto']}" rendered="#{misSolicitudes.presupuestoBuscar == 'NO' and (misSolicitudes.tipoBuscar == 'R' or misSolicitudes.tipoBuscar == null)}" styleClass="centrado">
+							<p:dataTable id="tablaReservas" var="_res" value="#{misSolicitudes.getReservasActivasByConsumo(_con)}" styleClass="tablaSinHeader tablaSinBordes" 
+										 rowHover="true" rendered="#{_con.tipo=='R' and not empty misSolicitudes.getReservasActivasByConsumo(_con)}" summary="#{messages['solicitudes.reservas.listado']}">
+								<p:column styleClass="fuente06" ariaHeaderText="#{messages['label.fecha']}">
+									<h:outputText value="#{misSolicitudes.getDescripcionFechaReserva(_res)}" title="#{messages['solicitudes.reservable']}" />
+								</p:column>
+								<p:column styleClass="fuente06" ariaHeaderText="#{messages['solicitudes.reservable']}">
+									<h:outputText value="#{_res.reservable.descripcion}" title="#{messages['solicitudes.reservable']}" />
+								</p:column>
+							</p:dataTable>
+							<h:outputText title="-" value="-" rendered="#{_con.tipo != 'R'}"/>
+						</p:column>
+						<p:column headerText="#{messages['solicitudes.factura']}" rendered="#{misSolicitudes.presupuestoBuscar == 'NO' and (identity.tienePerfil('SUPERVISOR') or identity.tienePerfil('IR'))}" styleClass="centrado">											
+							<p:commandLink rendered="#{misSolicitudes.esSupervisorFactura(_con) or misSolicitudes.esIrFactura(_con)}"
+									   	   title="Consultar factura #{_con.factura.cod}" ariaLabel="Consultar factura #{_con.factura.cod}"							    
+									   	   action="#{facturacionEdit.establecerFacturaEdit(_con.factura)}">
+								<em class="fa fa-file-text-o fuente17" />
+								<f:param value="/paginas/compartido/misSolicitudes.xhtml" name="facturacionEditFrom"/>
+							</p:commandLink>
+						</p:column>
+						<p:column headerText="#{messages['solicitudes.accion']}" styleClass="centrado">												
+							<div class="p-grid p-justify-center">
+								<div class="p-col">
+									<p:commandLink rendered="#{_con.tipo == 'P'}" id="buttonEditPrestacion" process="@this"
+							  					   action="#{solicitudPrestaciones.establecerPrestacionEdit(_con)}" 
+							  					   title="#{misSolicitudes.presupuestoBuscar == 'NO' ? messages['solicitudes.prestacionEdit'] : messages['solicitudes.presupuestoEdit']} #{_con.cod}"
+							  					   ariaLabel="#{misSolicitudes.presupuestoBuscar == 'NO' ? messages['solicitudes.prestacionEdit'] : messages['solicitudes.presupuestoEdit']} #{_con.cod}"> 
+										<em class="fa fa-pencil-square-o fuente17" />
+									</p:commandLink>
+									<p:commandLink rendered="#{_con.tipo == 'F'}" id="buttonEditFungible" process="@this"
+												   action="#{solicitudFungibles.establecerFungibleEdit(_con)}" ariaLabel="#{messages['solicitudes.fungibleEdit']} #{_con.cod}" title="#{messages['solicitudes.fungibleEdit']} #{_con.cod}">
+										<em class="fa fa-pencil-square-o fuente17" />
+									</p:commandLink>
+									<p:commandLink rendered="#{_con.tipo == 'R'}" id="buttonEditReserva" process="@this"
+												   action="#{solicitudReservas.establecerReservaEdit(_con)}" ariaLabel="#{messages['solicitudes.reservaEdit']} #{_con.cod}" title="#{messages['solicitudes.reservaEdit']} #{_con.cod}">
+										<em class="fa fa-pencil-square-o fuente17" />
+									</p:commandLink>
+								</div>
+								<s:div styleClass="p-col" rendered="#{misSolicitudes.presupuestoBuscar == 'NO'}">					
+									<p:commandLink id="buttonImprimeConsumo" ariaLabel="#{messages['solicitudes.consumo.gethtml']} #{_con.cod}" title="#{messages['solicitudes.consumo.gethtml']} #{_con.cod}" 
+												   action="#{misSolicitudes.obtenerConsumoHtml(_con.cod)}" ajax="false" update=":messages"
+									   			   target="_blank">
+										<em class="fa fa-print fuente17" />
+									</p:commandLink>
+								</s:div>				
+							</div>							
+						</p:column>
+					</p:dataTable>
+				</h:form>
+			</p:panel>
+		</ui:define>
+	</ui:composition>
+</html>

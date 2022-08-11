@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:s="http://jboss.org/schema/seam/taglib"
+	  xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+	
+		<h:outputLink value="#{'http://www.um.es/atica/w3c.html'}"
+				title="#{messages['application.w3c.icon.title']}"
+		 		target="_blank">
+			<h:graphicImage height="31" width="88"
+        		value="http://www.w3.org/WAI/wcag1AAA-blue"
+        		alt="#{messages['application.w3c.icon.wai']}" />
+		</h:outputLink>
+	
+</ui:composition>
+
+</html>

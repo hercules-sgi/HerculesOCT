@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0" 
+	xmlns="http://java.sun.com/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+
+	<persistence-unit name="defaultPU" transaction-type="JTA">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<jta-data-source>jdbc/Sai DataSource</jta-data-source>
+		<properties>
+			<property name="hibernate.hbm2ddl.auto" value="validate"/>
+         	<property name="hibernate.show_sql" value="true"/>
+         	<property name="hibernate.format_sql" value="true"/>
+
+			<!-- Añadir el esquema por defecto de la Base de Datos -->
+			<property name="hibernate.default_schema" value="SAI"/>
+
+			<property name="hibernate.dialect" value="es.um.atica.hibernate.dialect.FundeWebOracle10gDialect"/>
+
+			<!-- Deshabilitar el chacheado de queries por defecto -->
+			<property name="hibernate.cache.use_query_cache" value="false"/>
+
+			<!-- Weblogic --> 
+			<property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.WeblogicJtaPlatform"/>
+			
+			<!-- Nuestro propio proveedor para generar auditoría con el DNI del usuario conectado -->
+			<property name="hibernate.connection.provider_class" value="es.um.atica.sai.hibernate.connection.SaiConnectionProvider"/>
+<!--		
+			hqlLiteral=SQL_LITERAL or hqlFunction=SQLFUNC
+			
+			Map from tokens in Hibernate queries to SQL tokens, such as function or literal names.
+
+			https://docs.jboss.org/hibernate/orm/4.2/manual/en-US/html/ch03.html#configuration-optional-querysubstitution
+			
+			<property name="hibernate.query.substitutions" value="true=1, false=0, toLowerCase=LOWERCASE"/>
+-->
+<!--	Acceder a los objetos de BBDD por los sininimos publicos
+
+			<property name="hibernate.synonyms" value="true"/>
+-->
+
+		</properties>
+	</persistence-unit>
+
+</persistence>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/layout/template.xhtml">
+
+	<ui:define name="page-header">
+		<p:panel id="panelBienvenida">
+		<h1>
+			<h:graphicImage styleClass="logo" library="img" name="logo_acti.png" alt="Logo ACTI" /> 
+			<h:outputText value="#{messages['home.titulo']}" title="#{messages['home.titulo']}" />
+		</h1>
+		<h2>			
+			<h:outputText value="#{identity.usuarioConectado.getFullName()}" title="#{identity.usuarioConectado.getFullName()}" />
+		</h2>
+		<p:dataList id="dataListPerfiles" styleClass="listaSinBorde fuente08" value="#{identity.listaDescripcionesPerfiles}" 
+					var="descripcionPerfil" rendered="#{not empty identity.listaDescripcionesPerfiles}" >
+			<h:outputText value="#{descripcionPerfil}" title="#{descripcionPerfil}" />
+		</p:dataList>
+		</p:panel>
+		<s:div rendered="#{identity.usuarioConectado.estado == 'PEND' or identity.caducado}">
+			<p class="textoAlerta">ATENCIÓN: Aún está pendiente de validar como usuario de la aplicación</p>
+			<p>
+			   Le informamos que si va a usar directamente in situ nuestras instalaciones debe disponer de un seguro que cubra las posibles incidencias que puedan surgir en el ACTI.<br/> 
+			   Debe enviar certificado de esta cobertura de seguro a <a href='mailto:acti.adm@um.es' class='enlaceTexto'>acti.adm@um.es</a><br/>
+			   Si no dispone de la documentación, debe contactar con su IR.<br/>
+			   Su alta o renovación queda pendiente hasta recibir dicha documentación. Si no va a usar nuestras instalaciones contacte igualmente a <a href='mailto:acti.adm@um.es' class='enlaceTexto'>acti.adm@um.es</a>.
+			</p>		
+		</s:div>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:form id="formInfoPanel">
+			<p:panel id="homeInfoPanel">
+			    <s:div rendered="#{identity.getUsuarioConectado().acepta!='SI'}">
+                    <p class="textoAlerta fuente09">ATENCIÓN: Debe aceptar las condiciones de uso de la aplicación</p>
+                    <div>
+                    	<h:outputLink id="imagenVerCondiciones" styleClass="nobloqueoFundeweb enlaceTexto" title="#{messages['menuprincipal.condiciones']}"                   	
+                    				  value="https://www.um.es/web/acti/contenido/normativa#Registro" target="_blank" tabindex="-1">
+                    		<em class="fa fa-eye fuente13" />
+                    	</h:outputLink>
+                    	<h:outputLink id="enlaceVerCondiciones" styleClass="nobloqueoFundeweb enlaceTexto margen5" title="#{messages['menuprincipal.condiciones']}"
+                    	 			  value="https://www.um.es/web/acti/contenido/normativa#Registro" target="_blank">
+                    		<h:outputText value="#{messages['menuprincipal.condiciones']}" title="#{messages['menuprincipal.condiciones']}" />
+                    	</h:outputLink>
+                    </div>
+                    <p:commandLink id="imagenAceptarCondiciones" styleClass="enlaceTexto" ajax="false" title="#{messages['menuprincipal.aceptarCond']}" ariaLabel="#{messages['menuprincipal.aceptarCond']}"
+	                    		   action="#{home.aceptarCondiciones}" update="@form :menuLateralForm" tabindex="-1">
+							<em class="fa fa-check-square-o fuente13" />
+						<p:confirm header="#{messages['home.confirmar']}" message="#{messages['home.confirmar.aceptacion']}"
+								   icon="ui-icon-alert" />							
+					</p:commandLink>		                    		 
+                    <p:commandLink id="enlaceAceptarCondiciones" styleClass="enlaceTexto margen5" ajax="false" value="#{messages['menuprincipal.aceptarCond']}" 
+                    			   ariaLabel="#{messages['menuprincipal.aceptarCond']}"	title="#{messages['menuprincipal.aceptarCond']}" action="#{home.aceptarCondiciones}" update="@form :menuLateralForm">
+						<em class="fa fa-check-square-o" />
+						<p:confirm header="#{messages['home.confirmar']}" message="#{messages['home.confirmar.aceptacion']}"
+								   icon="ui-icon-alert" />							
+					</p:commandLink>		                    		 
+	             </s:div>
+	             <h:outputLink id="imagenNormativa" styleClass="nobloqueoFundeweb enlaceTexto" title="#{messages['menuprincipal.normativa']}" 
+	             			   value="http://www.um.es/web/acti/contenido/normativa" target="_blank" tabindex="-1">
+	             	 <em class="fa fa-file-text-o fuente13"/>
+	             </h:outputLink>
+	             <h:outputLink id="enlaceNormativa" styleClass="nobloqueoFundeweb enlaceTexto margen5" value="http://www.um.es/web/acti/contenido/normativa" target="_blank">
+	             	 <h:outputText value="#{messages['menuprincipal.normativa']}" title="#{messages['menuprincipal.normativa']}" />
+	             </h:outputLink>
+				 <br/>
+				 <br/>	
+				 <s:div styleClass="p-grid">
+				 	<div class="p-col-12 p-md-7">
+						<p:dataTable id="dataSolicitudServicio" tableStyleClass="tablaAuto fuente08" rowHover="true"
+									 rendered="#{home.servicios.size() > 0}" var="_ser" value="#{home.servicios}">
+							<p:column headerText="#{messages['home.table.seccion']}" ariaHeaderText="#{messages['home.table.seccion']}">
+								<h:outputText value="#{_ser.nombre}" title="#{_ser.nombre}"/>
+							</p:column>
+							<p:column headerText="#{messages['home.table.email']}" ariaHeaderText="#{messages['home.table.email']}" styleClass="centrado">
+								<a href="mailto:#{_ser.email}" class="enlaceTexto"> 
+									<h:outputText value="#{_ser.email}" title="#{_ser.email}" />
+								</a>	
+							</p:column>
+							<p:column headerText="#{messages['home.table.solicitud']}" 
+							          ariaHeaderText="#{messages['home.table.solicitud']}" styleClass="centrado" 
+									  rendered="#{identity.trabajadorUmu or identity.tienePerfil('IR')}">
+								<p:commandLink rendered="#{!identity.tienePerfilEnServicio('IR',_ser.cod)}" ajax="false" id="buttonSolicitar" 
+											   title="#{messages['home.table.thumb']}" 
+											   ariaLabel="#{messages['home.table.thumb']}"
+											   action="#{registroIr.establecerServicioRegistroIr(_ser)}">
+									<em class="fa fa-folder-open fuente17" />
+									<p:confirm header="#{messages['home.confirmar']}" message="#{messages['registroir.alerta.confirm']}"
+											   icon="ui-icon-alert" />							
+								</p:commandLink>				
+							</p:column>
+						</p:dataTable>
+					</div>
+				</s:div>
+			</p:panel>
+		
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+        		<p:commandButton title="Si" label="Si" ariaLabel="Si" value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-check" />
+        		<p:commandButton title="No" label="No" ariaLabel="No" value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-times" />
+    		</p:confirmDialog>  
+		</h:form>
+	</ui:define>
+
+</ui:composition>
+
+</html>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:s="http://jboss.org/schema/seam/taglib"
+	  xmlns:p="http://primefaces.org/ui">
+	  
+<h:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title><h:outputText value="#{messages['aplicacion.nombre']}"/></title>
+       
+    <link rel="shortcut icon" href="#{request.contextPath}/favicon.ico"/>
+    <h:outputStylesheet library="css" name="fundewebportal.css"/>
+    <ui:insert name="head"/>
+    
+</h:head>
+
+<h:body>
+
+<f:view>
+	<s:div id="messagesGlobal" >
+		<p:growl id="messages" globalOnly="true" life="10000000" />
+	 </s:div>
+	<div class="container-fluid">
+		<div class="row flex-xl-nowrap">
+			<div class="col-12 col-md-3 col-xl-3 bd-sidebar">
+				<h2>
+					#{messages['aplicacion.nombre']}
+					<br/>
+					<small>Universidad de Murcia</small>
+				</h2>
+			
+			</div>
+			<main class="col-12 col-md-9 col-xl-8" role="main">
+				<h:form prependId="false">
+					<nav class="navbar fixed-top navbar-light bg-light">
+				      <a class="navbar-brand" href="#">#{messages['aplicacion.nombre']}</a>
+				     
+				      <p:link styleClass="btn btn-danger btn-sm text-right" outcome="/login.seam"  title="Acceder a la aplicación">
+				        		Acceder  »
+						  </p:link>
+	    			</nav>
+				</h:form>
+				<div class="pl-md-5 bd-content main-content">
+					<ui:insert name="content"/>
+				</div>
+			</main>
+		</div>
+	</div>
+	
+	<ui:insert name="footer-js"/>
+	
+</f:view>
+
+</h:body>
+
+</html>

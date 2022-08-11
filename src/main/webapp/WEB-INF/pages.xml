@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pages xmlns="http://jboss.org/schema/seam/pages"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://jboss.org/schema/seam/pages http://jboss.org/schema/seam/pages-2.3.xsd"
+
+       no-conversation-view-id="/${viewid.pagina.principal}"
+       login-view-id="/${viewid.pagina.login}">
+
+	
+	
+
+    <page view-id="*">
+ 
+        <navigation>
+            <rule if-outcome="home">
+                <redirect view-id="/${viewid.pagina.principal}"/>
+            </rule>
+        </navigation>
+		<navigation from-action="#{identity.logout}">
+			<rule if="#{identity.loggedInByCas}">
+            	<redirect url="https://${cas.server.url}.um.es/cas/"/>
+            </rule>
+            <rule if="#{not identity.loggedInByCas}">
+            	<redirect view-id="/${viewid.pagina.login}"/>
+            </rule>
+        </navigation>
+		<navigation from-action="#{identity.logoutByCAS}">
+			<redirect url="https://${cas.server.url}.um.es/cas/logout"/>
+        </navigation>
+        <navigation from-action="#{identity.relogByCAS}">
+    		<redirect url="https://${cas.server.url}.um.es/cas/logout?service=https://${cas.application.url}/#{request.contextPath}" />
+		</navigation>
+    </page>
+
+	<page view-id="/paginas/*" login-required="true"/>
+	
+	<page view-id="/paginas/admin/*" login-required="true">
+ 	    <restrict>#{s:hasRole('ADM')}</restrict>
+	</page>
+	
+    <exception class="org.jboss.seam.framework.EntityNotFoundException">
+        <redirect view-id="/error.xhtml">
+            <message severity="warn">#{messages['org.jboss.seam.framework.EntityNotFoundException']}</message>
+        </redirect>
+    </exception>
+    
+    <exception class="java.sql.BatchUpdateException" >
+    	<end-conversation/>
+	    <redirect view-id="/error.xhtml" >
+	    	<message severity="error">#{messages['oracle.error.message']}</message>
+	    </redirect>
+    </exception>
+
+    <exception class="javax.persistence.EntityNotFoundException">
+        <redirect view-id="/error.xhtml">
+            <message severity="warn">#{messages['javax.persistence.EntityNotFoundException']}</message>
+        </redirect>
+    </exception>
+    
+    <exception class="javax.persistence.EntityExistsException">
+        <redirect view-id="/error.xhtml">
+            <message severity="warn">#{messages['javax.persistence.EntityExistsException']}</message>
+        </redirect>
+    </exception>
+    
+    <exception class="javax.persistence.OptimisticLockException">
+        <end-conversation/>
+        <redirect view-id="/error.xhtml">
+            <message severity="warn">#{messages['javax.persistence.OptimisticLockException']}</message>
+        </redirect>
+    </exception>
+    
+<!--     <exception class="org.jboss.seam.security.AuthorizationException"> -->
+<!--         <redirect view-id="/error.xhtml"> -->
+<!--             <message severity="error">#{messages['org.jboss.seam.security.AuthorizationException']}</message> -->
+<!--         </redirect> -->
+<!--     </exception> -->
+    
+    <exception class="org.jboss.seam.security.AuthorizationException">
+    	<redirect view-id="/fundeweb/error_no_auth.xhtml">
+        	<message severity="error">#{messages['org.jboss.seam.security.AuthorizationException']}</message>
+    	</redirect>
+	</exception>
+    
+    <exception class="org.jboss.seam.security.NotLoggedInException">
+        <redirect view-id="/${viewid.pagina.login}">
+            <message severity="warn">#{messages['org.jboss.seam.NotLoggedIn']}</message>
+        </redirect>
+    </exception>
+    
+    <exception class="javax.faces.application.ViewExpiredException">
+        <redirect view-id="/${viewid.pagina.principal}">
+            <message severity="warn">#{messages['javax.faces.application.ViewExpiredException']}</message>
+        </redirect>
+    </exception>
+    
+    <exception class="org.jboss.seam.ConcurrentRequestTimeoutException" log-level="trace">
+        <http-error error-code="503" />
+    </exception>
+
+    <exception class="es.um.atica.seam.web.exceptions.TooManyRequestException">
+        <redirect view-id="/error.xhtml">
+            <message severity="error">#{messages['es.um.atica.seam.web.exceptions.TooManyRequestException']}</message>
+        </redirect>
+    </exception>
+    
+    <exception class="es.um.atica.sai.exceptions.SaiException">
+    	 <redirect view-id="/error.xhtml">
+            <message severity="error">#{messages['es.um.atica.seam.web.exceptions.TooManyRequestException']}</message>
+        </redirect>    
+    </exception>
+
+	<exception class="es.um.atica.seam.security.CasLoginException">
+        <redirect view-id="/error.xhtml">
+            <message severity="error">#{messages['es.um.atica.seam.security.CasLoginException']}</message>
+        </redirect>
+    </exception>
+
+	<exception class="es.um.atica.seam.security.authentication.exceptions.AuthenticationMethodNotSupportedException">
+    	<redirect view-id="/fundeweb/error_auth_method.xhtml">
+        	<message severity="error">#{messages['es.um.atica.security.authentication.AuthenticationMethodNotSupportedException']}</message>
+    	</redirect>
+	</exception>
+
+    <exception class="org.jasig.cas.client.validation.TicketValidationException">
+        <redirect view-id="/error_cas.xhtml"/>
+    </exception>
+
+    <exception class="org.jasig.cas.client.validation.InvalidProxyChainTicketValidationException">
+        <redirect view-id="/error_cas.xhtml"/>
+    </exception>
+
+    <exception>
+        <redirect view-id="/error.xhtml">
+            <message severity="error">#{messages['unexpected.error']}</message>
+        </redirect>
+    </exception>
+
+</pages>

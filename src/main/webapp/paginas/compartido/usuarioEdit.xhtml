@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/layout/template.xhtml">
+	<ui:define name="page-header">
+		<h1>
+			<h:outputText value="#{messages['usuario.editar.title']}" title="#{messages['usuario.editar.title']}" />
+		</h1>
+		<h2>
+			<h:outputText value="#{messages['usuario.editar.subtitle']}" title="#{messages['usuario.editar.subtitle']}" />
+		</h2>
+	</ui:define>
+	
+	<ui:define name="body">
+		<p:panel id="panelPrincipal">
+			<h:form id="formBuscarUsuario">
+				<s:div styleClass="p-grid" rendered="#{usuarioEdit.usuarioEdit.cod == null and !usuarioEdit.introducirDatos}">
+					<div class="p-col-12 p-md-4">
+						<p:outputLabel for="usuarioBuscar" value="#{messages['usuario.existente.bbdd.umu']}:" title="#{messages['usuario.existente.bbdd.umu']}:" />
+						<p:autoComplete id="usuarioBuscar" value="#{usuarioEdit.descripcionUsuarioBuscar}" completeMethod="#{usuarioEdit.buscaUsuariosByPatron}" 
+										queryDelay="1000" styleClass="ancho100" inputStyleClass="ancho100" minQueryLength="8" maxResults="15" forceSelection="true" 
+										title="#{messages['usuario.busqueda.patron.watermark']}">
+							<p:ajax event="itemSelect" listener="#{usuarioEdit.seleccionadoUsuario}" update="@form :formEdicionUsuario tabViewAsociaciones :messages"/>
+						</p:autoComplete>											
+						<p:watermark for="usuarioBuscar" value="#{messages['usuario.busqueda.patron.watermark']}"/>
+						<p:message id="msgValidaUsuarioBuscar" for="usuarioBuscar" />
+					</div>
+					<div class="p-col-12 p-md-4 p-offset-2">
+						<p:outputLabel value="#{messages['usuario.no.existente.bbdd.umu']}:" title="#{messages['usuario.no.existente.bbdd.umu']}:" />
+						<br/>
+						<p:commandButton value="#{messages['usuario.no.existente.bbdd.umu.crear']}" title="#{messages['usuario.no.existente.bbdd.umu.crear']}"
+										 label="#{messages['usuario.no.existente.bbdd.umu.crear']}" ariaLabel="#{messages['usuario.no.existente.bbdd.umu.crear']}"
+										 action="#{usuarioEdit.pulsadoCrearNuevoUsuario()}" update="@form :formEdicionUsuario" icon="fa fa-user-plus"/>
+					</div>
+				</s:div>
+				<s:div class="p-grid" rendered="#{usuarioEdit.usuarioEdit.cod == null and !usuarioEdit.introducirDatos}">
+					<div class="p-col-12 p-md-2 p-lg-1">
+						<br/>
+						<p:commandButton value="#{messages['value.return']}" title="#{messages['value.return']}"
+										 label="#{messages['value.return']}" 
+										 action="#{usuarioEdit.volver()}" icon="fa fa-reply" process="@this"/>
+					</div>
+				</s:div>		
+			</h:form>
+			<h:form id="formEdicionUsuario">
+				<s:fragment id="fragmentEdicionUsuario" rendered="#{usuarioEdit.introducirDatos}">
+					<div class="p-grid ui-fluid">
+						<!-- DNI -->
+						<s:div styleClass="p-col-12 p-md-1" rendered="#{!usuarioEdit.existeEnGente}">
+							<p:outputLabel for="dni" value="#{messages['table.dni']}:" title="#{messages['table.dni']}:" />
+							<p:inputText id="dni" value="#{usuarioEdit.usuarioEdit.dni}" title="#{usuarioEdit.usuarioEdit.dni}" required="true" maxlength="8" validatorMessage="#{messages['validator.dni']}">
+								<f:validateLength minimum="8" maximum="8"/>
+								<f:validateRegex pattern="^[A-Z0-9_]*$" />
+							</p:inputText>
+							<p:message for="dni"/>
+						</s:div>
+						<s:div styleClass="p-col-12 p-md-1" rendered="#{usuarioEdit.existeEnGente}">
+							<p:outputLabel value="#{messages['table.dni']}:" title="#{messages['table.dni']}:"  />
+							<br/>
+							<h:outputText value="#{usuarioEdit.usuarioEdit.dni}" title="#{usuarioEdit.usuarioEdit.dni}" styleClass="margen5"/>
+						</s:div>
+						<!-- NOMBRE Y APELLIDOS -->
+						<s:div styleClass="p-col-12 p-md-2" rendered="#{!usuarioEdit.existeEnGente}">
+							<p:outputLabel for="nombre" value="#{messages['table.nombre']}:" title="#{messages['table.nombre']}:" />
+							<p:inputText id="nombre" value="#{usuarioEdit.usuarioEdit.nombre}" label="#{usuarioEdit.usuarioEdit.nombre}" required="true"/>
+							<p:message for="nombre"/>
+						</s:div>
+						<s:div styleClass="p-col-12 p-md-3" rendered="#{!usuarioEdit.existeEnGente}">
+							<p:outputLabel for="apellidos" value="#{messages['table.apellidos']}:" title="#{messages['table.apellidos']}:" />
+							<p:inputText id="apellidos" value="#{usuarioEdit.usuarioEdit.apellidos}" title="#{usuarioEdit.usuarioEdit.apellidos}"
+							 required="true"/>
+							<p:message for="apellidos"/>
+						</s:div>
+						<s:div styleClass="p-col-12 p-md-6" rendered="#{usuarioEdit.existeEnGente}">
+							<p:outputLabel value="#{messages['table.nombre']}:" title="#{messages['table.nombre']}:" />
+							<br/>
+							<h:outputText value="#{usuarioEdit.usuarioEdit.datosUsuario.nombreCompleto}"
+										  title="#{usuarioEdit.usuarioEdit.datosUsuario.nombreCompleto}"	 styleClass="margen5" rendered="#{usuarioEdit.usuarioEdit.cod != null}"/>
+							<h:outputText value="#{usuarioEdit.usuarioEdit.nombre} #{usuarioEdit.usuarioEdit.apellidos}"
+										  title="#{usuarioEdit.usuarioEdit.nombre} #{usuarioEdit.usuarioEdit.apellidos}"
+										  styleClass="margen5" rendered="#{usuarioEdit.usuarioEdit.cod == null}"/>
+						</s:div>
+						<!-- EMAIL -->
+						<s:div styleClass="p-col-12 p-md-2" rendered="#{!usuarioEdit.esTrabajadorUmu}">
+							<p:outputLabel for="email" value="#{messages['table.email']}:" title="#{messages['table.email']}:" />
+							<p:inputText id="email" value="#{usuarioEdit.usuarioEdit.email}" title="#{usuarioEdit.usuarioEdit.email}" label="#{usuarioEdit.usuarioEdit.email}" required="true" validatorMessage="#{messages['validator.email.no']}">
+								<f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"/>
+							</p:inputText>
+							<p:message for="email"/>
+						</s:div>
+						<s:div styleClass="p-col-12 p-md-2" rendered="#{usuarioEdit.esTrabajadorUmu}">
+							<p:outputLabel value="#{messages['table.email']}:" title="#{messages['table.email']}:" />
+							<br/>
+							<h:outputText value="#{usuarioEdit.usuarioEdit.datosUsuario.email}" title="#{usuarioEdit.usuarioEdit.datosUsuario.email}" styleClass="margen5" rendered="#{usuarioEdit.usuarioEdit.cod != null}"/>
+							<h:outputText value="#{usuarioEdit.usuarioEdit.email}" title="#{usuarioEdit.usuarioEdit.email}" styleClass="margen5" rendered="#{usuarioEdit.usuarioEdit.cod == null}"/>
+						</s:div>
+						<!-- TELEFONO -->
+						<div class="p-col-12 p-md-1">
+							<p:outputLabel for="telefono" value="#{messages['table.telefono']}:" title="#{messages['table.telefono']}:" />
+							<p:inputText id="telefono" value="#{usuarioEdit.usuarioEdit.telefono}" title="#{usuarioEdit.usuarioEdit.telefono}" 
+										 label="#{usuarioEdit.usuarioEdit.telefono}" required="true" maxlength="20" validatorMessage="#{messages['validator.telefono']}">
+								<f:validateRegex pattern="^(\+?)\d{4,19}$"/>
+							</p:inputText>	
+							<p:message for="telefono"/>
+						</div>
+					</div>
+					<div class="p-grid">
+						<div class="p-col-12 p-md-4">
+							<p:outputLabel for="observaciones" value="#{messages['dato.observaciones']}:" title="#{messages['dato.observaciones']}:"  />
+							<p:inputTextarea id="observaciones" value="#{usuarioEdit.usuarioEdit.observaciones}" title="#{usuarioEdit.usuarioEdit.observaciones}" rows="2" maxlength="400" />
+						</div>
+						<s:div styleClass="p-col-12 p-md-2" rendered="#{usuarioEdit.usuarioEdit.cod != null}">
+							<p:outputLabel value="#{messages['table.estado']}:" title="#{messages['table.estado']}:" />
+							<br/>
+							<h:outputText value="#{usuarioEdit.usuarioEdit.estado}" title="#{usuarioEdit.usuarioEdit.estado}" styleClass="margen5"/>
+						</s:div>
+						<s:div styleClass="p-col-12 p-md-2" rendered="#{usuarioEdit.usuarioEdit.cod != null}">
+							<p:outputLabel value="#{messages['usuario.caduca']}:" title="#{messages['usuario.caduca']}:" />
+							<br/>
+							<h:outputText title="#{messages['usuario.caduca.empty']}" value="#{messages['usuario.caduca.empty']}" styleClass="margen5" rendered="#{usuarioEdit.usuarioEdit.caduca == null}"/>
+							<h:outputText title="#{messages['usuario.caduca.empty.infopendiente']}" value="#{messages['usuario.caduca.empty.infopendiente']}" styleClass="margen5" rendered="#{usuarioEdit.usuarioEdit.caduca == null and usuarioEdit.usuarioEdit.estado == 'PEND'}"/>
+							<h:outputText title="#{usuarioEdit.usuarioEdit.caduca}" value="#{usuarioEdit.usuarioEdit.caduca}" styleClass="margen5" rendered="#{usuarioEdit.usuarioEdit.caduca != null}">
+								<s:convertDateTime pattern="dd/MM/yyyy"/>
+							</h:outputText>	
+						</s:div>
+						<s:div styleClass="p-col-12 p-md-2" rendered="#{usuarioEdit.usuarioEdit.cod != null and usuarioEdit.usuarioEdit.acepta == 'NO'}">
+							<br/>
+							<p:outputLabel value="#{messages['usuario.acepta.no']}" title="#{messages['usuario.acepta.no']}" styleClass="textoAlerta"/>
+						</s:div>
+					</div>
+					<div class="p-grid">
+						<div class="p-col-12">
+							<p:commandButton value="#{messages['label.save']}" title="#{messages['label.save']}" label="#{messages['label.save']}"
+											 action="#{usuarioEdit.guardarUsuario()}" update=":messages @form :formBuscarUsuario :formEstadoUsuario tabViewAsociaciones" icon="fa fa-floppy-o"/>
+							<p:commandButton value="#{messages['label.cancel']}" title="#{messages['label.cancel']}" label="#{messages['label.cancel']}" process="@this"
+											 action="#{usuarioEdit.cancelarAltaUsuario()}" update="@form :formBuscarUsuario" icon="fa fa-times"
+											 rendered="#{usuarioEdit.usuarioEdit.cod == null}"/>
+							<p:commandButton value="#{messages['value.return']}" title="#{messages['value.return']}" ariaLabel="#{messages['value.return']}"
+											 action="#{usuarioEdit.volver()}" icon="fa fa-reply" process="@this"/>
+						</div>
+					</div>	
+				</s:fragment>	
+			</h:form>
+			<h:form id="formEstadoUsuario">
+				<s:div styleClass="p-grid" rendered="#{identity.tienePerfil('GESTOR') and usuarioEdit.usuarioEdit.cod != null}">
+					<div class="p-col-12">
+						<p:commandButton value="#{messages['usuario.dar.baja']}" title="#{messages['usuario.dar.baja']}"
+							 			 ariaLabel="#{messages['usuario.dar.baja']}" label="#{messages['usuario.dar.baja']}"
+										 action="#{usuarioEdit.bajaUsuario()}" update=":messages @form" icon="fa fa-trash"
+										 rendered="#{usuarioEdit.usuarioEdit.estado == 'ALTA' or usuarioEdit.usuarioEdit.estado == 'PEND'}">
+							<p:confirm header="#{messages['application.deleting.confirm.title']}" message="#{messages['usuario.dar.baja.confirm']}"  icon="ui-icon-alert"/>
+						</p:commandButton>				 
+						<p:commandButton value="#{messages['usuario.dar.alta']}" title="#{messages['usuario.dar.alta']}"
+										 ariaLabel="#{messages['usuario.dar.alta']}" label="#{messages['usuario.dar.alta']}"
+										 action="#{usuarioEdit.altaUsuario()}" update=":messages @form" icon="fa fa-arrow-circle-up"
+										 rendered="#{usuarioEdit.usuarioEdit.estado == 'BAJA'}"/>
+					</div>
+					<p:confirmDialog id="confirmEstadoUsuario" global="true" showEffect="fade" hideEffect="fade" >
+   						<p:commandButton title="Si" label="Si" ariaLabel="Si" value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						<p:commandButton title="No" label="No" ariaLabel="No" value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					</p:confirmDialog>
+				</s:div>	
+			</h:form>
+			<p:tabView id="tabViewAsociaciones">
+				<p:tab title="#{messages['usuario.perfiles.largo']}" rendered="#{usuarioEdit.usuarioEdit.cod != null}" ariaLabel="#{messages['usuario.perfiles.largo']}">
+					<h:form id="formListadoPerfiles">	
+						<div class="p-grid">
+							<div class="p-col-12 p-md-10">	
+								<p:dataTable id="dataTablePerfilesUsuario" value="#{usuarioEdit.getPerfilesUsuarioIgnoraEstado()}" var="up"
+											 tableStyleClass="tablaAuto fuente08" styleClass="header-right" rowHover="true" emptyMessage="#{messages['usuario.perfil.empty']}">
+									<f:facet name="header">
+										<p:commandLink action="#{usuarioEdit.establecerUsuarioPerfilCreate}" oncomplete="PF('dlgAddPerfil').show();" update=":tabViewAsociaciones:formAddPerfil" 
+													   title="#{messages['usuario.perfil.add']}" ariaLabel="#{messages['usuario.perfil.add']}" styleClass="enlaceTexto">
+											<em class="fa fa-plus"/>#{' '} 
+											<h:outputText styleClass="enlaceAdd" title="#{messages['usuario.perfil.add']}" value="#{messages['usuario.perfil.add']}" />
+										</p:commandLink>
+									</f:facet>
+									<p:column headerText="#{messages['label.perfil']}" >
+										<h:outputText value="#{usuarioEdit.getDescripcionUsuarioPerfil(up)}" title="#{messages['label.perfil']}"/>
+									</p:column>
+									<p:column headerText="#{messages['usuario.perfil.irresponsable']}"  styleClass="centrado">
+										<h:outputText value="#{up.usuarioIrResponsable.datosUsuario.nombreCompleto}" title="#{messages['usuario.perfil.irresponsable']}" rendered="#{up.perfil.tag == 'MIEMBRO' and up.usuarioIrResponsable != null}"/>
+										<h:outputText value="#{messages['usuario.noestablecido']}" title="#{messages['usuario.perfil.irresponsable']}" rendered="#{up.perfil.tag == 'MIEMBRO' and up.usuarioIrResponsable == null}"/>
+										<h:outputText value="-" title="#{messages['usuario.perfil.irresponsable']}" rendered="#{up.perfil.tag != 'MIEMBRO'}" />
+									</p:column>
+									<p:column headerText="#{messages['usuario.perfil.avisarirsolicitud']}" styleClass="centrado">
+										<h:outputText value="#{up.avisarIrSolicitud}" title="#{messages['usuario.perfil.avisarirsolicitud']}" rendered="#{up.perfil.tag == 'MIEMBRO'}"/>
+										<h:outputText value="-" title="#{messages['usuario.perfil.avisarirsolicitud']}" rendered="#{up.perfil.tag != 'MIEMBRO'}" />
+									</p:column>
+									<p:column headerText="#{messages['miembros.usuario']}" rendered="#{identity.tienePerfil('SUPERVISOR')}" >
+										<s:div styleClass="centrado" rendered="#{up.perfil.tag != 'IR'}" >
+											<h:outputText value="-" title="-"/>
+										</s:div>
+										<s:div styleClass="centrado" rendered="#{up.perfil.tag == 'IR' and empty usuarioEdit.getMiembrosByIrServicio(up)}" >
+											<h:outputText value="#{messages['generico.ninguno']}" title="#{messages['generico.ninguno']}"/>
+										</s:div>		
+										<p:dataList id="dataListMiembrosIr" styleClass="listaSinBorde fuente09" value="#{usuarioEdit.getMiembrosByIrServicio(up)}" 
+													var="mi" rendered="#{up.perfil.tag == 'IR' and not empty usuarioEdit.getMiembrosByIrServicio(up)}" >
+											#{mi.datosUsuario.nombreCompleto}
+										</p:dataList>
+									</p:column>
+									<p:column headerText="#{messages['usuario.perfil.pendientevalidar']}" styleClass="centrado">
+										<h:outputText value="Pendiente" title="Pendiente" rendered="#{up.perfil.tag == 'IR' and up.pendienteValidarIr == 'SI'}"/>
+										<h:outputText value="Validado" title="Validado" rendered="#{!identity.tienePerfil('GESTOR') and up.perfil.tag == 'IR' and up.pendienteValidarIr == 'NO' and up.usuarioSupervisorValidador != null}"/>
+										<h:outputText value="Validado por #{up.usuarioSupervisorValidador.datosUsuario.nombreCompleto}" title="Validado por #{up.usuarioSupervisorValidador.datosUsuario.nombreCompleto}" rendered="#{identity.tienePerfil('GESTOR') and up.perfil.tag == 'IR' and up.pendienteValidarIr == 'NO' and up.usuarioSupervisorValidador != null}"/>
+										<h:outputText value="Validado por desconocido" title="Validado por desconocido" rendered="#{identity.tienePerfil('GESTOR') and up.perfil.tag == 'IR' and up.pendienteValidarIr == 'NO' and up.usuarioSupervisorValidador == null}"/>
+										<h:outputText value="-" title="-" rendered="#{up.perfil.tag != 'IR'}"/>
+									</p:column>
+									<p:column headerText="#{messages['value.action']}" styleClass="centrado">
+										<div class="p-grid p-justify-center">
+											<s:div styleClass="p-col" rendered="#{up.perfil.tag == 'MIEMBRO' and usuarioEdit.puedeEliminarPerfil(up)}">
+												<p:commandLink action="#{usuarioEdit.establecerUsuarioPerfilEdit(up)}" process="@this"
+										  					   oncomplete="PF('dlgAddPerfil').show();" update=":tabViewAsociaciones:formAddPerfil"
+										  					   ariaLabel="#{messages['value.edit']}" title="#{messages['value.edit']}">
+													<em class="fa fa-pencil-square-o fuente17" />
+												</p:commandLink>
+											</s:div>
+											<s:div styleClass="p-col" rendered="#{usuarioEdit.puedeEliminarPerfil(up)}">
+												<p:commandLink id="eliminarPerfil" action="#{usuarioEdit.eliminarPerfil(up)}" update="tabViewAsociaciones :messages" 
+															   title="#{messages['usuario.delete.perfil']}" ariaLabel="#{messages['usuario.delete.perfil']}">
+													<em class="fa fa-trash fuente17" />
+													<p:confirm header="#{messages['application.deleting.confirm.title']}" message="#{messages['usuario.delete.perfil.confirm']}"  icon="ui-icon-alert"/>
+												</p:commandLink>
+											</s:div>
+										</div>
+									</p:column>
+								</p:dataTable>
+							</div>
+						</div>	
+					</h:form>
+
+					<p:dialog id="dlgAddPerfil" header="#{messages['usuario.perfil.asignacion']}" widgetVar="dlgAddPerfil" modal="true" width="50%" onHide="goToLastFocus();">
+						<h:form id="formAddPerfil">
+							<div class="p-grid ui-fluid">
+								<s:div styleClass="p-col-4 p-md-4" rendered="#{usuarioEdit.usuarioPerfilEdit.cod == null}">
+									<p:outputLabel for="perfil" value="#{messages['label.perfil']}:" />
+									<br/>
+									<p:selectOneMenu id="perfil" value="#{usuarioEdit.usuarioPerfilEdit.perfil}" required="true">
+										<f:selectItem itemLabel="#{messages['usuario.add.perfil.seleccion']}" itemValue=""/>
+										<f:selectItems value="#{identity.getPerfilesPuedeCrearUsuarioConectado()}" var="perf" itemLabel="#{perf.nombre}" itemValue="#{perf}" />
+										<p:ajax event="valueChange" update="@form" listener="#{usuarioEdit.seleccionadoPerfilAddPerfil}" process="@this" />
+										<s:convertEntity />
+									</p:selectOneMenu>
+									<p:message for="perfil"/>
+								</s:div>
+								<s:div styleClass="p-col-4 p-md-4" rendered="#{usuarioEdit.usuarioPerfilEdit.cod != null}">
+									<p:outputLabel value="#{messages['label.perfil']}:" />
+									<br/>
+									<h:outputText value="#{usuarioEdit.usuarioPerfilEdit.perfil.nombre}" styleClass="margen5"/>
+								</s:div>
+								<s:div id="divSeleccionServicio" styleClass="p-col-6 p-md-6" rendered="#{usuarioEdit.usuarioPerfilEdit.cod == null and usuarioEdit.usuarioPerfilEdit.perfil != null and usuarioEdit.usuarioPerfilEdit.perfil.requiereServicio=='SI'}">
+									<p:outputLabel for="servicio" value="#{messages['label.servicio']}:" />
+									<br/>
+									<p:selectOneMenu id="servicio" value="#{usuarioEdit.usuarioPerfilEdit.servicio}" title="#{messages['label.servicio']}" 
+													 required="true" filter="true" filterMatchMode="contains">
+										<f:selectItem itemLabel="#{messages['usuario.add.perfil.servicio.seleccion']}" itemValue=""/>
+										<f:selectItems value="#{identity.getServiciosPuedeCrearPerfil(usuarioEdit.usuarioPerfilEdit.perfil.tag)}" var="serv" itemLabel="#{serv.nombre}" itemValue="#{serv}" />
+										<p:ajax event="valueChange" update="@form" listener="#{usuarioEdit.seleccionadoServicioAddPerfil}" process="@this" />
+										<s:convertEntity />
+									</p:selectOneMenu>
+									<p:message for="servicio"/>
+								</s:div>
+								<s:div styleClass="p-col-6 p-md-6" rendered="#{usuarioEdit.usuarioPerfilEdit.cod != null}">
+									<p:outputLabel value="#{messages['label.servicio']}:" />
+									<br/>
+									<h:outputText value="#{usuarioEdit.usuarioPerfilEdit.servicio.nombre}" styleClass="margen5"/>
+								</s:div>
+							</div>
+							<div class="p-grid ui-fluid">		
+								<s:div id="divSeleccionIr" styleClass="p-col-6 p-md-6" rendered="#{usuarioEdit.usuarioPerfilEdit.cod == null and usuarioEdit.usuarioPerfilEdit.servicio != null and usuarioEdit.usuarioPerfilEdit.perfil.requiereIr=='SI'}">
+									<p:outputLabel for="ir" value="#{messages['usuario.perfil.ir']}:" />
+									<br/>
+									<p:selectOneMenu id="ir" value="#{usuarioEdit.usuarioPerfilEdit.usuarioIrResponsable}" 
+													 required="true" filter="true" filterMatchMode="contains">
+										<f:selectItem itemLabel="#{messages['usuario.add.perfil.ir.seleccion']}" itemValue=""/>
+										<f:selectItems value="#{usuarioEdit.listaIrsPerfilAdd}" var="us" itemLabel="#{us.datosUsuario.nombreCompleto}" itemValue="#{us}" />
+										<s:convertEntity />
+									</p:selectOneMenu>
+									<p:message for="ir"/>
+								</s:div>
+								<s:div styleClass="p-col-6 p-md-6" rendered="#{usuarioEdit.usuarioPerfilEdit.cod != null and usuarioEdit.usuarioPerfilEdit.perfil.requiereIr=='SI'}">
+									<p:outputLabel value="#{messages['usuario.perfil.ir']}:"/>
+									<br/>
+									<h:outputText value="#{usuarioEdit.usuarioPerfilEdit.usuarioIrResponsable.datosUsuario.nombreCompleto}" rendered="#{usuarioEdit.usuarioPerfilEdit.usuarioIrResponsable != null}" styleClass="margen5"/>
+									<h:outputText value="#{messages['usuario.noestablecido']}" rendered="#{usuarioEdit.usuarioPerfilEdit.usuarioIrResponsable == null}"/>
+								</s:div>
+								<s:div styleClass="p-col-6 p-md-4" rendered="#{usuarioEdit.usuarioPerfilEdit.servicio != null and usuarioEdit.usuarioPerfilEdit.perfil.requiereIr=='SI'}">
+									<p:outputLabel for="avisarIrSolicitud" value="#{messages['usuario.perfil.avisarirsolicitud']}:" />
+									<br/>
+									<p:selectOneMenu id="avisarIrSolicitud" value="#{usuarioEdit.usuarioPerfilEdit.avisarIrSolicitud}" required="true" title="#{messages['usuario.perfil.avisarirsolicitud']}">
+										<f:selectItem itemLabel="#{messages['usuario.perfil.avisarirsolicitud.seleccion']}" itemValue=""/>
+										<f:selectItem itemLabel="Sí" itemValue="SI"/>
+										<f:selectItem itemLabel="No" itemValue="NO"/>
+									</p:selectOneMenu>
+									<p:message for="avisarIrSolicitud"/>
+								</s:div>								
+							</div>
+							<br/>
+							<div class="p-grid">	
+								<div class="p-col-12">
+									<p:commandButton icon="fa fa-save" value="#{messages['usuario.add.perfil']}" title="#{messages['usuario.add.perfil']}"
+													 ariaLabel="#{messages['usuario.add.perfil']}" action="#{usuarioEdit.guardarUsuarioPerfil()}" process="@form" 
+													 oncomplete="comprobarArgsModal(xhr, status, args, 'dlgAddPerfil');" update="@form :tabViewAsociaciones:formListadoPerfiles :messages"/>
+									<p:commandButton icon="fa fa-times" type="button" value="#{messages['label.cancel']}" title="#{messages['label.cancel']}"
+													 process="@this" ariaLabel="#{messages['label.cancel']}" onclick="PF('dlgAddPerfil').hide();" />
+								</div>
+							</div>
+						</h:form>
+					</p:dialog>	
+				</p:tab>
+			</p:tabView>
+		</p:panel>
+		<h:form id="formConfirm">
+			<p:confirmDialog id="confirmDeletePerfil" global="true" showEffect="fade" hideEffect="fade" >
+   				<p:commandButton ariaLabel="Si" title="Si" label="Si" value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton ariaLabel="No" title="No" label="No" value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+</html>

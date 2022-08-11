@@ -1,0 +1,17 @@
+/*
+CSS solo para usar con Less http://lesscss.org/features/
+
+@nice-blue: #5B83AD;
+@light-blue: @nice-blue + #111;
+
+.prueba {
+  color: @light-blue;
+  .bordered;
+}
+
+.bordered {
+  border-top: dotted 1px black;
+  border-bottom: solid 2px black;
+}
+
+*/

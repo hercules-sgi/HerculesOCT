@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/layout/template.xhtml">
+	<ui:define name="page-header">
+		<h1>
+			<h:outputText title="#{messages['fungibles.title']}" value="#{messages['fungibles.title']}" />
+		</h1>
+		<h2>
+			<h:outputText title="#{messages['fungibles.subtitle']}" value="#{messages['fungibles.subtitle']}" />
+		</h2>
+	</ui:define>
+	<ui:define name="body">
+		<p:panel>
+			<h:form id="busqueda">
+				<div class="p-grid ui-fluid">
+					<div class="p-col-12 p-sm-4 p-md-2">
+						<p:outputLabel title="#{messages['fungible.name']}" value="#{messages['fungible.name']}" for="nombre" />
+						<br/>
+						<p:inputText id="nombre" title="#{fungiblesBean.nombreBuscar}" value="#{fungiblesBean.nombreBuscar}" />
+					</div>
+					<div class="p-col-12 p-sm-6 p-md-3">
+						<p:outputLabel value="#{messages['fungible.service']}" title="#{messages['fungible.service']}"	for="servicio" />
+						<br/>
+						<p:selectOneMenu id="servicio" filter="true" filterMatchMode="custom" filterFunction="contains" value="#{fungiblesBean.servicioBuscar}">
+							<f:selectItem itemValue="" itemLabel="Cualquier servicio"/>
+							<f:selectItems value="#{fungiblesBean.listaServicios}" var="serv" itemValue="#{serv}" itemLabel="#{serv.nombre}" />
+							<s:convertEntity />
+						</p:selectOneMenu>
+					</div>
+				</div>
+				<br/>
+				<div class="p-grid">
+					<div class="p-col-12">
+						<p:commandButton action="#{fungiblesBean.buscarFungibles}" label="#{messages['fungible.buscar']}" title="#{messages['fungible.buscar']}"
+										 value="#{messages['fungible.buscar']}" icon="fa fa-search" ajax="true" process="@form" update="@form" />
+						<p:commandButton action="#{fungiblesBean.limpiarBusqueda}" title="#{messages['fungible.limpiar']}" label="#{messages['fungible.limpiar']}"
+										 value="#{messages['fungible.limpiar']}" icon="fa fa-eraser" update="@form"/>
+					</div>
+				</div>
+				<br/>
+				<div class="p-grid">
+					<div class="p-col-12 p-md-9  p-lg-6">
+						<p:dataTable value="#{fungiblesBean.listaFungibles}" var="fung" emptyMessage="#{messages['table.no.results']}" reflow="true"
+									 paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+									 rowsPerPageTemplate="10, 25, 50" paginatorPosition="bottom" rows="25" currentPageReportTemplate="{totalRecords} #{messages['table.registros']}" 
+									 paginatorAlwaysVisible="false" tableStyleClass="tablaAuto fuente08" rowHover="true" styleClass="header-right">
+							<f:facet name="header">
+								<p:commandLink action="#{fungiblesBean.establecerFungibleCreate}" title="#{messages['fungible.addfungible']}" ariaLabel="#{messages['fungible.addfungible']}" styleClass="enlaceTexto">
+									<em class="fa fa-plus"/>#{' '} 
+									<h:outputText styleClass="enlaceAdd" title="#{messages['fungible.addfungible']}" value="#{messages['fungible.addfungible']}" />
+								</p:commandLink>
+							</f:facet>
+							<p:column headerText="#{messages['fungible.name']}" sortBy="#{fung.nombre}">
+								<h:outputText value="#{fung.nombre}" title="#{fung.nombre}" />
+							</p:column>
+							<p:column headerText="#{messages['fungible.service']}" sortBy="#{fung.servicio.nombre}">
+								<h:outputText value="#{fung.servicio.nombre}" />
+							</p:column>
+							<p:column headerText="#{messages['value.action']}" styleClass="centrado">
+								<div class="p-grid p-justify-center">
+									<div class="p-col">
+										<p:commandLink title="#{messages['value.edit']}" action="#{fungiblesBean.establecerFungibleEdit(fung)}">
+											<em class="fa fa-pencil-square-o fuente17" />
+										</p:commandLink>
+									</div>
+									<div class="p-col">
+										<p:commandLink id="eliminarFungilbe" title="#{messages['value.delete']}" action="#{fungiblesBean.eliminarFungible(fung)}" 
+													   update="@form, :messages" disabled="#{not fung.deleteable}">
+											<em class="fa fa-trash fuente17" />
+											<p:confirm header="#{messages['application.deleting.confirm.title']}" message="#{messages['fungible.delete.confirm']}"  icon="ui-icon-alert"/>
+										</p:commandLink>
+										<p:tooltip for="eliminarFungilbe" rendered ="#{fung.deleteable}" value="#{messages['label.delete']}"/>
+										<p:tooltip for="eliminarFungilbe" rendered ="#{not fung.deleteable}" value="#{messages['fungible.nodeleteable']}"/>
+									</div>
+								</div>	
+							</p:column>
+						</p:dataTable>
+					</div>
+				</div>
+				<p:confirmDialog id="confirm" global="true" showEffect="fade" hideEffect="fade" >
+   					<p:commandButton label="Si" title="Si" value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton label="Si" title="Si" value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</p:confirmDialog>
+			</h:form>
+		</p:panel>
+	</ui:define>
+</ui:composition>
+
+</html>

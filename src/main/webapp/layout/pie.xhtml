@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:s="http://jboss.org/schema/seam/taglib"
+	  xmlns:p="http://primefaces.org/ui">
+	  
+<ui:composition>
+                 
+	<s:div id="pieDiv" styleClass="clearBoth">
+
+  		<h3 class="ocultarTexto">#{messages['application.header3.organization']}</h3>
+  	 		
+   		<s:div id="pieIdentificador" >
+   			<h:outputLink styleClass="pie_login_izq_url" value="#{'http://www.um.es'}" target="_blank">
+   				<h:outputText styleClass="pie_login_text" value="#{messages['application.foot.universidad']}" />
+   			</h:outputLink>
+   			<h:outputText styleClass="pie_login_text" value=" - " />
+			<h:outputLink styleClass="pie_login_izq_url" value="#{'http://www.um.es/atica'}" target="_blank">
+				<h:outputText styleClass="pie_login_text" value="#{messages['application.foot.link.atica']}"/>
+			</h:outputLink>   		
+    	</s:div>
+
+		<h3 class="ocultarTexto">#{messages['application.header3.other.information']}</h3>
+
+    	<s:div id="pieInformacion" >
+    		<ul id="informacion" title="Información sobre la página" > 				
+    			<li>
+    				<h:outputLink value="#{'#'}" styleClass="pie_login_der_url" title="#{messages['application.foot.recomendation.title']}" 
+    					onclick="widgetPanelRecomendaciones.show();">
+    					<h:outputText styleClass="pie_login_text" value="#{messages['application.foot.recomendation']}" />
+    				</h:outputLink>
+					<h:outputText styleClass="pie_login_text" value="  | " />
+				</li>
+      			<li>
+      				<h:outputLink value="#{'mailto:correo_applicacion@um.es'}" styleClass="pie_login_der_url" title="#{messages['application.foot.contact.title']}">
+      					<h:outputText styleClass="pie_login_text" value="#{messages['application.foot.contact']}" />
+      				</h:outputLink>
+      				<h:outputText styleClass="pie_login_text" value="  | " />
+      			</li>
+      			<li>
+      				<h:outputLink value="#{'mailto:dumbo@um.es'}" styleClass="pie_login_der_url" title="#{messages['application.foot.incidences.title']}">
+      					<h:outputText styleClass="pie_login_text" value="#{messages['application.foot.incidences']}" />
+      				</h:outputLink>
+      				<h:outputText styleClass="pie_login_text" value="  | " />
+      			</li>
+      		
+      			<li>
+      				<h:outputLink value="#{'http://www.um.es/atica/buzon/'}" styleClass="pie_login_der_url" title="#{messages['application.foot.mailbox.title']}"
+						target="_blank" >
+      					<h:outputText styleClass="pie_login_text" value="#{messages['application.foot.mailbox']}" />
+      				</h:outputLink>
+      			</li>
+      		</ul>
+    	</s:div>
+
+  		<h3 class="ocultarTexto">#{messages['application.header3.accessibility']}</h3>
+  	
+  		<s:div id="meta" >
+			<s:div styleClass="normativas">
+<!--
+	   			<ui:decorate template="#{xhtmlValid==null?messages['no.valid']:xhtmlValid}"/>
+	  			<ui:decorate template="#{cssValid==null?messages['no.valid']:cssValid}"/>
+        		<ui:decorate template="#{waiValid==null?messages['no.valid']:waiValid}"/>
+-->
+			</s:div>
+  		</s:div>
+  		
+  	</s:div>
+
+	<p:dialog id="panelRecomendaciones" header="#{messages['page.recommendation.browse']}"
+		widgetVar="widgetPanelRecomendaciones" modal="true" width="450" height="210"
+		closable="true" closeOnEscape="true" focus="aceptarPanelRecomendacionesButton">
+
+			<p class="parrafo_justificado">#{messages['page.recommendation.resolution']}:
+			<strong>1024 x 768</strong>
+			#{messages['page.recommendation.browsers']}:</p>
+			<ul class="bullets">
+				<li><h:outputText
+					value="Internet Explorer 7.0 o #{messages['page.recommendation.higher']}" />
+				</li>
+				<li><h:outputText
+					value="Mozilla FireFox 2.0 o #{messages['page.recommendation.higher']}" />
+				</li>
+				<li><h:outputText
+					value="Google Chrome 2.0 o #{messages['page.recommendation.higher']}" />
+				</li>
+			</ul>
+			<p:spacer height="5px" />
+			<p class="parrafo_justificado">#{messages['page.recommendation.user.support']}</p>
+			<ul class="bullets">
+				<li><h:outputLink styleClass="pie_login_der_url"
+					value="#{'mailto:dumbo@um.es'}">
+					<h:outputText styleClass="pie_login_text" value="dumbo@um.es" />
+				</h:outputLink></li>
+
+				<li><h:outputText value="Tlf: 868884222" /></li>
+			</ul>
+			<s:div id="botonesPanelRecomendacionesDiv" styleClass="botonesPanelModal">
+				<h:button id="aceptarPanelRecomendacionesButton" value="Aceptar"
+					onclick="widgetPanelRecomendaciones.hide();return false;" />
+			</s:div>
+
+	</p:dialog>
+
+</ui:composition>
+
+</html>

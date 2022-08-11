@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/layout/template.xhtml">
+
+	<ui:define name="page-header">
+		<h1>
+			<h:outputText value="#{messages['listado.tipotarifa']}" />
+		</h1>
+		<h2>
+			<h:outputText value="#{messages['listado.tipotarifa.subtitle']}" />
+		</h2>
+	</ui:define>
+	<ui:define name="body">
+		<p:panel>
+			<h:form id="listado">
+				<div class="p-grid">
+					<div class="p-col-12 p-md-6">
+						<p:dataTable id="listaTiposTarifa" var="_tt" value="#{tipoTarifa.listaTiposTarifa}" reflow="true" rowHover="true" 
+									 tableStyleClass="tablaAuto fuente08" styleClass="header-right">
+							<f:facet name="header">
+								<p:commandLink action="#{tipoTarifa.establecerTipoTarifaCreate}" title="#{messages['tipotarifa.add']}" 
+											   ariaLabel="#{messages['tipotarifa.add']}" styleClass="enlaceTexto">
+									<em class="fa fa-plus"/>#{' '} 
+									<h:outputText styleClass="enlaceAdd" value="#{messages['tipotarifa.add']}" />
+								</p:commandLink>
+							</f:facet>
+							<p:column headerText="#{messages['tipotarifa.descripcion']}" sortBy="#{_tt.descripcion}">
+								<h:outputText value="#{_tt.descripcion}" />
+							</p:column>
+							<p:column headerText="#{messages['value.action']}" styleClass="centrado">
+								<div class="p-grid p-justify-center">
+									<div class="p-col">
+										<p:commandLink title="#{messages['value.edit']}" action="#{tipoTarifa.establecerTipoTarifaEdit(_tt)}">
+											<em class="fa fa-pencil-square-o fuente17" />
+										</p:commandLink>
+									</div>
+									<div class="p-col">
+										<p:commandLink id="eliminarTipoTarifa" title="#{messages['value.delete']}" action="#{tipoTarifa.eliminarTipoTarifa(_tt)}" 
+													   disabled="#{not _tt.deleteable}" update="@form, :messages">
+											<em class="fa fa-trash fuente17" />
+											<p:confirm header="#{messages['application.deleting.confirm.title']}" message="#{messages['tipotarifa.delete.confirm']}"  icon="ui-icon-alert"/>
+										</p:commandLink>
+										<p:tooltip for="eliminarTipoTarifa" rendered ="#{_tt.deleteable}" value="#{messages['label.delete']}"/>
+										<p:tooltip for="eliminarTipoTarifa" rendered ="#{not _tt.deleteable}" value="#{messages['tipotarifa.nodeleteable']}"/>
+									</div>
+								</div>	
+							</p:column>
+						</p:dataTable>
+
+					</div>
+
+				</div>
+				
+				<p:confirmDialog id="confirm" global="true" showEffect="fade" hideEffect="fade" >
+   					<p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</p:confirmDialog>
+				
+			</h:form>
+		</p:panel>
+	</ui:define>
+</ui:composition>
+
+</html>

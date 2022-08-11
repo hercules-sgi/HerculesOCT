@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/layout/template.xhtml">
+	<ui:define name="page-header">
+		<h1>
+			<h:outputText value="#{messages['menu.registronuevoirexterno']} #{registroNuevoIrExterno.servicio.nombre}" />
+		</h1>
+		<h2>
+			<h:outputText value="#{messages['menu.registronuevoirexterno.subtitle']}" />
+		</h2>
+	</ui:define>
+
+	<ui:define name="body">
+		<p:panel>
+			<p class="textoAlerta fuente08">#{messages['registroir.alerta']}</p>
+			<h:form id="formUsuarioEntidadEdit">
+				<div class="p-grid">
+					<div class="p-col-12 p-md-12 negrita">
+						#{messages['registroir.externos.datospersonales']}
+					</div>
+				</div>
+				<div class="p-grid ui-fluid">
+					<div class="p-col-12 p-md-1">
+						<p:outputLabel for="dni" value="#{messages['table.dni']}:" />
+						<p:inputText id="dni" value="#{registroNuevoIrExterno.usuarioEdit.dni}" required="true" maxlength="8" 
+									 validatorMessage="#{messages['validator.dni']}">
+							<f:validateLength minimum="8" maximum="8"/>
+							<f:validateRegex pattern="^[A-Z0-9_]*$" />
+							<p:ajax event="blur" listener="#{registroNuevoIrExterno.blurDni}" update="@form :messages"/>
+						</p:inputText>
+						<p:message for="dni"/>
+					</div>
+					<div class="p-col-12 p-md-2">
+						<p:outputLabel for="nombreUsuario" value="#{messages['table.nombre']}:" />
+						<p:inputText id="nombreUsuario" value="#{registroNuevoIrExterno.usuarioEdit.nombre}" required="true"/>
+						<p:message for="nombreUsuario"/>
+					</div>
+					<div class="p-col-12 p-md-4">
+						<p:outputLabel for="apellidos" value="#{messages['table.apellidos']}:" />
+						<p:inputText id="apellidos" value="#{registroNuevoIrExterno.usuarioEdit.apellidos}" required="true"/>
+						<p:message for="apellidos"/>
+					</div>
+					<div class="p-col-12 p-md-1">
+						<p:outputLabel for="telefonoUsuario" value="#{messages['table.telefono']}:" />
+						<p:inputText id="telefonoUsuario" value="#{registroNuevoIrExterno.usuarioEdit.telefono}" required="true" maxlength="20" validatorMessage="#{messages['validator.telefono']}">
+							<f:validateRegex pattern="^(\+?)\d{4,19}$"/>
+						</p:inputText>	
+						<p:message for="telefonoUsuario"/>
+					</div>
+				</div>
+				<div class="p-grid ui-fluid">	
+					<div class="p-col-12 p-md-2">
+						<p:outputLabel for="emailUsuario" value="#{messages['table.email']}:" />
+						<p:inputText id="emailUsuario" value="#{registroNuevoIrExterno.usuarioEdit.email}" required="true" validatorMessage="#{messages['validator.email.no']}">
+							<f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"/>
+							<p:ajax event="blur" update="@this msjEmailUsuario"/>
+						</p:inputText>
+						<p:message id="msjEmailUsuario" for="emailUsuario"/>
+					</div>
+					<div class="p-col-12 p-md-2">
+						<p:outputLabel for="password1" value="#{messages['registroir.password1']}:" />
+						<p:password id="password1" value="#{registroNuevoIrExterno.password1}" required="true" maxlength="20" validatorMessage="#{messages['login.nuevopass.longitud.minima']}" 
+									feedback="true" promptLabel="Introduzca su contraseña" weakLabel="Débil" goodLabel="Normal" strongLabel="Fuerte">
+							<f:validateLength minimum="8"/>
+							<p:ajax event="blur" process="@this" update="msjPassword1"/>
+						</p:password>
+						<p:message id="msjPassword1" for="password1" />	
+					</div>
+					<div class="p-col-12 p-md-2">
+						<p:outputLabel for="password2" value="#{messages['registroir.password2']}:" />
+						<p:password id="password2" value="#{registroNuevoIrExterno.password2}" required="true" maxlength="20" validatorMessage="#{messages['login.nuevopass.longitud.minima']}">
+							<f:validateLength minimum="8"/>
+							<p:ajax event="blur" process="@this" update="msjPassword2"/>
+						</p:password>
+						<p:message id="msjPassword2" for="password2" />	
+					</div>
+				</div>
+				<div class="p-grid ui-fluid">
+					<div class="p-col-12 p-md-6">
+						<p:outputLabel for="observacionesUsuario" value="#{messages['dato.observaciones']}:" />
+						<p:inputTextarea id="observacionesUsuario" value="#{registroNuevoIrExterno.usuarioEdit.observaciones}" rows="2" maxlength="400" />
+					</div>
+				</div>
+				<hr/>
+				<br/>
+				<div class="p-grid">
+					<div class="p-col-12 p-md-12 negrita">
+						#{messages['registroir.externos.datosentidad']}
+					</div>
+				</div>
+				<div class="p-grid ui-fluid" >
+					<div class="p-col-12 p-md-1">
+						<p:outputLabel for="cif" value="#{messages['crearentidadpagadora.entidadcif']}:" />
+						<p:inputText id="cif" maxlength="9" required="true" value="#{registroNuevoIrExterno.entidadEdit.cif}"
+									 validatorMessage="#{messages['validator.cif']}">
+							<f:validateLength minimum="9"/>
+							<f:validateRegex pattern="^[A-Z0-9_]*$" />	
+							<p:ajax event="blur" listener="#{registroNuevoIrExterno.introducidoCif}" update="msjCif, comboSubterceros, :messages" />
+						</p:inputText>	
+						<p:message id="msjCif" for="cif" />
+					</div>
+					<p:outputPanel id="comboSubterceros">
+						<s:div styleClass="p-md-12" rendered="#{not empty registroNuevoIrExterno.listaSubterceros}"> 
+							<p:outputLabel for="subtercero" value="#{messages['factura.subtercero']}:"/>
+							<p:selectOneMenu id="subtercero" filter="true" filterMatchMode="contains" value="#{registroNuevoIrExterno.entidadEdit.codSubtercero}" title="#{messages['factura.subtercero']}">
+								<f:selectItem itemLabel="#{messages['registroir.externos.subtercero.desconocido']}" itemValue="" />
+								<f:selectItems var="_subt" itemLabel="#{_subt.nombre}" itemValue="#{_subt.codigo}" value="#{registroNuevoIrExterno.listaSubterceros}" />
+							</p:selectOneMenu>
+							<p:message for="subtercero"/>
+						</s:div>	
+					</p:outputPanel>
+				</div>
+				<div class="p-grid ui-fluid">
+					<div class="p-col-12 p-md-4">
+						<p:outputLabel for="nombreEntidad" value="#{messages['crearentidadpagadora.nombre']}:" />
+						<p:inputText id="nombreEntidad" required="true" requiredMessage="#{messages['crearentidadpagadora.reqnombre']}"
+									 value="#{registroNuevoIrExterno.entidadEdit.nombre}"/>
+						<p:message for="nombreEntidad" />
+					</div>
+					<div class="p-col-12 p-md-4">
+						<p:outputLabel for="entidadDireccion" value="#{messages['crearentidadpagadora.entidadDireccion']}:" />
+						<p:inputText id="entidadDireccion" maxlength="50" required="true"
+									 requiredMessage="#{messages['crearentidadpagadora.reqdir']}"
+									 value="#{registroNuevoIrExterno.entidadEdit.direccion}"/>
+						<p:message for="entidadDireccion" />
+					</div>
+					<div class="p-col-12 p-md-3">
+						<p:outputLabel for="entidadLocalidad" value="#{messages['crearentidadpagadora.entidadLocalidad']}:" />
+						<p:inputText id="entidadLocalidad" maxlength="40" required="true"
+									 requiredMessage="#{messages['crearentidadpagadora.reqloc']}"
+									 value="#{registroNuevoIrExterno.entidadEdit.localidad}"/>
+						<p:message for="entidadLocalidad" />
+					</div>
+					<div class="p-col-12 p-md-1">
+						<p:outputLabel for="entidadCp" value="#{messages['crearentidadpagadora.entidadCp']}:" />
+						<p:inputText id="entidadCp" maxlength="26" required="true" requiredMessage="#{messages['crearentidadpagadora.reqcp']}"
+									 value="#{registroNuevoIrExterno.entidadEdit.cp}">
+							<p:keyFilter for="entidadCp" mask="num"/>
+						</p:inputText>
+						<p:message for="entidadCp" />
+					</div>
+				</div>
+				<div class="p-grid ui-fluid">
+					<div class="p-col-12 p-sm-6 p-md-3 p-lg-2">
+						<p:outputLabel for="emailEntidad" value="#{messages['crearentidadpagadora.email']}:" />
+						<p:inputText id="emailEntidad" required="true" requiredMessage="#{messages['crearentidadpagadora.reqemail']}"
+									 value="#{registroNuevoIrExterno.entidadEdit.email}" validatorMessage="#{messages['validator.email.no']}">
+							<f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"/>
+							<p:ajax event="blur" update="@this msjEmailEntidad"/>
+						</p:inputText>
+						<p:message id="msjEmailEntidad" for="emailEntidad" />
+					</div>
+					<div class="p-col-12 p-sm-6 p-md-2 p-lg-1">
+						<p:outputLabel for="telefonoEntidad" value="#{messages['crearentidadpagadora.telefono']}:" />
+						<p:inputText id="telefonoEntidad" required="true" requiredMessage="#{messages['crearentidadpagadora.reqtelefono']}"
+									 value="#{registroNuevoIrExterno.entidadEdit.telefono}" maxlength="20" validatorMessage="#{messages['validator.telefono']}">
+							<f:validateRegex pattern="^(\+?)\d{4,19}$"/>
+						</p:inputText>
+						<p:message for="telefonoEntidad" />
+					</div>
+				</div>
+				<div class="p-grid ui-fluid">	
+					<div class="p-col-12 p-sm-7 p-md-6 ">
+						<p:outputLabel for="observacionesEntidad" value="#{messages['crearentidadpagadora.observaciones']}:" />
+							<p:inputTextarea id="observacionesEntidad" cols="20" rows="2" maxlength="800"
+											 value="#{registroNuevoIrExterno.entidadEdit.observaciones}"/>
+					</div>
+				</div>
+				<br/>
+				<div class="p-grid">
+					<div class="p-col-12">
+						<p:commandButton action="#{registroNuevoIrExterno.guardar}" value="#{messages['registroir.guardar']}" id="buttonGuardar"
+										 process="@form" update="@form :messages" icon="fa fa-floppy-o"
+										 title="#{messages['value.save']}" />
+						<p:commandButton action="#{registroNuevoIrExterno.volver}" value="#{messages['value.return']}" id="buttonCancel"
+										 process="@this" icon="fa fa-reply" title="#{messages['value.return']}" />
+					</div>
+				</div>
+			</h:form>
+			
+		</p:panel>
+	</ui:define>
+
+</ui:composition>
+</html>

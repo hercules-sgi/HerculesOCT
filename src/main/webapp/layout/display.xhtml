@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:s="http://jboss.org/schema/seam/taglib">
+	  
+<ui:composition>
+
+    <div class="#{styleClassDiv==null?'prop':styleClassDiv}">
+        <span class="#{styleClassLabel==null?'name':styleClassLabel}">
+            <ui:insert name="label"/>
+        </span>
+        <span class="#{styleClassValue==null?'value':styleClassValue}">
+            <ui:insert/>
+        </span>
+    </div>
+
+</ui:composition>
+
+</html>

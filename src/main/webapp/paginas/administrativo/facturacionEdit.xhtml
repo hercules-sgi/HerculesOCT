@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/layout/template.xhtml">
+
+	<ui:define name="page-header">
+		<h1>
+			<h:outputText value="#{messages['menu.administrativo.facturas']}" />
+		</h1>
+		<h2>
+			<h:outputText value="#{messages['facturacion.crear.subtitle']}" rendered="#{facturacionEdit.facturaEdit.cod == null}"/>
+			<h:outputText value="#{messages['facturacion.editar.subtitle']}" rendered="#{facturacionEdit.facturaEdit.cod != null and facturacionEdit.facturaEdit.numeroJusto == null and identity.tienePerfil('ADMINISTRATIVO')}"/>
+			<h:outputText value="#{messages['facturacion.detalles.subtitle']}" rendered="#{facturacionEdit.facturaEdit.cod != null and (facturacionEdit.facturaEdit.numeroJusto != null or !identity.tienePerfil('ADMINISTRATIVO'))}"/>
+		</h2>
+	</ui:define>
+	<ui:define name="body">
+		<p:panel id="panelFacturaCrear" >
+			<h:form id="formFacturaCrear">
+				<div class="p-grid ui-fluid">
+					<s:div styleClass="p-md-2 p-lg-1" rendered="#{facturacionEdit.facturaEdit.cod == null}">
+						<p:outputLabel for="fechaGeneracion" value="#{messages['factura.fechageneracion']}:" />
+						<br/>
+						<p:calendar id="fechaGeneracion" size="10" maxlength="10" value="#{facturacionEdit.facturaEdit.fechaGeneracion}" pattern="dd/MM/yyyy" mask="99/99/9999" locale="es" required="true" title="#{messages['factura.fechageneracion']}"/>
+						<p:message for="fechaGeneracion"/>
+					</s:div>
+					<s:div styleClass="p-md-2 p-lg-1" rendered="#{facturacionEdit.facturaEdit.cod != null}">
+						<p:outputLabel value="#{messages['factura.fechageneracion']}" />
+						<br/>
+						<h:outputText value="#{facturacionEdit.facturaEdit.fechaGeneracion}:" title="#{messages['factura.fechageneracion']}" styleClass="margen5">
+							<s:convertDateTime pattern="dd/MM/yyyy"/>
+						</h:outputText>		
+					</s:div>
+					<s:div styleClass="p-md-2" rendered="#{facturacionEdit.facturaEdit.cod != null}">
+						<p:outputLabel value="#{messages['factura.estado']}:" />
+						<br/>
+						<h:outputText value="#{facturacionEdit.getDescripcionEstadoFactura()}" title="#{messages['factura.estado']}" styleClass="margen5 negrita #{facturacionEdit.getColorEstadoFactura()}"/>
+					</s:div>
+					<s:div styleClass="p-md-2" rendered="#{facturacionEdit.facturaEdit.numeroJusto != null}">
+						<p:outputLabel value="#{messages['factura.identificadorjusto']}:" />
+						<br/>
+						<h:outputText value="#{facturacionEdit.facturaEdit.anoJusto} / #{facturacionEdit.facturaEdit.numeroJusto}" title="#{messages['factura.identificadorjusto']}" styleClass="margen5"/>
+					</s:div>
+					<s:div styleClass="p-md-3 p-lg-2" rendered="#{facturacionEdit.facturaEdit.cod == null}">
+						<p:outputLabel for="servicio" value="#{messages['factura.servicio']}:" />
+						<br/>
+						<p:selectOneMenu id="servicio" filter="true" filterMatchMode="contains" value="#{facturacionEdit.facturaEdit.servicio}" title="#{messages['factura.servicio']}" required="true">
+							<f:selectItem itemLabel="#{messages['servicio.seleccion']}" itemValue="" />
+							<f:selectItems value="#{facturacionEdit.serviciosDisponiblesParaFacturar}" var="_ser" itemLabel="#{_ser.nombre}" itemValue="#{_ser}" />
+					 		<p:ajax event="valueChange" update="@form" listener="#{facturacionEdit.seleccionadoServicioCreacion}" />
+							<s:convertEntity />
+						</p:selectOneMenu>
+						<p:message for="servicio"/>
+					</s:div>
+					<s:div styleClass="p-md-3" rendered="#{facturacionEdit.facturaEdit.cod != null}">
+						<p:outputLabel value="#{messages['factura.servicio']}:" />
+						<br/>
+						<h:outputText value="#{facturacionEdit.facturaEdit.servicio.nombre}" title="#{messages['factura.servicio']}" styleClass="margen5"/>
+					</s:div>
+					<s:div styleClass="p-md-3" rendered="#{facturacionEdit.facturaEdit.cod == null and facturacionEdit.facturaEdit.servicio != null}">
+						<p:outputLabel for="usuarioInvestigador" value="#{messages['solicitudes.usuarioinvestigador']}:" />
+						<br/>
+						<p:selectOneMenu id="usuarioInvestigador" filter="true" filterMatchMode="contains" value="#{facturacionEdit.facturaEdit.investigador}" required="true" title="#{messages['solicitudes.usuarioinvestigador']}">
+							<f:selectItem itemLabel="#{messages['usuario.seleccion']}" itemValue="" />
+							<f:selectItems var="_usuario" itemLabel="#{_usuario.datosUsuario.fullName}" itemValue="#{_usuario}" value="#{facturacionEdit.listaUsuariosIrCrearFactura}" />
+							<p:ajax event="valueChange" update="@form" listener="#{facturacionEdit.seleccionadoIrCreacion}" />
+							<s:convertEntity />
+						</p:selectOneMenu>
+						<p:message for="usuarioInvestigador"/>
+					</s:div>
+					<s:div styleClass="p-md-4" rendered="#{facturacionEdit.facturaEdit.cod != null and facturacionEdit.facturaEdit.servicio != null}">
+						<p:outputLabel value="#{messages['solicitudes.usuarioinvestigador']}:" />
+						<br/>
+						<h:outputText value="#{facturacionEdit.facturaEdit.investigador.datosUsuario.fullName}" title="#{messages['solicitudes.usuarioinvestigador']}" styleClass="margen5"/>
+					</s:div>						
+					<s:div styleClass="p-md-5 p-lg-4" rendered="#{facturacionEdit.facturaEdit.cod == null and facturacionEdit.facturaEdit.investigador != null}">
+						<p:outputLabel for="entidadPagadora" value="#{messages['factura.entidadpagadora']}:"/>
+						<br/>
+						<p:selectOneMenu id="entidadPagadora" filter="true" filterMatchMode="contains" value="#{facturacionEdit.facturaEdit.entidadPagadora}" title="#{messages['factura.entidadpagadora']}" required="true">
+							<f:selectItem itemLabel="Seleccione una entidad pagadora" itemValue="" />
+							<f:selectItems var="_ep" itemLabel="#{facturacionEdit.getDescripcionEntidadPagadora(_ep)}" itemValue="#{_ep}" value="#{facturacionEdit.listaEntidadesPagadoras}" />
+							<s:convertEntity />
+							<p:ajax event="valueChange" update="@form" listener="#{facturacionEdit.seleccionadaEntidadPagadoraCreacion}" />
+						</p:selectOneMenu>
+						<p:message for="entidadPagadora"/>
+					</s:div>
+					<s:div styleClass="p-md-5" rendered="#{facturacionEdit.facturaEdit.cod != null and facturacionEdit.facturaEdit.investigador != null}">
+						<p:outputLabel value="#{messages['factura.entidadpagadora']}:"/>
+						<br/>
+						<h:outputText value="#{facturacionEdit.getDescripcionEntidadPagadora(facturacionEdit.facturaEdit.entidadPagadora)}" title="#{messages['factura.entidadpagadora']}" styleClass="margen5"/>
+					</s:div>									
+				</div>
+
+				<s:fragment rendered="#{facturacionEdit.facturaEdit.entidadPagadora != null}">
+					<s:div styleClass="p-grid ui-fluid">
+						<s:fragment rendered="#{facturacionEdit.facturaEdit.entidadPagadora.cif != null}">								
+							<s:div styleClass="p-md-2" rendered="#{facturacionEdit.facturaEdit.cod == null}">
+								<p:outputLabel for="serie" value="#{messages['factura.serie']}:"/>
+								<br/>
+								<p:selectOneMenu id="serie" value="#{facturacionEdit.facturaEdit.serie}" required="true" title="#{messages['factura.serie']}">
+									<f:selectItem itemLabel="#{messages['factura.serie.seleccion']}" itemValue="" />
+									<f:selectItem itemLabel="PF" itemValue="PF" />							
+									<f:selectItem itemLabel="R" itemValue="R" />
+									<p:ajax event="valueChange" update="@form"/>
+								</p:selectOneMenu>
+								<p:message for="serie"/>
+							</s:div>									
+							<s:div styleClass="p-md-2" rendered="#{facturacionEdit.facturaEdit.cod != null}">
+								<p:outputLabel value="#{messages['factura.serie']}:"/>
+								<br/>
+								<h:outputText value="#{facturacionEdit.facturaEdit.serie}" title="#{messages['factura.serie']}" styleClass="margen5"/>
+							</s:div>
+						</s:fragment>									
+						<s:fragment rendered="#{facturacionEdit.facturaEdit.entidadPagadora.cif == null}">
+							<s:div styleClass="p-md-3" rendered="#{facturacionEdit.facturaEdit.cod == null}">
+								<p:outputLabel for="tipoGasto" value="#{messages['factura.tipogasto']}:" />
+								<br/>
+								<p:selectOneMenu id="tipoGasto" filter="true" filterMatchMode="contains" value="#{facturacionEdit.facturaEdit.tipoGasto}" title="#{messages['factura.tipogasto']}" required="true">
+									<f:selectItem itemLabel="#{messages['factura.tipogasto.seleccion']}" itemValue="" />
+									<f:selectItems var="_tg" itemLabel="#{_tg.descri}" itemValue="#{_tg.tipgasto}" value="#{facturacionEdit.listaTiposGasto}" />
+									<p:ajax event="valueChange" update="@form"/>
+								</p:selectOneMenu>
+								<p:message for="tipoGasto"/>
+							</s:div>
+							<s:div styleClass="p-md-3" rendered="#{facturacionEdit.facturaEdit.cod != null}">
+								<p:outputLabel value="#{messages['factura.tipogasto']}:" />
+								<br/>
+								<h:outputText value="#{facturacionEdit.getNombreTipoGasto()}" title="#{messages['factura.tipogasto']}" styleClass="margen5"/>
+							</s:div>									
+						</s:fragment>									
+						<s:div styleClass="p-md-3" rendered="#{facturacionEdit.facturaEdit.cod == null}">
+							<p:outputLabel for="partida" value="#{messages['factura.partida']}:"/>
+							<br/>
+							<p:selectOneMenu id="partida" filter="true" filterMatchMode="contains" value="#{facturacionEdit.facturaEdit.partida}" title="#{messages['factura.partida']}" required="true">
+								<f:selectItem itemLabel="#{messages['factura.partida.seleccion']}" itemValue="" />
+								<f:selectItems var="_par" itemLabel="#{_par.partidaStr}" itemValue="#{_par.partidaStr}" value="#{facturacionEdit.listaPartidas}" />
+								<p:ajax event="valueChange" update="@form" />
+							</p:selectOneMenu>
+							<p:message for="partida"/>
+						</s:div>									
+						<s:div styleClass="p-md-3" rendered="#{facturacionEdit.facturaEdit.cod != null}">
+							<p:outputLabel value="#{messages['factura.partida']}:"/>
+							<br/>
+							<h:outputText value="#{facturacionEdit.facturaEdit.partida}" title="#{messages['factura.partida']}" styleClass="margen5"/>
+						</s:div>									
+						<s:div styleClass="p-md-5" rendered="#{facturacionEdit.facturaEdit.cod == null}">
+							<p:outputLabel for="observaciones" value="#{messages['factura.concepto']}:"/>
+							<br/>
+							<p:inputText id="observaciones" value="#{facturacionEdit.facturaEdit.concepto}" title="#{messages['factura.concepto']}"/>
+						</s:div>
+						<s:div styleClass="p-md-5" rendered="#{facturacionEdit.facturaEdit.cod != null and facturacionEdit.facturaEdit.concepto != null}">
+							<p:outputLabel value="#{messages['factura.concepto']}"/>
+							<br/>
+							<h:outputText value="#{facturacionEdit.facturaEdit.concepto}" title="#{messages['factura.concepto']}" styleClass="margen5"/>
+						</s:div>
+					</s:div>
+				</s:fragment>	
+				<br/>
+				<s:div styleClass="p-grid" rendered="#{identity.tienePerfil('ADMINISTRATIVO')}">
+					<s:div styleClass="p-col-12" rendered="#{facturacionEdit.facturaEdit.numeroJusto == null}">
+		            	<p:panel id="panelConsumosPendientes" header="#{messages['facturacion.consumos.pendientes']}" 
+								 rendered="#{facturacionEdit.facturaEdit.entidadPagadora != null and (facturacionEdit.facturaEdit.tipoGasto != null or facturacionEdit.facturaEdit.serie != null) and facturacionEdit.facturaEdit.partida != null}">
+							<div class="p-grid ui-fluid">
+								<div class="p-col-12 p-md-2 p-lg-1" >
+									<p:outputLabel for="codigoBuscar" value="#{messages['solicitudes.codigo']}:"/>
+									<br/>
+									<p:inputText id="codigoBuscar" value="#{facturacionEdit.codFiltrarConsumosPendientes}" title="#{messages['solicitudes.codigo']}" maxlength="19"/>
+								</div>
+								<div class="p-col-12 p-md-3 p-lg-2">
+									<p:outputLabel for="tipoFiltrar" value="#{messages['producto.tipo']}:"/>
+									<br/>
+									<p:selectOneMenu id="tipoFiltrar" value="#{facturacionEdit.tipoFiltrarConsumosPendientes}" title="#{messages['producto.tipo']}">
+										<f:selectItem itemLabel="#{messages['generico.cualquiera']}" itemValue="" />
+										<f:selectItem itemLabel="#{messages['producto.tipo.fungible']}" itemValue="F" />
+										<f:selectItem itemLabel="#{messages['producto.tipo.prestacion']}" itemValue="P" />
+										<f:selectItem itemLabel="#{messages['producto.tipo.reserva']}" itemValue="R" />
+									</p:selectOneMenu>
+								</div>
+								<div class="p-col-12 p-md-2 p-lg-1">
+									<p:outputLabel for="fechaDesde" value="#{messages['consumoresumen.fechadesde']}:" />
+									<br/>
+									<p:calendar id="fechaDesde" value="#{facturacionEdit.fechaDesdeFiltrarConsumosPendientes}" pattern="dd/MM/yyyy" mask="99/99/9999" size="10" maxlength="10" locale="es" title="#{messages['consumoresumen.fechadesde']}"/>
+									<p:message for="fechaDesde"/>
+								</div>
+								<div class="p-col-12 p-md-2 p-lg-1">
+									<p:outputLabel for="fechaHasta" value="#{messages['consumoresumen.fechahasta']}:" />
+									<br/>
+									<p:calendar id="fechaHasta" value="#{facturacionEdit.fechaHastaFiltrarConsumosPendientes}" pattern="dd/MM/yyyy" mask="99/99/9999" size="10" maxlength="10" locale="es" title="#{messages['consumoresumen.fechahasta']}"/>
+									<p:message for="fechaHasta"/>
+								</div>
+							</div>
+							<div class="p-grid"> 	
+								<div class="p-col-12">
+									<p:selectBooleanCheckbox id="soloEstadosFacturables" value="#{facturacionEdit.soloEstadosFacturablesFiltrarConsumosPendientes}" 
+															 itemLabel="#{messages['facturacion.consumos.pendientes.filtrar.soloestadosfacturables']}" styleClass="negrita"/>
+								</div>
+							</div>
+							<br/>
+							<div class="p-grid">
+								<div class="p-col-12">
+									<p:commandButton id="buttonFiltrar" action="#{facturacionEdit.filtrarConsumosPendientes}" value="#{messages['facturacion.consumos.pendientes.filtrar']}" update="@form"
+													 icon="fa fa-search" title="#{messages['facturacion.consumos.pendientes.filtrar']}" />
+								</div>
+							</div>
+							<br/>
+		            		<h:outputLabel value="#{messages['facturacion.consumospendientes.empty']}" rendered="#{empty facturacionEdit.listaConsumosPendientesFacturar and facturacionEdit.consumosPendientesFiltrados}" />
+		            		<p:dataTable id="consumosPendientesTable" var="_consumo" value="#{facturacionEdit.listaConsumosPendientesFacturar}" rendered="#{not empty facturacionEdit.listaConsumosPendientesFacturar and facturacionEdit.consumosPendientesFiltrados}"
+       		      					     reflow="true" rowHover="true" tableStyleClass="tablaAuto fuente08" sortBy="#{_consumo.consumoPadre.cod} #{_consumo.fechaSolicitud}" sortOrder="ASCENDING" summary="#{messages['facturacion.consumos.pendientes']}">
+								<p:column id="seleccionColumn" ariaHeaderText="#{messages['facturacion.consumos.seleccionaruno']}" styleClass="centrado" rendered="#{facturacionEdit.listaConsumosPendientesFacturar.size > 1}">
+									<p:selectBooleanCheckbox value="#{_consumo.seleccionado}" rendered="#{facturacionEdit.obtenerTarifaByConsumo(_consumo) != null}" 
+															 title="#{messages['facturacion.consumos.seleccionaruno']} #{_consumo.cod}" itemLabel="#{messages['generico.selecciona.corto']} #{_consumo.cod}" styleClass="labelOculto"/>
+									<f:facet name="footer">
+										<div class="p-grid p-justify-center">
+											<div class="p-col">
+												<p:commandLink id="buttonSelecTodos" action="#{facturacionEdit.seleccionarConsumosPendientes}" title="#{messages['facturacion.consumos.seleccionartodos']}" 
+															   ariaLabel="#{messages['facturacion.consumos.seleccionartodos']}" update="@form">
+													<em class="fa fa-check fuente17" />		 	
+												</p:commandLink>																 		
+								    		</div>
+											<div class="p-col">
+								    			<p:commandLink id="buttonDeselecTodos" action="#{facturacionEdit.deseleccionarConsumosPendientes}" title="#{messages['facturacion.consumos.deseleccionartodos']}" 
+								    						   ariaLabel="#{messages['facturacion.consumos.deseleccionartodos']}" update="@form" >
+													<em class="fa fa-times fuente17" />		 	
+												</p:commandLink>																 		
+											</div>									    							 
+							    		</div>		 
+									</f:facet>
+								</p:column>
+								<p:column headerText="#{messages['solicitudes.codigo.corto']}" sortBy="#{_consumo.cod}" styleClass="centrado">
+									<h:outputText value="#{_consumo.cod}" />
+								</p:column>
+								<p:column headerText="#{messages['consumo.consumopadre.corto']}" sortBy="#{_consumo.consumoPadre.cod}" styleClass="centrado">
+									<h:outputText value ="#{_consumo.consumoPadre.cod}" title="#{_consumo.consumoPadre.producto.descripcion}" styleClass="info"/>
+									<s:fragment rendered="#{_consumo.consumoPadre != null}">
+										#{' '}
+										<em class="fa fa-info-circle fuente13 iconoInfo" title="#{_consumo.consumoPadre.producto.descripcion}"/>
+									</s:fragment>
+								</p:column>
+								<p:column headerText="#{messages['label.fecha']}" sortBy="#{_consumo.fechaSolicitud}" styleClass="centrado">
+									<h:outputText value="#{_consumo.fechaSolicitud}">
+										<s:convertDateTime pattern="dd/MM/yyyy"/>
+									</h:outputText>
+								</p:column>
+								<p:column headerText="#{messages['solicitudes.solicitante']}" sortBy="#{_consumo.usuarioSolicitante.datosUsuario.nombreCompleto}" >
+									<h:outputText value="#{_consumo.usuarioSolicitante.datosUsuario.nombreCompleto}"/>
+								</p:column>
+								<p:column headerText="#{messages['producto.title']}" >
+									<h:outputText value="#{_consumo.producto.descripcion}" sortBy="#{_consumo.producto.descripcion}"/>
+								</p:column>
+								<p:column headerText="#{messages['producto.comment']}" >
+									<h:outputText value="#{_consumo.comentarioFacturacion}" />
+								</p:column>
+								<p:column headerText="#{messages['producto.tipo']}" sortBy="#{_consumo.producto.tipo}" >
+									<h:outputText value="#{facturacionEdit.getDescripcionTipoConsumo(_consumo.producto.tipo)}"/>
+								</p:column>									
+								<p:column headerText="#{messages['label.estado']}" sortBy="#{_consumo.estado}" styleClass="centrado">
+									<h:outputText value="#{_consumo.estado}" />
+								</p:column>
+								<p:column headerText="#{messages['tarifa.title']}" styleClass="derecha">
+									<s:fragment rendered="#{facturacionEdit.obtenerTarifaByConsumo(_consumo) != null}" >
+										<h:outputText value="#{facturacionEdit.obtenerTarifaByConsumo(_consumo)}"/>
+										<h:outputText value=" #{messages['simbolo.euro']}"/>
+									</s:fragment>
+									<h:outputText rendered="#{facturacionEdit.obtenerTarifaByConsumo(_consumo) == null}" value="#{messages['factura.producto.tarifa.noencontrada']}" styleClass="textoAlerta"/>
+								</p:column>
+								<p:column headerText="#{messages['consumoresumen.cantidad.corto']}" sortBy="#{_consumo.cantidad}" styleClass="derecha">
+									<h:outputText value="#{_consumo.cantidad}"/>
+								</p:column>
+								<p:column headerText="#{messages['producto.factorconversion.corto']}" sortBy="#{_consumo.producto.factor}" styleClass="derecha">
+									<h:outputText value="x#{_consumo.producto.factor}"/>
+								</p:column>
+								<p:column headerText="#{messages['facturacion.subtotal']}" styleClass="derecha">
+									<s:fragment rendered="#{facturacionEdit.obtenerTarifaByConsumo(_consumo) != null}" >
+										<h:outputText value="#{facturacionEdit.getSubtotalConsumo(_consumo)}"/>
+										<h:outputText value=" #{messages['simbolo.euro']}"/>
+									</s:fragment>
+								</p:column>
+								<p:column headerText="#{messages['value.action']}" styleClass="centrado">
+									<p:commandButton id="buttonAdd" action="#{facturacionEdit.addConsumoFactura(_consumo)}" value="#{messages['facturacion.consumo.add']}"  
+													 update="@form, :messages" icon="fa fa-plus" title="#{messages['facturacion.consumo.add.title1']} #{_consumo.cod} #{messages['facturacion.consumo.add.title2']}" ariaLabel="#{messages['facturacion.consumo.add.title1']} #{_consumo.cod} #{messages['facturacion.consumo.add.title2']}"
+													 rendered="#{facturacionEdit.obtenerTarifaByConsumo(_consumo) != null}" />
+									<f:facet name="footer">
+										<s:div styleClass="p-col" rendered="#{facturacionEdit.listaConsumosPendientesFacturar.size > 1}">
+											<p:commandButton id="buttonAddSeleccionados" action="#{facturacionEdit.addConsumosSeleccionadosFactura}" value="#{messages['facturacion.consumo.add.seleccionados']}"  
+															 update="@form, :messages" icon="fa fa-plus" title="#{messages['facturacion.consumo.add.seleccionados.title']}" ariaLabel="#{messages['facturacion.consumo.add.seleccionados.title']}"/>
+							    		</s:div>		 
+									</f:facet>
+								</p:column>
+							</p:dataTable>
+						</p:panel>
+					</s:div>
+				</s:div>
+				<div class="p-grid">
+					<div class="p-col-12">
+						<p:panel id="panelConsumosFactura" header="#{messages['facturacion.consumos.factura']}" rendered="#{not empty facturacionEdit.listaConsumosFactura}">
+		    		        <p:dataTable id="consumosFacturaTable" var="_consumo" value="#{facturacionEdit.listaConsumosFactura}" reflow="true"
+       		      					     rowHover="true" tableStyleClass="tablaAuto fuente08"  sortBy="#{_consumo.fechaSolicitud}" sortOrder="ASCENDING" summary="#{messages['facturacion.consumos.factura']}">
+								<p:column headerText="#{messages['solicitudes.codigo.corto']}" sortBy="#{_consumo.consumoPadre.cod} #{_consumo.fechaSolicitud}" styleClass="centrado">
+									<h:outputText value="#{_consumo.cod}" />
+								</p:column>
+								<p:column headerText="#{messages['consumo.consumopadre.corto']}" sortBy="#{_consumo.consumoPadre.cod}" styleClass="centrado">
+									<h:outputText value ="#{_consumo.consumoPadre.cod}" title="#{_consumo.consumoPadre.producto.descripcion}" styleClass="info"/>
+									<s:fragment rendered="#{_consumo.consumoPadre != null}">
+										#{' '}
+										<em class="fa fa-info-circle fuente13 iconoInfo" title="#{_consumo.consumoPadre.producto.descripcion}"/>
+									</s:fragment>
+								</p:column>
+								<p:column headerText="#{messages['label.fecha']}" sortBy="#{_consumo.fechaSolicitud}" styleClass="centrado">
+									<h:outputText value="#{_consumo.fechaSolicitud}">
+										<s:convertDateTime pattern="dd/MM/yyyy"/>
+									</h:outputText>
+								</p:column>
+								<p:column headerText="#{messages['solicitudes.solicitante']}" sortBy="#{_consumo.usuarioSolicitante.datosUsuario.nombreCompleto}" >
+									<h:outputText value="#{_consumo.usuarioSolicitante.datosUsuario.nombreCompleto}"/>
+								</p:column>
+								<p:column headerText="#{messages['producto.title']}" sortBy="#{_consumo.producto.descripcion}">
+									<h:outputText value="#{_consumo.producto.descripcion}" />
+									<s:fragment rendered="#{_consumo.producto.tipo=='F' and _consumo.observaciones != null}">
+										<br/>
+										<h:outputText value="#{_consumo.observaciones}" styleClass="fuenteXSmall"/>
+									</s:fragment>
+								</p:column>
+								<p:column headerText="#{messages['producto.comment']}" >
+									<h:outputText value="#{_consumo.comentarioFacturacion}" />
+								</p:column>
+								<p:column headerText="#{messages['producto.tipo']}" sortBy="#{_consumo.producto.tipo}" >
+									<h:outputText value="#{facturacionEdit.getDescripcionTipoConsumo(_consumo.producto.tipo)}"/>
+								</p:column>									
+								<p:column headerText="#{messages['tarifa.title']}" styleClass="derecha">
+									<s:fragment rendered="#{facturacionEdit.obtenerTarifaByConsumo(_consumo) != null}">
+										<h:outputText value="#{facturacionEdit.obtenerTarifaByConsumo(_consumo)}"/>
+										<h:outputText value=" #{messages['simbolo.euro']}"/>
+									</s:fragment>
+									<h:outputText rendered="#{facturacionEdit.obtenerTarifaByConsumo(_consumo) == null}" value="#{messages['factura.importe.nodisponible']}" styleClass="textoAlerta"/>
+								</p:column>
+								<p:column headerText="#{messages['consumoresumen.cantidad.corto']}" sortBy="#{_consumo.cantidad}" styleClass="derecha">
+									<h:outputText value="#{_consumo.cantidad}"/>
+								</p:column>
+								<p:column headerText="#{messages['producto.factorconversion.corto']}" sortBy="#{_consumo.producto.factor}" styleClass="derecha">
+									<h:outputText value="x#{_consumo.producto.factor}"/>
+								</p:column>
+								<p:column headerText="#{messages['facturacion.subtotal']}" styleClass="derecha">
+									<s:fragment rendered="#{facturacionEdit.obtenerTarifaByConsumo(_consumo) != null}">
+										<h:outputText value="#{facturacionEdit.getSubtotalConsumo(_consumo)}"/>
+										<h:outputText value=" #{messages['simbolo.euro']}"/>
+									</s:fragment>	
+									<h:outputText rendered="#{facturacionEdit.obtenerTarifaByConsumo(_consumo) == null}" value="#{messages['factura.importe.nodisponible']}" styleClass="textoAlerta"/>
+									<f:facet name="footer">
+										<s:fragment rendered="#{facturacionEdit.getImporteTotalFactura() != null}">
+									    	<h:outputText value="Total " styleClass="negrita"/>
+											<h:outputText value="#{facturacionEdit.getImporteTotalFactura()}" styleClass="negrita"/>
+											<h:outputText value=" #{messages['simbolo.euro']}" styleClass="negrita"/>
+										</s:fragment>	
+										<h:outputText rendered="#{facturacionEdit.getImporteTotalFactura() == null}" value="#{messages['factura.importe.nodisponible']}" styleClass="textoAlerta"/>
+									</f:facet>
+								</p:column>
+								<p:column headerText="#{messages['value.action']}" rendered="#{identity.tienePerfil('ADMINISTRATIVO') and facturacionEdit.facturaEdit.numeroJusto == null}" styleClass="centrado">
+									<p:commandButton id="buttonDel" action="#{facturacionEdit.delConsumoFactura(_consumo)}" value="#{messages['facturacion.consumo.del']}"  
+													 update="@form, :messages" icon="fa fa-times" title="#{messages['facturacion.consumo.del.title1']} #{_consumo.cod} #{messages['facturacion.consumo.del.title2']}" 
+													 ariaLabel="#{messages['facturacion.consumo.del.title1']} #{_consumo.cod} #{messages['facturacion.consumo.del.title2']}">
+										<p:confirm header="#{messages['application.deleting.confirm.title']}" message="#{messages['facturacion.consumo.del.confirm']}"  icon="ui-icon-alert"/>	
+									</p:commandButton>				 
+									<f:facet name="footer">
+										<s:div styleClass="p-col"  rendered="#{facturacionEdit.listaConsumosFactura.size > 1}">
+											<p:commandButton action="#{facturacionEdit.delConsumosFacturaTodos}" value="#{messages['facturacion.consumo.del.todos']}" id="buttonDelTodos" 
+															 update="@form, :messages" icon="fa fa-times" title="#{messages['facturacion.consumo.del.todos.title']}" 
+															 ariaLabel="#{messages['facturacion.consumo.del.todos.title']}">
+												<p:confirm header="#{messages['application.deleting.confirm.title']}" message="#{messages['facturacion.consumo.del.todos.confirm']}"  icon="ui-icon-alert"/>	
+											</p:commandButton>				 
+							    		</s:div>		 
+									</f:facet>
+								</p:column>
+							</p:dataTable>
+						</p:panel>
+					</div>
+				</div>							 
+				<div class="p-grid">
+					<div class="p-col-12">
+						<s:fragment id="frAdministrativo" rendered="#{identity.tienePerfil('ADMINISTRATIVO')}">
+							<s:fragment rendered="#{facturacionEdit.mostrarBotonCrearFactura() or (facturacionEdit.facturaEdit.cod != null and facturacionEdit.facturaEdit.numeroJusto == null)}">
+								<p:commandButton action="#{facturacionEdit.crearFactura}" value="#{messages['facturacion.consumos.guardar']}" id="buttonCrearFactura" 
+												 update="@form, :messages" icon="fa fa-floppy-o" title="#{messages['facturacion.consumos.guardar.title']}" ariaLabel="#{messages['facturacion.consumos.guardar.title']}"
+												 rendered="#{facturacionEdit.mostrarBotonCrearFactura()}"/>
+								<p:commandButton action="#{facturacionEdit.modificarFactura}" value="#{messages['facturacion.consumos.guardar']}" id="buttonModificarFactura" 
+												 update="@form, :messages" icon="fa fa-floppy-o" title="#{messages['facturacion.consumos.guardar.title']}" ariaLabel="#{messages['facturacion.consumos.guardar.title']}"
+												 rendered="#{facturacionEdit.facturaEdit.cod != null and facturacionEdit.facturaEdit.numeroJusto == null}"/>
+							</s:fragment>
+							<p:commandButton action="#{facturacionEdit.eliminarFactura}" value="#{messages['facturacion.consumos.eliminar']}" id="buttonEliminarFactura" 
+											 update="@form, :messages" icon="fa fa-trash" title="#{messages['facturacion.consumos.eliminar.title']}" ariaLabel="#{messages['facturacion.consumos.eliminar.title']}"
+											 rendered="#{facturacionEdit.facturaEdit.cod != null and facturacionEdit.facturaEdit.numeroJusto == null}">
+								<p:confirm header="#{messages['application.deleting.confirm.title']}" message="#{messages['factura.delete.confirm']}"  icon="ui-icon-alert"/>				 
+							</p:commandButton>				 
+							<p:commandButton action="#{facturacionEdit.enviarFacturaJusto}" value="#{messages['factura.enviarjusto']}" id="buttonEnviarJusto" 
+											 update="@form, :messages" icon="fa fa-share-square" title="#{messages['factura.enviarjusto.title']}" ariaLabel="#{messages['factura.enviarjusto.title']}"
+											 rendered="#{facturacionEdit.facturaEdit.cod != null and facturacionEdit.facturaEdit.numeroJusto == null and not empty facturacionEdit.listaConsumosFactura and facturacionEdit.cambiosGuardados}">
+								<p:confirm header="#{messages['factura.enviarjusto.confirm.title']}" message="#{messages['factura.enviarjusto.confirm']}"  icon="ui-icon-alert"/>											 
+							</p:commandButton>				 
+							<p:commandButton action="#{facturacionEdit.anularFacturaJusto}" value="#{messages['factura.anularjusto']}" id="buttonAnularJusto" 
+											 update="@form, :messages" icon="fa fa-trash" title="#{messages['factura.anularjusto.title']}" ariaLabel="#{messages['factura.anularjusto.title']}"
+											 rendered="#{facturacionEdit.facturaEdit.cod != null and facturacionEdit.facturaEdit.numeroJusto != null}">
+								<p:confirm header="#{messages['factura.anularjusto.confirm.title']}" message="#{messages['factura.anularjusto.confirm']}"  icon="ui-icon-alert"/>											 
+							</p:commandButton>				 
+						</s:fragment>
+						<p:commandButton ajax="false" value="#{messages['facturacion.obtenerpdf']}" icon="fa fa-file-pdf-o" id="botonPdf" title="#{messages['facturacion.obtenerpdf']}" ariaLabel="#{messages['facturacion.obtenerpdf']}"
+										 rendered="#{not empty facturacionEdit.listaConsumosFactura}">
+							<p:dataExporter type="pdf" target="consumosFacturaPdf" fileName="factura" options="#{facturacionEdit.pdfOpt}" encoding="ISO-8859-15"/>
+						</p:commandButton>
+					</div>
+				</div>
+				<br/>
+				<div class="p-grid">	
+					<div class="p-col-12">
+						<p:button id="volverButton" value="#{messages['value.return']}" outcome="/paginas/administrativo/facturacion.xhtml" rendered="#{facturacionEditFrom == null}" 
+								  icon="fa fa-reply" styleClass="bloqueoFundeweb" title="#{messages['value.return']}">
+							<f:param name="cid" value="#{conversation.id}" />
+						</p:button>
+						<p:button id="volverButton2" value="#{messages['value.return']}" outcome="#{facturacionEditFrom}" rendered="#{facturacionEditFrom != null}" 
+								  icon="fa fa-reply" styleClass="bloqueoFundeweb" title="#{messages['value.return']}">
+							<f:param name="cid" value="#{conversation.id}" />
+						</p:button>
+					</div>
+				</div>	
+					
+				<!-- El siguiente datatable no se muestra por pantalla, será el que se exporte a pdf -->
+				<p:dataTable id="consumosFacturaPdf" var="_consumo" value="#{facturacionEdit.listaConsumosFactura}" style="visibility: collapse;"
+        				     rowHover="true" tableStyleClass="tablaAuto fuente08" sortBy="#{_consumo.fechaSolicitud}" sortOrder="ASCENDING">
+					<f:facet name="header" >
+						<h:outputText value="#{facturacionEdit.getTextoCabeceraPdf()}" escape="false" />
+					</f:facet>
+					<p:column headerText="#{messages['solicitudes.codigo.corto']}" styleClass="centrado">
+						<h:outputText value="#{_consumo.cod}" />
+					</p:column>
+					<p:column headerText="#{messages['label.fecha']}" styleClass="centrado">
+						<h:outputText value="#{_consumo.fechaSolicitud}" >
+							<s:convertDateTime pattern="dd/MM/yyyy"/>
+						</h:outputText>
+					</p:column>
+					<p:column headerText="#{messages['fungibles.numpedido.corto']}">
+						<h:outputText value="#{_consumo.organizacion}" />
+					</p:column>
+					<p:column headerText="#{messages['solicitudes.solicitante']}" >
+						<h:outputText value="#{_consumo.usuarioSolicitante.datosUsuario.nombreCompleto}" />
+					</p:column>
+					<p:column headerText="#{messages['producto.tipo']}"  >
+						<h:outputText value="#{facturacionEdit.getDescripcionTipoConsumo(_consumo.producto.tipo)}" />
+					</p:column>									
+					<p:column headerText="#{messages['producto.title']}">
+						<h:outputText value="#{_consumo.producto.descripcion}" />
+						<h:outputText value="#{_consumo.observaciones}" rendered="#{_consumo.producto.tipo=='F' and _consumo.observaciones != null}"/>
+					</p:column>
+					<p:column headerText="#{messages['producto.comment']}" >
+						<h:outputText value="#{_consumo.comentarioFacturacion}"/>
+					</p:column>
+					<p:column headerText="#{messages['tarifa.title']}" styleClass="derecha">
+						<h:outputText value="#{facturacionEdit.obtenerTarifaByConsumo(_consumo)}" rendered="#{facturacionEdit.obtenerTarifaByConsumo(_consumo) != null}" />
+						<h:outputText rendered="#{facturacionEdit.obtenerTarifaByConsumo(_consumo) == null}" value="#{messages['factura.importe.nodisponible']}" styleClass="textoAlerta"/>
+					</p:column>
+					<p:column headerText="#{messages['consumoresumen.cantidad.corto']}" styleClass="derecha">
+						<h:outputText value="#{_consumo.cantidad}" />
+					</p:column>
+					<p:column headerText="#{messages['producto.factorconversion.corto']}" styleClass="derecha">
+						<h:outputText value="x#{_consumo.producto.factor}" />
+					</p:column>
+					<p:column headerText="#{messages['facturacion.subtotal']}" styleClass="derecha">
+						<h:outputText value="#{facturacionEdit.getSubtotalConsumo(_consumo)}" rendered="#{facturacionEdit.obtenerTarifaByConsumo(_consumo) != null}" />
+						<h:outputText rendered="#{facturacionEdit.obtenerTarifaByConsumo(_consumo) == null}" value="#{messages['factura.importe.nodisponible']}" styleClass="textoAlerta"/>
+						<f:facet name="footer">
+					    	<h:outputText value="#{facturacionEdit.getImporteTotalFactura()}" styleClass="negrita"/>
+						</f:facet>
+					</p:column>
+				</p:dataTable>
+ 			</h:form>	
+		</p:panel>
+		<h:form id="formConfirm">
+			<p:confirmDialog id="confirm" global="true" showEffect="fade" hideEffect="fade" >
+				<p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>		
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

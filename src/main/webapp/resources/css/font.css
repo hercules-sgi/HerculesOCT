@@ -1,0 +1,14 @@
+/* Fuentes para la aplicacion */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Open Sans Light'), local('OpenSans-Light'), url"#{resource['fonts:google-open-sans-light-v8.woff']}") format('woff');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Open Sans'), local('OpenSans'), url("#{resource['fonts:google-open-sans-v8.woff']}") format('woff');
+}

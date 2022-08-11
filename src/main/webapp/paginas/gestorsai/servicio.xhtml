@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/layout/template.xhtml">
+
+	<ui:define name="page-header">
+		<h1>
+			<h:outputText value="#{messages['listado.servicios']}" title="#{messages['listado.servicios']}"/>
+		</h1>
+		<h2>
+			<h:outputText value="#{messages['listado.servicios.subtitle']}" title="#{messages['listado.servicios.subtitle']}"  />
+		</h2>
+	</ui:define>
+	<ui:define name="body">
+		<p:panel>
+			<h:form id="formListadoServiios">
+				<p:dataTable id="listaServicios" var="_serv" value="#{servicioBean.listaServicios}" reflow="true" rowHover="true"  
+							 styleClass="header-right"  rows="25" paginator="true" paginatorAlwaysVisible="false" 
+							 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" 
+							 rowsPerPageTemplate="10,25,50" paginatorPosition="bottom" tableStyleClass="tablaAuto fuente08" sortBy="#{_serv.nombre}">
+					<f:facet name="header">
+						<p:commandLink action="#{servicioBean.establecerServicioCreate}" title="#{messages['servicios.addservicio']}" ariaLabel="#{messages['servicios.addservicio']}" styleClass="enlaceTexto">
+							<em class="fa fa-plus"/>#{' '} 
+							<h:outputText styleClass="enlaceAdd" value="#{messages['servicios.addservicio']}" title="#{messages['servicios.addservicio']}" />
+						</p:commandLink>
+					</f:facet>
+					<p:column headerText="#{messages['table.nombre']}" sortBy="#{_serv.nombre}" >
+						<h:outputText value="#{_serv.nombre}" title="#{messages['table.nombre']}"/>
+					</p:column>							
+					<p:column headerText="#{messages['servicio.abreviatura']}" sortBy="#{_serv.abreviatura}" styleClass="centrado">
+						<h:outputText value="#{_serv.abreviatura}" title="#{messages['servicio.abreviatura']}" />
+					</p:column>
+					<p:column headerText="#{messages['servicio.email']}" sortBy="#{_serv.email}" >
+						<h:outputText value="#{_serv.email}" title="#{messages['servicio.email']}" />
+					</p:column>
+					<p:column headerText="#{messages['servicio.solicitudvisible.corto']}" sortBy="#{_serv.email}" styleClass="centrado">
+						<h:outputText value="#{_serv.solicitudVisible}" title="#{messages['servicio.solicitudvisible']}" />
+					</p:column>
+					<p:column headerText="#{messages['value.action']}" styleClass="centrado">
+						<p:commandLink title="#{messages['value.edit']}"  action="#{servicioBean.establecerServicioEdit(_serv)}">
+							<em class="fa fa-pencil-square-o fuente17" />
+						</p:commandLink>
+					</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:panel>
+		<h:form id="formConfirm">
+			<p:confirmDialog id="confirm" global="true" showEffect="fade" hideEffect="fade" >
+   				<p:commandButton title="Si" label="Si" value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton title="No" label="No" value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+</html>

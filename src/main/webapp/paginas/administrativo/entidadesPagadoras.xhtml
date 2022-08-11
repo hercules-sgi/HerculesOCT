@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/layout/template.xhtml">
+
+	<ui:define name="page-header">
+		<h1>
+			<h:outputText value="#{messages['menu.administrativo.entidades']}" />
+		</h1>
+		<h2>
+			<h:outputText
+				value="#{messages['menu.administrativo.entidades.subtitle']}" />
+		</h2>
+	</ui:define>
+	<ui:define name="body">
+		<p:panel>
+			<h:form id="formBuscarEntidades">
+				<div class="p-grid ui-fluid">
+					<div class="p-col-12 p-sm-6 p-md-2 p-lg-1">
+						<p:outputLabel for="cif" value="#{messages['entidadespagadoras.cif']}:" />
+						<br/>
+						<p:inputText id="cif" value="#{entidadesPagadoras.cif}" maxlength="20" />
+						<p:message for="cif" display="icon" />
+					</div>
+					<div class="p-col-12 p-sm-6 p-md-6 p-lg-5">
+						<p:outputLabel for="departamento" value="#{messages['entidadespagadoras.unidad']}:" />
+						<br/>
+						<p:selectOneMenu id="departamento" value="#{entidadesPagadoras.codDepartamento}"
+						   			     filter="true" filterMatchMode="contains">
+							<f:selectItem itemLabel="#{messages['generico.cualquiera']}" itemValue="" />
+							<f:selectItems value="#{entidadesPagadoras.listaDepartamentos}" var="_dep" itemLabel="#{_dep.nombre} - #{_dep.codigo}" itemValue="#{_dep.codigo}" />
+						</p:selectOneMenu>
+					</div>
+					<div class="p-col-12 p-sm-6 p-md-3 p-lg-2">
+						<p:outputLabel for="localidad" value="#{messages['entidadespagadoras.localidad']}:" />
+						<br/>
+						<p:inputText id="localidad" value="#{entidadesPagadoras.localidad}" />
+					</div>
+					<div class="p-col-12 p-sm-6 p-md-4 p-lg-3 ">
+						<p:outputLabel for="nombre" value="#{messages['entidadespagadoras.nombre']}:" />
+						<br/>
+						<p:inputText id="nombre" value="#{entidadesPagadoras.nombre}" />
+					</div>
+					<div class="p-col-12 p-sm-6 p-md-3 p-lg-2 ">
+						<p:outputLabel for="email" value="#{messages['entidadespagadoras.email']}:" />
+						<br/>
+						<p:inputText id="email" value="#{entidadesPagadoras.email}" />
+					</div>
+					<div class="p-col-12 p-sm-6 p-md-2 p-lg-1 ">
+						<p:outputLabel for="telefono" value="#{messages['entidadespagadoras.telefono']}:" />
+						<br/>
+						<p:inputText id="telefono" value="#{entidadesPagadoras.telefono}" />
+					</div>
+					<div class="p-col-12 p-sm-6 p-md-3 p-lg-2">
+						<p:outputLabel for="estado" value="#{messages['table.estado']}:" />
+						<br/>
+						<p:selectOneMenu id="estado" value="#{entidadesPagadoras.estado}">
+							<f:selectItem itemLabel="#{messages['generico.cualquiera']}" itemValue="" />
+							<f:selectItem itemLabel="#{messages['entidadespagadoras.estado.v']}" itemValue="V" />
+							<f:selectItem itemLabel="#{messages['entidadespagadoras.estado.s']}" itemValue="S"/>
+						</p:selectOneMenu>
+					</div>
+				</div>
+				<br/>
+				<div class="p-grid">
+					<div class="p-col-12">
+						<p:commandButton id="buscarButton" action="#{entidadesPagadoras.buscar}" value="#{messages['value.search']}"
+										 process="@form" update=":formListadoEntidades" icon="fa fa-search" title="#{messages['value.search']}" />
+						<p:commandButton id="limpiarButton" action="#{entidadesPagadoras.reset}" value="#{messages['value.reset']}"
+										 process="@this" update=":formListadoEntidades @form" icon="fa fa-undo" title="#{messages['value.reset']}" />
+					</div>
+				</div>
+			</h:form>
+			<h:form id="formListadoEntidades">
+				<p:dataTable id="dataListado" var="_entidad" value="#{entidadesPagadoras.entidades}" reflow="true" emptyMessage="#{messages['table.no.results']}"
+							 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}" 
+							 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+							 paginator="true" rows="10" paginatorPosition="bottom" paginatorAlwaysVisible="false" 
+							 tableStyleClass="tablaAuto fuente08" sortBy="#{_entidad.nombre}" styleClass="header-right" rowHover="true"
+							 rowStyleClass="#{entidadesPagadoras.getEstiloFilaEntidad(_entidad)}">
+					<f:facet name="header">
+						<p:commandLink id="nuevaEntidadLink" action="#{entidadPagadoraEdit.establecerEntidadCreate}" process="@this" 
+									   title="#{messages['entidadespagadoras.nuevo']}" ariaLabel="#{messages['entidadespagadoras.nuevo']}" styleClass="enlaceTexto">
+							<em class="fa fa-plus"/>#{' '}
+							<h:outputText styleClass="enlaceAdd" value=" #{messages['entidadespagadoras.nuevo']}" />
+						</p:commandLink>
+					</f:facet>
+					<p:column headerText="#{messages['entidadespagadoras.cif.subtercero']}" sortBy="#{_entidad.cif} #{_entidad.codSubtercero}" >
+						<s:fragment rendered="#{_entidad.cif != null}">
+							<h:outputText value="#{_entidad.cif}" />
+							<br/>
+							<h:outputText value="#{entidadesPagadoras.getNombreSubtercero(_entidad)}" />
+						</s:fragment>
+						
+					</p:column>
+					<p:column headerText="#{messages['entidadespagadoras.unidad.corto']}" sortBy="#{_entidad.unidadAdministrativa}"
+							  styleClass="centrado">
+					<h:outputText value="#{_entidad.unidadAdministrativa}" />
+					</p:column>
+					<p:column headerText="#{messages['entidadespagadoras.nombre']}" sortBy="#{_entidad.nombre}">
+						<h:outputText value="#{_entidad.nombre}" />
+					</p:column>
+					<p:column headerText="#{messages['entidadespagadoras.email']}" sortBy="#{_entidad.email}">
+						<a href="mailto:#{_entidad.email}" class="enlaceTexto"> 
+							<h:outputText value="#{_entidad.email}" />
+						</a>
+					</p:column>
+					<p:column headerText="#{messages['entidadespagadoras.telefono']}" sortBy="#{_entidad.telefono}"
+							  styleClass="centrado">
+						<h:outputText value="#{_entidad.telefono}" />
+					</p:column>
+					<p:column headerText="#{messages['entidadespagadoras.localidad']}" sortBy="#{_entidad.localidad}">
+						<h:outputText value="#{_entidad.localidad}" />
+					</p:column>
+					<p:column headerText="#{messages['entidadespagadoras.tarifa']}" sortBy="#{_entidad.tipoTarifa}" styleClass="centrado">
+						<h:outputText value="#{_entidad.tipoTarifa.descripcion}" rendered="#{_entidad.tipoTarifa != null}"/>
+						<h:outputText value="#{messages['entidadespagadoras.estado.s.info']}" styleClass="textoAlerta" rendered="#{_entidad.tipoTarifa == null}"/>
+					</p:column>
+					<p:column headerText="#{messages['value.action']}" styleClass="centrado">
+						<div class="p-grid p-justify-center">
+							<div class="p-col">
+								<p:commandLink ajax="false" id="buttonEditEntidad" process="@this" action="#{entidadPagadoraEdit.establecerEntidadEdit(_entidad)}" 
+											   title="#{messages['value.edit']}" ariaLabel="#{messages['value.edit']}">
+									<em class="fa fa-pencil-square-o fuente17" />
+								</p:commandLink>
+							</div>
+							<div class="p-col">
+									<p:commandLink id="buttonDeleteEntidad" title="#{messages['value.delete']}" ariaLabel="#{messages['value.delete']}" 
+												   action="#{entidadesPagadoras.eliminarEntidadPagadora(_entidad)}" 
+												   disabled="#{not empty _entidad.consumos or not empty _entidad.facturas or not empty _entidad.entidadesIrs}" update="@form, :messages">
+										<em class="fa fa-trash fuente17" />
+										<p:confirm header="#{messages['application.deleting.confirm.title']}" message="#{messages['entidadpagadora.delete.confirm']}"  icon="ui-icon-alert"/>
+									</p:commandLink>
+									<p:tooltip for="buttonDeleteEntidad" rendered ="#{empty _entidad.consumos and empty _entidad.facturas and empty _entidad.entidadesIrs}" value="#{messages['label.delete']}"/>
+									<p:tooltip for="buttonDeleteEntidad" rendered ="#{not empty _entidad.consumos or not empty _entidad.facturas or not empty _entidad.entidadesIrs}" value="#{messages['entidadpagadora.nodeleteable']}"/>
+							</div>								
+						</div>
+					</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:panel>
+		<h:form id="formConfirm">
+			<p:confirmDialog id="dialogoConfirmacion" global="true" showEffect="fade" hideEffect="fade" responsive="true">
+				<p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" process="@form" />
+				<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+		</h:form>
+	</ui:define>
+
+</ui:composition>
+</html>

@@ -1,0 +1,167 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib" xmlns:p="http://primefaces.org/ui" template="/layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<div class="main-box">
+			<div class="box-body" id="maincontent">
+				<div>
+
+					<h1>Declaración de Accesibilidad</h1>
+
+					<article id="introduccion">
+
+						<p>
+							El Área de Tecnologías de la Información y las Comunicaciones Aplicadas (ATICA) de la Universidad de Murcia se ha
+							comprometido a hacer accesibles sus sitios web de conformidad con el <a class="azuloscuro"
+								href="https://www.boe.es/diario_boe/txt.php?id=BOE-A-2018-12699" target="_blank" rel="noopener noreferrer"
+								title="Real Decreto 1112/2018, de 7 de septiembre, sobre accesibilidad de los sitios web y aplicaciones para dispositivos móviles del sector público (Abre en nueva ventana)">Real
+								Decreto 1112/2018, de 7 de septiembre, sobre accesibilidad de los sitios web y aplicaciones para dispositivos
+								móviles del sector público</a>.
+						</p>
+						<p>
+							La presente declaración de accesibilidad se aplica al sitio web <a class="azuloscuro" href="/" title="https://sai.um.es/">https://sai.um.es/</a>.
+						</p>
+					</article>
+
+					<article id="situacionCumplimientoB">
+						<h2>Situación de cumplimiento</h2>
+						<p>
+							Este sitio web es <strong>parcialmente conforme</strong> con el RD 1112/2018 debido a las excepciones y a la
+							falta de conformidad de los aspectos que se indican a continuación.
+						</p>
+					</article>
+
+					<article id="contenidoNoAccesible">
+						<h2>Contenido no accesible</h2>
+						<p>El contenido que se recoge a continuación no es accesible por lo siguiente:</p>
+						<ol>
+							<li>
+								<p>
+									<strong>falta de conformidad con el RD 1112/2018</strong>
+								</p>
+								<ul>
+									<!-- Deben describirse, evitando en la medida de lo posible el uso de tecnicismos, los aspectos que hacen que el contenido no sea accesible e indicarse las referencias a los requisitos aplicables de las normas o especificaciones técnicas pertinentes que no se cumplen. -->
+									<li>
+										<p>Algunos elementos de formulario pueden tener una función no predecible por algunos agentes de interfaz
+											asistida de usuario.[WCAG 4.1.2]</p>
+									</li>
+									<li>
+										<p>Algunos componentes de los formularios pueden incluir informacion no visible que haga que los lectores
+											automaticos no los identifiquen correctamente [WCAG 4.1.1, WCAG 4.1.2].</p>
+									</li>
+									<li>
+										<p>Algúnos textos descriptivos (i.e. nombres de pestañas) pueden parecer no ligados al elemento que
+											describen por ser la composición de varios.[WCAG 1.3.1, WCAG 2.5.3]</p>
+									</li>
+									<li>
+										<p>El menú y algunas tablas exceden el ancho de la vista obligando a hacer scroll horizontal para visionar todas sus columnas según el tamaño de visualización.[WCAG 1.4.10]</p>
+									</li>
+									<li>
+										<p>Autocompletado: usuario y password no tienen el atributo HTML5 autocomplete correcto.[WCAG 1.3.5]</p>
+									</li>
+									<li>
+										<p>Diálogos de confirmación de primefaces no codifican los Headings como tal.[WCAG 1.3.1, WCAG 2.4.1]</p>
+									</li>
+									<li>
+										<p>Algunos elementos de formulario no tienen etiqueta.[WCAG 1.3.1, WCAG 4.1.2]</p>
+									</li>
+									<li>
+										<p>Los diálogos no retornan el foco al elemento que los activó.[WCAG 2.4.3]</p>
+									</li>
+									<li>
+										<p>Etiquetas de estado de la prestación no tienen suficiente contraste.[WCAG 1.4.3]</p>
+									</li>
+									<li>
+										<p>Mensajes de aviso pueden no tener el rol adecuado asignado[WCAG 4.1.3]</p>
+									</li>
+									<li>
+										<p>El acceso a cada página se hace sólo a través de menú.[WCAG 2.4.5]</p>
+									</li>
+								</ul>
+							</li>
+							<li>
+								<p>
+									<strong>carga desproporcionada</strong>
+								</p>
+								<p>No aplica.</p>
+							</li>
+							<li>
+								<p>
+									el contenido <strong>no entra dentro del ámbito de la legislación</strong> aplicable
+								</p>
+								<ul>
+									<li>Podrían existir archivos ofimáticos en PDF u otros formatos publicados antes del 20 de septiembre de
+										2018 que no cumplan en su totalidad todos los requisitos de accesibilidad.</li>
+								</ul>
+							</li>
+						</ol>
+					</article>
+
+					<!-- Como mínimo se debe hacer una "evaluación de la accesibilidad" cada 3 años, por tanto, la fecha de preparación no puede superar en más de 3 años la fecha actual. Cada vez que se realiza una "evaluación de la accesibilidad" hay que actualizar la fecha de preparación y también la fecha de última revisión. Como máximo se debe hacer una "revisión de la exactitud de la declaración de accesibilidad" cada año. Cuando se realice esta revisión solo debe modificarse la fecha de última revisión. -->
+					<article id="preparacion">
+						<h2>Preparación de la presente declaración de accesibilidad</h2>
+						<p>La presente declaración fue preparada el 17 de septiembre de 2020.</p>
+						<p>El método empleado para preparar la declaración ha sido una autoevaluación llevada a cabo por el propio
+							organismo.</p>
+						<p>Última revisión de la declaración: 26 de Julio de 2021.</p>
+					</article>
+
+					<article id="observacionesContacto">
+						<h2>Observaciones y datos de contacto</h2>
+						<p>
+							Puede realizar <strong>comunicaciones</strong> sobre requisitos de accesibilidad (artículo 10.2.a) del RD
+							1112/2018) como por ejemplo:
+						</p>
+						<ul>
+							<li>informar sobre cualquier posible <strong>incumplimiento</strong> por parte de este sitio web
+							</li>
+							<li>transmitir otras <strong>dificultades de acceso</strong> al contenido
+							</li>
+							<li>formular cualquier otra <strong>consulta o sugerencia de mejora</strong> relativa a la accesibilidad del
+								sitio web
+							</li>
+						</ul>
+						<p>A través de las siguientes vias:</p>
+						<ul>
+							<li>Aplicación web: <a class="azuloscuro" href="http://dumbo.um.es" title="http://dumbo.um.es" target="_blank"
+								rel="noopener noreferrer">http://dumbo.um.es</a></li>
+							<li>Correo electrónico: <a class="azuloscuro" href="mailto:dumbo@um.es" title="dumbo@um.es">dumbo@um.es</a></li>
+							<li>Teléfono: 868 88 42 22</li>
+						</ul>
+						<p>
+							Las comunicaciones serán recibidas y tratadas por el <strong>Área de Tecnologías de la Información y las
+								Comunicaciones Aplicadas (ATICA) de la Universidad de Murcia</strong>.
+						</p>
+					</article>
+
+					<article id="procedimientoAplicacion">
+						<h2>Procedimiento de aplicación</h2>
+						<p>Procedimiento de reclamación recogido en el artículo 13 del RD 1112/2018:</p>
+						<ul>
+							<li><a class="azuloscuro" href="https://sede.um.es/registro2/PR-000179" target="_blank" rel="noopener noreferrer" title="Solicitud de información y quejas sobre accesibilidad (Abre en nueva ventana)">Solicitud de información y quejas sobre accesibilidad</a></li>
+						</ul>
+					</article>
+
+					<!-- Descomentar este article si se quiere añadir contenido opcional -->
+					<!-- El contenido opcional que se indica a continuación puede añadirse a la declaración de accesibilidad según se estime oportuno: -->
+					<!-- 	1) una explicación del compromiso del organismo del sector público con la accesibilidad digital, por ejemplo: -->
+					<!-- 		· su intención de alcanzar un mayor grado de accesibilidad que el exigido por la legislación, -->
+					<!-- 		· las medidas correctoras que se adoptarán para hacer accesible el contenido de los sitios web y las aplicaciones para dispositivos móviles que no sea accesible, incluido el calendario para la aplicación de tales medidas; -->
+					<!-- 	2) respaldo oficial (en la esfera administrativa o política) a la declaración de accesibilidad; -->
+					<!-- 	3) fecha de publicación del sitio web o la aplicación para dispositivos móviles; -->
+					<!-- 	4) fecha de la última actualización del sitio web o la aplicación para dispositivos móviles tras una revisión sustancial del contenido; -->
+					<!-- 	5) enlace a un informe de evaluación, si se dispone de él, y en particular si se ha indicado que el sitio web o la aplicación para dispositivos móviles es «a) plenamente conforme»; -->
+					<!-- 	6) asistencia telefónica adicional para las personas con discapacidad y ayuda para los usuarios de tecnologías de apoyo; -->
+					<!-- 	7) cualquier otra información que se considere apropiada. -->
+					<!-- <article id="contenidoOpcional"> -->
+					<!-- 	<h2>Contenido opcional</h2> -->
+					<!-- </article> -->
+
+				</div>
+			</div>
+		</div>
+
+	</ui:define>
+</ui:composition>

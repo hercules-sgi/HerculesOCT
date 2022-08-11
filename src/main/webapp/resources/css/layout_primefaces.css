@@ -1,0 +1,259 @@
+/* CSS para solventar conflictos con el CSS de PrimeFaces */
+
+.ui-widget {
+	font-family: 'Open Sans';
+}
+
+/* DataTable */
+
+.ui-datatable table.table {
+	font-size: 0.98em;
+}
+
+table.table .ui-datatable-data.ui-widget-content {
+	border: none
+}
+
+.ui-datatable .table tbody td {
+	border-style: none;
+	border-top: 1px solid #ddd;
+}
+
+.ui-datatable .table thead th {
+	text-align: left;
+}
+
+.ui-datatable .table thead td {
+	border-style: none;
+}
+
+.ui-datatable .table thead th {
+	background-color: white;
+	background-image: none;
+	border-left: none;
+	border-right: none;
+}
+
+.ui-datatable .table tbody tr {
+	border: none;
+}
+
+.ui-datatable-tablewrapper {
+    overflow: hidden;
+}
+
+/*
+.ui-datatable .table tbody td {
+	border-left: none;
+}
+
+table.table .ui-state-highlight .ui-icon {
+   background-image: url("#{resource['primefaces-bootstrap:images/ui-icons_333333_256x240.png']}");
+   
+}
+*/
+
+.ui-state-highlight .text-muted {
+	color: white;
+}
+
+.ui-datatable-footer p {
+	font-size: 0.9em;
+}
+
+/*
+.ui-columntoggler {
+	overflow:hidden;
+}
+
+.ui-columntoggler .ui-columntoggler-items {
+	font-size: 0.9em;
+}
+
+.ui-columntoggler .ui-columntoggler-item {
+	  padding: 1px 3px;
+}
+
+.ui-columntoggler .ui-columntoggler-item label {
+  padding-left: 2em;
+}*/
+
+
+/** Inputs Forms */
+
+.form-control .ui-inputfield {
+	padding: 0px;
+	webkit-box-shadow: none;
+	box-shadow: none;
+}
+
+.ui-selectonemenu .ui-selectonemenu-trigger {
+	width: 25px;
+}
+
+.ui-selectonemenu {
+	min-width: 0 !important;
+} 
+
+.form-date {
+	display: block;
+}
+
+.form-date-max {
+	display: block;
+}
+
+.form-date .form-control {
+	display: inline;
+	float: left;
+	width: 83%;
+}
+
+.form-date .ui-datepicker-trigger.ui-button-icon-only .ui-button-text {
+	padding: 0.45em;
+}
+
+.form-date input.ui-inputfield {
+	padding: 7px;
+	width:80%;
+}
+
+.form-date-max input.ui-inputfield {
+	padding: 7.5px;
+	width:100%;
+}
+
+.ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled {
+	opacity: .75;
+}
+
+.form-group input.ui-state-disabled[disabled] {
+	background-color: #eee;
+}
+
+.form-horizontal label.control-label {
+	font-size: 0.94em;
+}
+
+.ui-selectoneradio label {
+	font-weight: normal;
+	margin-right: 8px;
+}
+
+.ui-selectmanycheckbox label {
+	margin-right: 10px;
+	margin-left: 2px;
+}
+
+.ui-radiobutton {
+	margin-right: 2px;
+}
+
+.ui-radiobutton-icon {
+	margin-left: 0px;
+}
+
+.ui-selectcheckboxmenu .ui-selectcheckboxmenu-trigger {
+	width: 23px !important;
+}
+
+.ui-icon-check {
+	background-position: -65px -146px;
+}
+
+.ui-inputswitch .ui-inputswitch-on, .ui-inputswitch .ui-inputswitch-off {
+	    padding-top: 1px;
+	    height: 25px;
+	    font-size: 1em;
+}
+
+.ui-selectonemenu.form-control.ui-state-error {
+	border: 2px solid #F68A8A;
+}
+
+.ui-state-disabled {
+	color: #999;
+}
+
+/** Iconos en las filas seleccioandas */
+.ui-state-highlight .ui-icon {
+	 background-image: url("#{resource['primefaces-bootstrap:images/ui-icons_333333_256x240.png']}");
+}
+
+/** Enlaces y botones */
+a.btn-primary, .btn.btn-primary .ui-icon.fa {
+	color: #fff !important; 
+}
+
+a.btn-info, .btn.btn-info .ui-icon.fa {
+	color: #fff !important; 
+}
+
+a.btn-success, .btn.btn-success .ui-icon.fa {
+	color: #fff !important; 
+}
+
+a.btn-danger, .btn.btn-danger .ui-icon.fa {
+	color: #fff !important; 
+}
+
+a.btn-warning, btn.btn-warning .ui-icon.fa  {
+	color: #fff !important; 
+}
+
+.ui-state-default.btn {
+	text-shadow: none;
+}
+
+/* Panel & Accordion */
+
+.panel-title {
+	font-size: 14px;
+}
+
+.ui-accordion .ui-accordion-header {
+    padding: 10px 35px;
+    background-color: #f5f5f5;
+}
+
+.ui-accordion .ui-accordion-header .ui-icon {
+	display: block;
+}
+
+.ui-accordion h3.ui-accordion-header {
+	font-size: 14px;
+}
+
+.ui-accordion .ui-accordion-header .ui-icon {
+    display: block !important;
+} 
+
+.panel-select.ui-selectonemenu-panel .ui-selectonemenu-items-wrapper {
+	overflow-x: hidden;
+}
+
+.ui-tree .ui-treenode-label {
+    display: inline-block;
+    margin: 2px 0 0 0;
+    vertical-align: top;
+    padding: 0 3px;
+    padding-right:20px;
+    white-space:normal;
+    width:calc(100% - 35px);
+}
+
+/*-------- Font Awesome --------*/
+.ui-icon.fa:not(.ui-treenode-icon) {
+	text-indent: 0px;
+	background-image: none;
+	margin-top: -5px !important;
+}
+
+.ui-widget .ui-icon.fa:not(.ui-treenode-icon), .ui-icon.fa:not(.ui-treenode-icon) {
+	color: #B41515;
+}
+
+.ui-dialog.ui-widget-content .ui-dialog-titlebar {
+    background-color: #f5f5f5;
+    font-size: 20px;
+}

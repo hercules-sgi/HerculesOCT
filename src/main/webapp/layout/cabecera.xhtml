@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:s="http://jboss.org/schema/seam/taglib"
+	  xmlns:p="http://primefaces.org/ui">
+	  
+	<ui:composition>
+		<div id="header-navbar" class="navbar navbar-inverse navbar-um navbar-fixed-top">
+		
+			<div class="container-fluid">
+				<h:form id="cabeceraForm">
+					<div class="navbar-header">
+						<s:link styleClass="navbar-brand"
+							action="#{menuManagerBean.clickAndKillLastConversation('/paginas/home.xhtml')}">
+							<h:graphicImage styleClass="logo" library="img" name="logo_inst.gif" alt="Logo UM"/>
+							<span>#{messages['aplicacion.nombre.acti']}</span>
+						</s:link>
+					</div>
+					
+					<div class="nav-no-collapse pull-right">
+						<ul class="nav navbar-nav navbar-right">
+							<s:fragment rendered="#{identity.loggedIn}">
+
+								<s:fragment rendered="#{identity.suplantado}">
+									<li>
+										<s:link view="/paginas/home.xhtml" styleClass="bloqueoFundeweb"
+											action="#{usuarios.deshacerSuplantacion}" value=""
+											title="Restaurar identidad" propagation="end"
+											includePageParams="false">
+											<em class="fa fa-sign-out"/>
+											<span class="hidden-xs">#{messages['supplant.restore.value']}</span>
+										</s:link>
+									</li>
+								</s:fragment>
+
+								<li>
+									<a href="#" onclick="return false;">
+										<s:fragment
+											rendered="#{not identity.suplantado}">
+											<em class="fa fa-user"/>
+										</s:fragment>
+										<s:fragment rendered="#{identity.suplantado}">
+											<em class="fa fa-user-secret"/>
+										</s:fragment>
+										<h:outputText value=" #{identity.username}" />
+									</a>
+								</li>
+								<li>
+									<s:link id="buttonLogOut" view="/login.xhtml"
+										action="#{identity.logout}" propagation="none"
+										includePageParams="false"
+										value="#{messages['value.link.logout']}"
+										title="#{messages['value.link.logout']}">
+										<em class="fa fa-power-off"/>
+									</s:link>
+								</li>
+							</s:fragment>
+							<li>
+								<button type="button" class="navbar-toggle pull-left"
+									data-toggle="collapse" data-target="#sidebar-nav">
+									<span class="sr-only">Toggle navigation</span>
+									<span class="icon-bar"></span>
+									<span class="icon-bar"></span>
+									<span class="icon-bar"></span>
+								</button>
+							</li>
+						</ul>
+					</div>
+				</h:form>
+			</div>
+		</div>
+	</ui:composition>
+</html>

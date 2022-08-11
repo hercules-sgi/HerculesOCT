@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:composition>
+
+
+	  <!-- Modal -->
+	   <h:form>
+	  <p:dialog id="modalRecomendaciones"  widgetVar="dialogRecomendaciones" 
+	  	 modal="true" showEffect="fade" closeOnEscape="true" responsive="true">
+	  	 	<f:facet name="header">Requisitos y recomendaciones de navegación</f:facet>  		    
+			      <div class="modal-body panel-dialog-body">
+			      		<p class="text-justify">Aunque la aplicación no restringe el uso a una determinada resolución de pantalla, 
+			      		para un uso óptimo de la misma se recomienda una <strong>resolución de al menos 1024 x 768 </strong> con los siguientes navegadores:</p>
+			      		<table class="table table-bordered">
+			      			<tr>
+			      				<td class="text-center">
+			      					<i class="fa fa-internet-explorer fa-2x" aria-hidden="true"></i><br/>
+			      					<small><span class="text-muted">Internet Explorer 10.0 o superior</span></small>
+			      				</td>
+			      				<td class="text-center">
+			      					<i class="fa fa-firefox fa-2x" aria-hidden="true"></i><br/>
+			      					<small><span class="text-muted"> Mozilla FireFox 2.0 o superior</span></small>
+			      				</td>
+			      				<td class="text-center">
+			      					<i class="fa fa-chrome fa-2x" aria-hidden="true"></i><br/>
+			      					<small><span class="text-muted">Google Chrome 2.0 o superior</span></small>
+			      				</td>
+			      				<td class="text-center">
+			      					<i class="fa fa-safari fa-2x" aria-hidden="true"></i><br/>
+			      					<small><span class="text-muted">Safari 5.0 o superior</span></small>
+			      				</td>
+			      				
+			      			</tr>
+			      		</table>
+
+						<hr/>
+						<strong>Soporte a usuarios:</strong>
+						<ul class="sub-list list-nostyle">
+							<li><i class="fa fa-envelope" aria-hidden="true"></i> dumbo@um.es</li>
+							<li><i class="fa fa-phone-square" aria-hidden="true"></i> 868884222</li>
+						</ul>	
+										
+			      </div>
+					<f:facet name="footer">
+			      		<p:commandLink  onclick="PF('dialogRecomendaciones').hide();" title="Cerrar Panel">
+			      		<em class="fa fa-times"/> Cerrar
+			      		</p:commandLink>
+			      	</f:facet>		      		     
+	 </p:dialog>
+	 </h:form>
+</ui:composition>
+
+</html>

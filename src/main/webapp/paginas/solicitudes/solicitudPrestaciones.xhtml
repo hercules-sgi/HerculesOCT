@@ -1,0 +1,982 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/layout/template.xhtml">
+
+	<ui:define name="page-header">
+		<s:fragment rendered="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'NO'}">
+			<h1>
+				<h:outputText value="#{messages['menu.prestaciones.title']}" title="#{messages['menu.prestaciones.title']}"/>
+			</h1>
+			<h2>
+				<h:outputText value="#{solicitudPrestaciones.prestacionEdit.cod == null ? messages['menu.prestaciones.subtitle'] : messages['menu.prestaciones.subtitle.edicion']}" />
+				<h:outputText value=" #{messages['menu.consumo.subtitle.hijo.add']} #{solicitudPrestaciones.prestacionEdit.consumoPadre.cod}" rendered="#{solicitudPrestaciones.prestacionEdit.consumoPadre != null}"/>
+			</h2>
+		</s:fragment>
+		<s:fragment rendered="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'SI'}">
+			<h1>
+				<h:outputText value="#{messages['menu.presupuestos.title']}" title="#{messages['menu.presupuestos.title']}"/>
+			</h1>
+			<h2>
+				<h:outputText value="#{solicitudPrestaciones.prestacionEdit.cod == null ? messages['menu.presupuestos.subtitle'] : messages['menu.presupuestos.subtitle.edicion']}" />
+				<h:outputText value=" #{messages['menu.presupuestos.subtitle.hijo.add']} #{solicitudPrestaciones.prestacionEdit.consumoPadre.cod}" rendered="#{solicitudPrestaciones.prestacionEdit.consumoPadre != null}"/>
+			</h2>
+		</s:fragment>
+	</ui:define>
+	<ui:define name="body">
+		<p:panel id="panelPrestacionEdit">
+			<h:form id="formPrestacionEdit" styleClass="editFundeweb" enctype="multipart/form-data">
+				<s:fragment id="fragmentModoEdicion" rendered="#{solicitudPrestaciones.prestacionEdit.cod != null}">
+					<div class="p-grid ui-fluid">
+						<div class="p-col-2 p-md-2">
+							<p:outputLabel value="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'NO' ?  messages['consumos.codigo'] : messages['presupuestos.codigo'] }:"/>
+							<br/>
+							<h:outputText value="#{solicitudPrestaciones.prestacionEdit.cod}" title="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'NO' ?  messages['consumos.codigo'] : messages['presupuestos.codigo'] }" styleClass="margen5" />
+						</div>
+						<s:div styleClass="p-col-2 p-md-2" rendered="#{solicitudPrestaciones.prestacionEdit.presupuestoOrigen != null}">
+							<p:outputLabel value="#{messages['prestaciones.origen']}:"/>
+							<br/>
+							<h:outputText value="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'NO' ? messages['prestaciones.origen.consumo'] : messages['prestaciones.origen.presupuesto']}" styleClass="margen5" />
+							#{' '}
+							<p:commandLink process="@this" action="#{solicitudPrestaciones.establecerPrestacionEdit(solicitudPrestaciones.prestacionEdit.presupuestoOrigen)}" 
+							  			   value="#{solicitudPrestaciones.prestacionEdit.presupuestoOrigen.cod}"
+							  			   title="#{messages['prestaciones.origen.navegar']} #{solicitudPrestaciones.prestacionEdit.presupuestoOrigen.cod}" 
+							  			   ariaLabel="#{messages['prestaciones.origen.navegar']} #{solicitudPrestaciones.prestacionEdit.presupuestoOrigen.cod}" styleClass="negrita enlaceTexto"/> 
+						</s:div>
+						<s:div styleClass="p-col-2 p-md-2" rendered="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'SI' and solicitudPrestaciones.getConsumoGeneradoFromPresupuesto() != null}">
+							<p:outputLabel value="#{messages['prestaciones.presupuesto.consumogenerado']}:"/>
+							<br/>
+							<p:commandLink process="@this" action="#{solicitudPrestaciones.establecerPrestacionEdit(solicitudPrestaciones.getConsumoGeneradoFromPresupuesto())}" 
+							  			   value="#{solicitudPrestaciones.getConsumoGeneradoFromPresupuesto().cod}"
+							  			   title="#{messages['prestaciones.presupuesto.consumogenerado.navegar']} #{solicitudPrestaciones.getConsumoGeneradoFromPresupuesto().cod} #{messages['prestaciones.presupuesto.consumogenerado.navegar2']}" 
+							  			   ariaLabel="#{messages['prestaciones.presupuesto.consumogenerado.navegar']} #{solicitudPrestaciones.getConsumoGeneradoFromPresupuesto().cod} #{messages['prestaciones.presupuesto.consumogenerado.navegar2']}" styleClass="negrita enlaceTexto margen5"/> 
+						</s:div>
+						<div class="p-col-2 p-md-2">
+							<p:outputLabel value="#{messages['prestaciones.fechaSolicitud']}:"/>
+							<br/>
+							<h:outputText value="#{solicitudPrestaciones.prestacionEdit.fechaSolicitud}" title="#{messages['prestaciones.fechaSolicitud']}" styleClass="margen5" >
+								<f:convertDateTime type="date" pattern="dd/MM/yyyy"/>
+							</h:outputText>
+						</div>
+						<div class="p-col-2 p-md-2">
+							<p:outputLabel value="#{messages['fungible.service']}:" />
+							<br/>
+							<h:outputText value="#{solicitudPrestaciones.prestacionEdit.producto.servicio.nombre}" title="#{messages['fungible.service']}" styleClass="margen5"/>
+						</div>
+						<s:div styleClass="p-col-2 p-md-2" rendered="#{solicitudPrestaciones.prestacionEdit.consumoPadre == null and solicitudPrestaciones.prestacionEdit.presupuesto == 'NO' and (identity.tienePerfilEnServicio('TECNICO',solicitudPrestaciones.servicioPrestacion.cod) or identity.tienePerfilEnServicio('SUPERVISOR', solicitudPrestaciones.servicioPrestacion.cod))}">
+							<p:outputLabel value="#{messages['fungibles.interno']}:" />
+							<br/>
+							<h:outputText value="#{solicitudPrestaciones.prestacionEdit.interno}" title="#{messages['fungibles.interno']}" styleClass="margen5"/>
+						</s:div>
+						<s:div styleClass="p-col-3 p-md-3" rendered="#{solicitudPrestaciones.prestacionEdit.organizacion != null}">
+							<p:outputLabel value="#{messages['fungibles.numPedido']}:" />
+							<br/>
+							<h:outputText value="#{solicitudPrestaciones.prestacionEdit.organizacion}" title="#{messages['fungibles.numPedido']}" styleClass="margen5"/>
+						</s:div>
+						<s:div styleClass="p-col-2 p-md-2" rendered="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'NO' or solicitudPrestaciones.prestacionEdit.consumoPadre == null}">
+							<p:outputLabel value="#{messages['prestaciones.estado']}:" />
+							<br/>
+							<h:outputText title="#{messages['prestaciones.estado']}" value="#{solicitudPrestaciones.getDescripcionEstadoConsumo()}" styleClass="margen5 negrita #{solicitudPrestaciones.getColorEstado(solicitudPrestaciones.prestacionEdit)}"
+										  rendered="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'NO'}"/>
+							<h:outputText title="#{messages['prestaciones.estado']}" value="#{solicitudPrestaciones.prestacionEdit.estadoPresupuesto}" styleClass="margen5 negrita #{solicitudPrestaciones.getColorEstadoPresupuesto(solicitudPrestaciones.prestacionEdit)}"
+										  rendered="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'SI'}"/>
+						</s:div>					
+					</div>
+					<s:div styleClass="p-grid ui-fluid" >
+						<div class="p-col-3 p-md-3">
+							<p:outputLabel value="#{messages['fungibles.usuarioSol']}:" />
+							<br/>
+							<h:outputText value="#{solicitudPrestaciones.prestacionEdit.usuarioSolicitante.datosUsuario.nombreCompleto}" styleClass="margen5" title="#{messages['fungibles.usuarioSol']}"/>
+						</div>
+						<s:div styleClass="p-col-3 p-md-3" rendered="#{solicitudPrestaciones.prestacionEdit.interno == 'NO'}">
+							<p:outputLabel value="#{messages['fungibles.investigador']}:" />
+							<br/>
+							<h:outputText value="#{solicitudPrestaciones.prestacionEdit.usuarioIrAsociado.datosUsuario.nombreCompleto}" styleClass="margen5" title="#{messages['fungibles.investigador']}"/>
+						</s:div>
+						<s:div styleClass="p-col-3 p-md-3" rendered="#{solicitudPrestaciones.prestacionEdit.interno == 'NO' and !solicitudPrestaciones.operacionPresupuestoModificar()}">
+							<p:outputLabel value="#{messages['fungibles.entidad']}:" />
+							<br/>
+							<h:outputText value="#{solicitudPrestaciones.getDescripcionEntidad(solicitudPrestaciones.prestacionEdit.entidadPagadora)}" styleClass="margen5" title="#{messages['fungibles.entidad']}"/>
+						</s:div>
+						<s:div styleClass="p-col-3 p-md-3" rendered="#{solicitudPrestaciones.prestacionEdit.interno == 'NO' and !solicitudPrestaciones.operacionPresupuestoModificar()}">
+							<p:outputLabel value="#{messages['fungibles.grupoinvestigacion']}:" />
+							<br/>
+							<h:outputText value="#{solicitudPrestaciones.prestacionEdit.grupoInvestigacion.grupoInvestigacionDatos.nombre}" styleClass="margen5" title="#{messages['fungibles.grupoinvestigacion']}"/>
+						</s:div>	
+						<s:div styleClass="p-col-3 p-md-3" rendered="#{solicitudPrestaciones.operacionPresupuestoModificar()}">
+							<p:outputLabel for="entidadPresupuestoEdit" value="#{messages['fungibles.entidad']}:" />
+							<br/>
+							<p:selectOneMenu id="entidadPresupuestoEdit" required="true" requiredMessage="#{messages['prestaciones.entidad.required']}"						
+											 value="#{solicitudPrestaciones.prestacionEdit.entidadPagadora}" filter="true" filterMatchMode="contains" title="#{messages['fungibles.entidad']}">
+								<f:selectItems value="#{solicitudPrestaciones.listaEntidades}" var="_ent" itemLabel="#{solicitudPrestaciones.getDescripcionEntidad(_ent)}" itemValue="#{_ent}" />
+								<p:ajax event="valueChange" listener="#{solicitudPrestaciones.modificadaEntidadPagadoraPresupuesto}" process="@this" update="@form" oncomplete="haCambiado=false;" />
+								<s:convertEntity />
+							</p:selectOneMenu>
+							<p:message for="entidadPresupuestoEdit" />
+						</s:div>
+						<s:div styleClass="p-col-3 p-md-3" rendered="#{!identity.tienePerfilEnServicio('SUPERVISOR', solicitudPrestaciones.prestacionEdit.producto.servicio.cod) or !solicitudPrestaciones.operacionModificar()}">
+							<p:outputLabel value="#{messages['prestaciones.tecnico']}:" />
+							<br/>
+							<h:outputText value="#{solicitudPrestaciones.prestacionEdit.usuarioTecnicoAsignado.datosUsuario.nombreCompleto}" styleClass="margen5"/>
+						</s:div>
+						<s:div styleClass="p-col-3 p-md-3" rendered="#{identity.tienePerfilEnServicio('SUPERVISOR', solicitudPrestaciones.prestacionEdit.producto.servicio.cod) and solicitudPrestaciones.operacionModificar()}">	
+							<p:outputLabel for="tecnicoAsignado" value="#{messages['prestaciones.tecnico']}:" />
+							<br/>
+							<p:selectOneMenu id="tecnicoAsignado" value="#{solicitudPrestaciones.prestacionEdit.usuarioTecnicoAsignado}" 
+											 required="#{(solicitudPrestaciones.prestacionEdit.presupuesto == 'NO' or solicitudPrestaciones.prestacionEdit.consumoPadre == null) and solicitudPrestaciones.prestacionEdit.estado == 'Aceptado'}">
+								<f:selectItem itemLabel="Seleccione un tecnico" itemValue="" />
+								<f:selectItems value="#{solicitudPrestaciones.listaUsuariosTecnicos}" var="_tec" itemLabel="#{_tec.datosUsuario.nombreCompleto}" itemValue="#{_tec}" />
+								<p:ajax event="valueChange" process="@this" update="@form"  />
+								<s:convertEntity/>
+							</p:selectOneMenu>
+							<p:message for="tecnicoAsignado"/>
+						</s:div>
+					</s:div>
+				</s:fragment>
+				<s:fragment id="fragmentModoAlta" rendered="#{solicitudPrestaciones.prestacionEdit.cod == null}">				
+					<div class="p-grid ui-fluid" >
+						<s:div styleClass="p-col-4 p-md-3 p-lg-2" rendered="#{solicitudPrestaciones.prestacionEdit.consumoPadre == null}">
+							<p:outputLabel for="servicio" value="#{messages['fungible.service']}:" />
+							<br/>
+							<p:selectOneMenu id="servicio" value="#{solicitudPrestaciones.servicioPrestacion}" required="true" title="#{messages['fungible.service']}" >
+								<f:selectItem itemLabel="#{messages['servicio.seleccion']}" itemValue="" />
+								<f:selectItems value="#{solicitudPrestaciones.listaServicios}" var="_ser" itemLabel="#{_ser.nombre}" itemValue="#{_ser}" />
+								<p:ajax event="valueChange" update="@form" process="@this" listener="#{solicitudPrestaciones.seleccionadoServicio}" />
+								<s:convertEntity />
+							</p:selectOneMenu>
+							<p:message for="servicio"/>
+						</s:div>
+						<s:div styleClass="p-col-3 p-md-3 p-lg-2" rendered="#{solicitudPrestaciones.prestacionEdit.consumoPadre != null}">
+							<p:outputLabel value="#{messages['fungible.service']}:" />
+							<br/>
+							<h:outputText value="#{solicitudPrestaciones.servicioPrestacion.nombre}" title="#{messages['fungible.service']}" styleClass="margen5"/>
+						</s:div>
+						<s:div class="p-col-2 p-md-2" rendered="#{solicitudPrestaciones.servicioPrestacion!= null and solicitudPrestaciones.prestacionEdit.presupuesto=='NO' and (identity.tienePerfilEnServicio('TECNICO',solicitudPrestaciones.servicioPrestacion.cod) or identity.tienePerfilEnServicio('SUPERVISOR', solicitudPrestaciones.servicioPrestacion.cod)) and solicitudPrestaciones.prestacionEdit.consumoPadre == null}">
+							<p:outputLabel for="consumoInterno" value="#{messages['fungibles.interno']}:" />
+							<br/>
+							<p:selectOneMenu id="consumoInterno" styleClass="ancho100" value="#{solicitudPrestaciones.prestacionEdit.interno}" title="#{messages['fungibles.interno']}" required="true">
+								<f:selectItem itemLabel="SI" itemValue="SI" />
+								<f:selectItem itemLabel="NO" itemValue="NO" />
+								<p:ajax event="valueChange" update="@form" listener="#{solicitudPrestaciones.seleccionadoConsumoInterno}" />
+							</p:selectOneMenu>
+							<p:message for="consumoInterno"/>
+						</s:div>
+						<s:div styleClass="p-col-4 p-md-3" rendered="#{solicitudPrestaciones.servicioPrestacion!= null and solicitudPrestaciones.prestacionEdit.interno == 'NO'}">
+							<p:outputLabel for="numPedido" value="#{messages['fungibles.numPedido']}:" />
+							<br/>
+							<p:inputText id="numPedido" value="#{solicitudPrestaciones.prestacionEdit.organizacion}" title="#{messages['fungibles.numPedido']}" maxlength="40">
+								<p:ajax event="blur" process="@this" />
+							</p:inputText>
+							<br/>
+							<h:outputText value="#{messages['fungibles.notaPedido']}" styleClass="fuente07"/>
+						</s:div>
+					</div>
+					<s:div id="divConsumoNoInterno" styleClass="p-grid ui-fluid" rendered="#{solicitudPrestaciones.servicioPrestacion!= null and solicitudPrestaciones.prestacionEdit.consumoPadre == null and solicitudPrestaciones.prestacionEdit.interno == 'NO'}">
+						<s:div styleClass="p-col-4 p-md-3" rendered="#{(identity.tienePerfilEnServicio('TECNICO',solicitudPrestaciones.servicioPrestacion.cod) or identity.tienePerfilEnServicio('SUPERVISOR', solicitudPrestaciones.servicioPrestacion.cod))}">
+							<p:outputLabel for="usuarioSolicitante" value="#{messages['fungibles.usuarioSol']}:" />
+							<p:selectOneMenu id="usuarioSolicitante" value="#{solicitudPrestaciones.prestacionEdit.usuarioSolicitante}" 
+											 filter="true" filterMatchMode="contains" title="#{messages['fungibles.usuarioSol']}" required="true">
+								<f:selectItem itemLabel="#{messages['usuario.seleccion']}" itemValue="" />
+								<f:selectItems value="#{solicitudPrestaciones.listaUsuariosSolicitantes}" var="_usu" itemLabel="#{_usu.datosUsuario.nombreCompleto}" itemValue="#{_usu}" />
+								<p:ajax event="valueChange" process="@this" update="@form :messages" listener="#{solicitudPrestaciones.seleccionadoUsuarioSolicitante}" />
+								<s:convertEntity />
+							</p:selectOneMenu>
+							<p:message for="usuarioSolicitante"/>
+						</s:div>
+						<div class="p-col-4 p-md-3">
+							<p:outputLabel for="usuarioIr" value="#{messages['fungibles.investigador']}:" />
+							<br/>
+							<p:selectOneMenu id="usuarioIr" value="#{solicitudPrestaciones.prestacionEdit.usuarioIrAsociado}" title="#{messages['fungibles.investigador']}"
+											 filter="true" filterMatchMode="contains" required="true" requiredMessage="#{messages['prestaciones.investigador.required']}">
+								<f:selectItem itemLabel="#{messages['usuario.perfil.ir.seleccion']}" itemValue="" />
+								<f:selectItems value="#{solicitudPrestaciones.listaUsuariosIr}" var="_inv" itemLabel="#{_inv.datosUsuario.nombreCompleto}" itemValue="#{_inv}" />
+								<p:ajax event="valueChange" update="@form" process="@this" listener="#{solicitudPrestaciones.seleccionadoUsuarioIr}" />
+								<s:convertEntity />
+							</p:selectOneMenu>
+							<p:message for="usuarioIr" />
+						</div>
+						<div class="p-col-5 p-md-5">
+							<p:outputLabel for="entidad" value="#{messages['fungibles.entidad']}:" />
+							<br/>
+							<p:selectOneMenu id="entidad" required="true" requiredMessage="#{messages['prestaciones.entidad.required']}"						
+											 value="#{solicitudPrestaciones.prestacionEdit.entidadPagadora}" filter="true" filterMatchMode="contains" title="#{messages['fungibles.entidad']}">
+								<f:selectItem itemLabel="#{messages['entidadpagadora.seleccion']}" itemValue="" />
+								<f:selectItems value="#{solicitudPrestaciones.listaEntidades}" var="_ent" itemLabel="#{solicitudPrestaciones.getDescripcionEntidad(_ent)}" itemValue="#{_ent}" />
+								<p:ajax event="valueChange" process="@this" update="@form" listener="#{solicitudPrestaciones.seleccionadaEntidadPagadora}"/>
+								<s:convertEntity />
+							</p:selectOneMenu>
+							<p:message for="entidad" />
+						</div>
+						<s:div styleClass="p-col-5 p-md-5" rendered="#{solicitudPrestaciones.prestacionEdit.entidadPagadora != null and solicitudPrestaciones.listaGruposInvestigacion.size() > 1}">
+							<p:outputLabel for="grupoInvestigacion" value="#{messages['fungibles.grupoinvestigacion']}:" />
+							<br/>
+							<p:selectOneMenu id="grupoInvestigacion" required="true" requiredMessage="#{messages['required.field']}"						
+											 value="#{solicitudPrestaciones.prestacionEdit.grupoInvestigacion}" title="#{messages['fungibles.grupoinvestigacion']}">
+								<f:selectItem itemLabel="#{messages['grupoinvestigacion.seleccion']}" itemValue="" />
+								<f:selectItems value="#{solicitudPrestaciones.listaGruposInvestigacion}" var="gi" itemLabel="#{gi.grupoInvestigacionDatos.nombre}" itemValue="#{gi}" />
+								<p:ajax event="valueChange" process="@this" />
+								<s:convertEntity />
+							</p:selectOneMenu>
+							<p:message for="grupoInvestigacion" />
+						</s:div>
+					</s:div>
+				</s:fragment>	
+				<s:div styleClass="p-grid ui-fluid" rendered="#{solicitudPrestaciones.prestacionEdit.cod == null and solicitudPrestaciones.servicioPrestacion != null}">
+					<s:div styleClass="p-col-2 p-md-2" rendered="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'NO' and solicitudPrestaciones.preguntarEnvioMailUsuario()}">
+						<p:outputLabel for="enviaEmail" value="#{messages['fungibles.email']}:" />
+						<br/>
+						<p:selectOneMenu id="enviaEmail" styleClass="ancho100" value="#{solicitudPrestaciones.enviaEmail}" title="#{messages['fungibles.email']}" required="true">
+							<f:selectItem itemLabel="NO" itemValue="NO" />
+							<f:selectItem itemLabel="SI" itemValue="SI" />
+							<p:ajax event="valueChange" process="@this" />
+						</p:selectOneMenu>
+						<p:message for="enviaEmail"/>
+					</s:div>
+					<div class="p-col-4 p-md-4">
+						<p:outputLabel for="comentario" value="#{messages['fungibles.obervaciones']}:" />
+						<p:inputTextarea id="comentario" value="#{solicitudPrestaciones.comentarioAdd}" rows="2" maxlength="4000" cols="30" title="#{messages['fungibles.obervaciones']}">
+							<p:ajax event="blur"/>
+						</p:inputTextarea>
+					</div>
+					<s:div styleClass="p-col-4 p-md-4" rendered="#{solicitudPrestaciones.operacionComentarFacturacion()}">
+						<p:outputLabel for="comentarioFacturacion" value="#{messages['fungibles.comentariofacturacion']}:" />
+						<p:inputTextarea id="comentarioFacturacion" value="#{solicitudPrestaciones.prestacionEdit.comentarioFacturacion}" rows="2" maxlength="4000" title="#{messages['fungibles.comentariofacturacion']}"
+										 disabled="#{solicitudPrestaciones.prestacionEdit.cod != null and !solicitudPrestaciones.operacionModificar()}"	>
+							<p:ajax event="blur"/>
+						</p:inputTextarea>
+					</s:div>
+				</s:div>	
+				<s:div styleClass="p-grid ui-fluid" rendered="#{solicitudPrestaciones.servicioPrestacion != null}">						
+					<s:fragment id="fragmentAltaYEdicionPermitidoModificarProducto" rendered="#{solicitudPrestaciones.permitidoModificarProducto()}">
+						<div class="p-col-4 p-md-4" >
+							<p:outputLabel for="producto" value="#{messages['prestaciones.producto']}:" />
+							<br/>
+							<p:selectOneMenu id="producto" required="true" requiredMessage="#{messages['prestaciones.producto.required']}"							
+											 value="#{solicitudPrestaciones.prestacionEdit.producto}" filter="true" filterMatchMode="contains" styleClass="ancho100"	>
+								<f:selectItem itemLabel="#{messages['prestaciones.producto.seleccion']}" itemValue=""/>
+								<f:selectItems value="#{solicitudPrestaciones.listaProductos}" var="_prod" itemLabel="#{_prod.descripcion}" itemValue="#{_prod}" />
+								<p:ajax event="valueChange" listener="#{solicitudPrestaciones.seleccionadoProducto}" update="@form, :formEquipoAdd, :messages" process="@this" />
+								<s:convertEntity />
+							</p:selectOneMenu>
+							<p:message for="producto" />
+						</div>
+						<s:div styleClass="p-col-3 p-md-3" rendered="#{solicitudPrestaciones.prestacionEdit.usuarioIrAsociado != null and solicitudPrestaciones.prestacionEdit.producto != null and solicitudPrestaciones.prestacionEdit.producto.requiereProyecto == 'SI'}">
+							<p:outputLabel for="proyecto" value="#{messages['proyecto.label']}:" />
+							<br/>
+							<p:selectOneMenu id="proyecto" value="#{solicitudPrestaciones.prestacionEdit.proyecto}" required="true" title="#{messages['proyecto.label']}">
+								<f:selectItem itemLabel="#{messages['proyecto.seleccion']}" itemValue="" />
+								<f:selectItems value="#{solicitudPrestaciones.listaProyectos}" var="proy" itemLabel="#{proy.nombre}"  itemValue="#{proy}" />
+								<p:ajax event="valueChange" process="@this"/>
+								<s:convertEntity />
+							</p:selectOneMenu>
+							<p:message for="proyecto"/>
+						</s:div>
+					</s:fragment>
+					<s:fragment id="fragmentEdicionNoPermitidoModificarProducto" rendered="#{!solicitudPrestaciones.permitidoModificarProducto()}"> 
+						<div class="p-col-4 p-md-4" >
+							<p:outputLabel value="#{messages['prestaciones.producto']}:" />
+							<br/>
+							<h:outputText value="#{solicitudPrestaciones.prestacionEdit.producto.descripcion}" title="#{messages['prestaciones.producto']}" styleClass="margen5"/>
+						</div>
+						<s:div styleClass="p-col-2 p-md-2" rendered="#{solicitudPrestaciones.prestacionEdit.producto.requiereProyecto == 'SI'}">
+							<p:outputLabel value="#{messages['proyecto.label']}:"/>
+							<br/>
+							<h:outputText value="#{solicitudPrestaciones.prestacionEdit.proyecto.nombre}" rendered="#{solicitudPrestaciones.prestacionEdit.proyecto != null}" title="#{messages['proyecto.label']}" styleClass="margen5"/>
+						</s:div>
+					</s:fragment>					
+					<s:div styleClass="p-col-1 p-md-1" rendered="#{solicitudPrestaciones.prestacionEdit.cod == null or solicitudPrestaciones.operacionModificar()}">
+						<p:outputLabel for="cantidad" value="#{messages['prestaciones.cantidad']}:" />
+						<br/>
+						<p:inputNumber id="cantidad" value="#{solicitudPrestaciones.prestacionEdit.cantidad}" required="true" maxlength="6" decimalPlaces="2" maxValue="1000" title="#{messages['prestaciones.cantidad']}">								
+							<f:validateDoubleRange minimum="0.1" maximum="999.1"/>	
+							<p:ajax event="blur"/>							
+						</p:inputNumber>											
+						<p:message for="cantidad" />									
+					</s:div>		
+					<s:div styleClass="p-col-1 p-md-1" rendered="#{solicitudPrestaciones.prestacionEdit.cod != null and !solicitudPrestaciones.operacionModificar()}">
+						<p:outputLabel value="#{messages['prestaciones.cantidad']}:" />
+						<br/>
+						<h:outputText value="#{solicitudPrestaciones.prestacionEdit.cantidad}" title="#{messages['prestaciones.cantidad']}" styleClass="margen5"/>								
+					</s:div>
+					<s:div styleClass="p-col-4 p-md-4" rendered="#{solicitudPrestaciones.prestacionEdit.producto != null and solicitudPrestaciones.prestacionEdit.producto.preguntaPersonalizada != null}">
+						<p:outputLabel id="pregunta" for="preguntaPersonalizada" value="#{solicitudPrestaciones.prestacionEdit.producto.preguntaPersonalizada}:" />
+						<br/>
+						<p:inputTextarea id="preguntaPersonalizada" required="true" requiredMessage="#{messages['prestaciones.pregunta.required']}" value="#{solicitudPrestaciones.prestacionEdit.observaciones}"
+										 maxlength="4000" rows="2" title="#{solicitudPrestaciones.prestacionEdit.producto.preguntaPersonalizada}" disabled="#{solicitudPrestaciones.prestacionEdit.cod != null and !solicitudPrestaciones.operacionModificar()}">
+							<p:ajax event="change" process="@this"/>							
+						</p:inputTextarea>	
+						<p:messages for="preguntaPersonalizada" />
+					</s:div>				
+					<s:div styleClass="p-col-4 p-md-4" rendered="#{solicitudPrestaciones.prestacionEdit.producto != null and solicitudPrestaciones.prestacionEdit.producto.pedirNivelBioseguridad == 'SI' and 
+																   (solicitudPrestaciones.prestacionEdit.cod == null or solicitudPrestaciones.operacionModificar())}">
+						<p:outputLabel for="nivelBioseguridad" value="#{messages['reservas.nivelbioseguridad']}:" />
+						<br/>
+						<p:selectOneMenu id="nivelBioseguridad" required="true" requiredMessage="#{messages['reservas.nivelbioseguridad.required']}"							
+										 value="#{solicitudPrestaciones.prestacionEdit.nivelBioseguridad}" styleClass="ancho100" title="#{messages['reservas.nivelbioseguridad']}">
+							<f:selectItem itemLabel="#{messages['reservas.nivelbioseguridad.seleccion']}" itemValue=""/>
+							<f:selectItem itemLabel="#{messages['reservas.nivelbioseguridad.no']}" itemValue="NO"/>
+							<f:selectItem itemLabel="#{messages['reservas.nivelbioseguridad.ncb1']}" itemValue="NCB1"/>
+							<f:selectItem itemLabel="#{messages['reservas.nivelbioseguridad.ncb2']}" itemValue="NCB2"/>
+							<f:selectItem itemLabel="#{messages['reservas.nivelbioseguridad.ncb3']}" itemValue="NCB3" itemDisabled="true"/>
+							<p:ajax event="valueChange" update="@form" process="@this" listener="#{solicitudPrestaciones.seleccionadoNivelBioseguridad}"/>
+						</p:selectOneMenu>
+						<p:message for="nivelBioseguridad"/>
+						<h:outputText value="#{messages['reservas.nivelbioseguridad.info']}" styleClass="fuente07"/>
+					</s:div>				
+					<s:div styleClass="p-col-4 p-md-4" rendered="#{solicitudPrestaciones.prestacionEdit.producto != null and solicitudPrestaciones.prestacionEdit.producto.pedirNivelBioseguridad == 'SI' and 
+																   (solicitudPrestaciones.prestacionEdit.cod != null and !solicitudPrestaciones.operacionModificar())}">
+						<p:outputLabel value="#{messages['reservas.nivelbioseguridad']}:" />
+						<br/>
+						<h:outputText value="#{solicitudPrestaciones.prestacionEdit.nivelBioseguridad}" styleClass="margen5"/>
+						<br/>
+						<h:outputText value="#{messages['reservas.nivelbioseguridad.info']}" styleClass="fuente07"/>
+					</s:div>				
+				</s:div>	
+				<s:div styleClass="p-grid ui-fluid" rendered="#{(solicitudPrestaciones.prestacionEdit.producto != null or (solicitudPrestaciones.prestacionEdit.factura == null and identity.tienePerfilEnServicio('SUPERVISOR', solicitudPrestaciones.servicioPrestacion.cod))) and 
+													   solicitudPrestaciones.requiereAnexoNivelBioseguridad() and solicitudPrestaciones.anexoBioseguridadRellenar != null}">
+					<s:fragment rendered="#{solicitudPrestaciones.prestacionEdit.cod == null or (solicitudPrestaciones.anexoBioseguridadCompletado == null and (solicitudPrestaciones.prestacionEdit.estado == 'Pendiente' or solicitudPrestaciones.prestacionEdit.estado == 'Aceptado'))}">
+						<div class="p-col-4 p-md-4"> 
+							<p:outputLabel value="#{messages['prestaciones.anexo.bioseguridad.descargar']}:" /> 
+							<br/> 
+							<p:commandLink value="#{solicitudPrestaciones.anexoBioseguridadRellenar.nomDocumento}"
+										   title="#{solicitudPrestaciones.anexoBioseguridadRellenar.nomDocumento}"
+										   ajax="false" immediate="true" update=":messages" styleClass="margen5 enlaceTexto">
+								<p:fileDownload value="#{solicitudPrestaciones.descargarFicheroAnexo(solicitudPrestaciones.anexoBioseguridadRellenar)}" />
+							</p:commandLink>	
+						</div>
+						<div class="p-col-4 p-md-4" > 
+							<p:outputLabel for="anexoBioseguridad" value="#{messages['prestaciones.anexo.bioseguridad.adjuntar']}:" />
+							<br/>
+							<p:fileUpload id="anexoBioseguridad" label="#{messages['reservas.anexo.seleccionar.fichero']}" required="true"
+										  value="#{solicitudPrestaciones.ficheroAnexoBioseguridad}" process="@this" fileUploadListener="#{solicitudPrestaciones.subidoFicheroAnexoBioseguridad}" 
+										  requiredMessage="#{messages['prestaciones.reqMessage']}" converterMessage="#{messages['anexos.fileallowed']}"
+										  invalidFileMessage="#{messages['anexos.fileallowed']}" auto="true" 
+										  update="@form" mode="advanced" skinSimple="true" allowTypes="/(\.|\/)(xls|docx|doc|pdf|ppt|pptx|xlsx|tiff|txt|zip|rar)$/"/>
+							<p:messages for="anexoBioseguridad" showDetail="true" />
+							<h:outputText value="#{solicitudPrestaciones.ficheroAnexoBioseguridad.fileName}" rendered="#{solicitudPrestaciones.ficheroAnexoBioseguridad != null}"/>
+						</div>
+					</s:fragment>
+					<s:div styleClass="p-col-4 p-md-4" rendered="#{solicitudPrestaciones.prestacionEdit.cod != null and solicitudPrestaciones.anexoBioseguridadCompletado != null}">
+						<p:outputLabel value="#{messages['prestaciones.anexo.bioseguridad.adjuntado']}:" />
+						<br/>
+						<p:commandLink title="#{solicitudPrestaciones.anexoBioseguridadCompletado.nomDocumento}" value="#{solicitudPrestaciones.anexoBioseguridadCompletado.nomDocumento}" ajax="false" immediate="true" styleClass="enlaceTexto margen5">
+							<p:fileDownload value="#{solicitudPrestaciones.descargarFicheroAnexo(solicitudPrestaciones.anexoBioseguridadCompletado)}" />
+						</p:commandLink>
+						<p:commandLink action="#{solicitudPrestaciones.eliminarAnexoBioseguridadCompletado()}" process="@this" styleClass="margen5" 
+									   update="@form, :messages" title="#{messages['value.delete']}" ariaLabel="#{messages['value.delete']}"
+									   rendered="#{identity.tienePerfilEnServicio('SUPERVISOR', solicitudPrestaciones.servicioPrestacion.cod) and (solicitudPrestaciones.prestacionEdit.estado == 'Pendiente' or solicitudPrestaciones.prestacionEdit.estado == 'Aceptado')}">
+							<em class="fa fa-trash fuente17" />
+							<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['prestaciones.anexo.del.confirm']}"/>
+						</p:commandLink>
+					</s:div>
+				</s:div>
+				
+				<s:div styleClass="p-grid" rendered="#{solicitudPrestaciones.prestacionEdit.producto != null}">	
+					<s:fragment id="fragmentAnexosAlta" rendered="#{solicitudPrestaciones.prestacionEdit.cod == null}">
+						<s:div class="p-col-4 p-md-4" rendered="#{not empty solicitudPrestaciones.prestacionEdit.producto.anexos}"> 
+ 							<p:outputLabel value="#{messages['prestaciones.anexo.producto']}:" /> 
+ 							<br/> 
+							<p:commandLink value="#{solicitudPrestaciones.prestacionEdit.producto.anexos.get(0).nomDocumento}"
+										   title="#{solicitudPrestaciones.prestacionEdit.producto.anexos.get(0).nomDocumento}"
+										   ajax="false" immediate="true" update=":messages" styleClass="margen5 enlaceTexto">
+								<p:fileDownload value="#{solicitudPrestaciones.descargarFicheroAnexo(solicitudPrestaciones.prestacionEdit.producto.anexos.get(0))}" />
+							</p:commandLink>	
+						</s:div>
+						<div class="p-col-4 p-md-4"> 
+							<p:outputLabel for="anexoPrestacion" value="#{messages['prestaciones.anexo.adjuntar']}:" />
+							<br/>
+							<p:fileUpload id="anexoPrestacion" label="#{messages['reservas.anexo.seleccionar.fichero']}" required="#{solicitudPrestaciones.prestacionEdit.producto.requiereAnexo == 'SI'}"
+										  value="#{solicitudPrestaciones.ficheroAnexoPrestacion}" process="@this" fileUploadListener="#{solicitudPrestaciones.subidoFicheroAnexo}" 
+										  requiredMessage="#{messages['prestaciones.reqMessage']}" converterMessage="#{messages['anexos.fileallowed']}"
+										  invalidFileMessage="#{messages['anexos.fileallowed']}" auto="true" 
+										  update="@form" mode="advanced" skinSimple="true" allowTypes="/(\.|\/)(xls|docx|doc|pdf|ppt|pptx|xlsx|tiff|txt|zip|rar)$/"/>
+							<p:messages for="anexoReserva" showDetail="true" />
+							<h:outputText value="#{solicitudPrestaciones.ficheroAnexoPrestacion.fileName}" rendered="#{solicitudPrestaciones.ficheroAnexoPrestacion != null}"/>
+						</div>
+					</s:fragment>
+					<s:fragment id="fragmentAnexosMuestrasHijosEquiposEdicion" rendered="#{solicitudPrestaciones.prestacionEdit.cod != null}">				
+						<div class="p-col-12 p-md-4">
+							<p:outputLabel value="#{messages['prestaciones.add.anexo.title']}:" />
+							<br/>
+							<h:outputText value="#{messages['prestaciones.anexo.empty']}" rendered="#{!solicitudPrestaciones.operacionModificar() and !solicitudPrestaciones.operacionPresupuestoAddanexo() and empty solicitudPrestaciones.getAnexosPrestacion()}" styleClass="margen5"/>
+							<p:commandButton type="button" title="#{messages['prestaciones.add.anexo']}" ariaLabel="#{messages['prestaciones.add.anexo']}" 
+											 value="#{messages['prestaciones.add.anexo']}" onclick="PF('dialogAnexoAdd').show();saveLastFocus(event);" rendered="#{solicitudPrestaciones.operacionModificar() or solicitudPrestaciones.operacionPresupuestoAddanexo()}" icon="fa fa-plus"/>
+							<p:dataTable id="tablaAnexos" value="#{solicitudPrestaciones.getAnexosPrestacion()}" rowHover="true"
+										 var="anexo" tableStyleClass="tablaAuto fuente08" rendered="#{not empty solicitudPrestaciones.getAnexosPrestacion()}">
+								<p:column headerText="#{messages['prestaciones.anexo.documento']}">
+									<p:commandLink value="#{anexo.nomDocumento}" title="#{_ane.nomDocumento}" ariaLabel="#{_ane.nomDocumento}" ajax="false" update=":messages" immediate="true" styleClass="enlaceTexto" >
+										<p:fileDownload value="#{solicitudPrestaciones.descargarFicheroAnexo(anexo)}" />
+									</p:commandLink>
+								</p:column>
+								<p:column headerText="#{messages['prestaciones.anexo.comentario']}">
+									<h:outputText value="#{anexo.comentario}" title="#{messages['prestaciones.anexo.comentario']}" />
+								</p:column>
+								<p:column headerText="#{messages['prestaciones.anexo.accion']}" styleClass="centrado"
+										  rendered="#{(identity.tienePerfilEnServicio('SUPERVISOR',solicitudPrestaciones.servicioPrestacion.cod) or solicitudPrestaciones.esTecnicoSolicitud()) and solicitudPrestaciones.operacionModificar()}">
+									<p:commandLink id="borrarAnexo" process="@this" actionListener="#{solicitudPrestaciones.eliminarAnexo(anexo)}" update="@form" title="#{messages['value.delete']}" ariaLabel="#{messages['value.delete']}">
+										<em class="fa fa-trash fuente17" />
+										<p:confirm header="#{messages['prestaciones.confirmar.anexo']}" message="#{messages['prestaciones.anexo.del.confirm']}" icon="ui-icon-alert" />
+									</p:commandLink>
+								</p:column>
+							</p:dataTable>
+						</div>
+						<s:div styleClass="p-col-12 p-md-4" rendered="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'NO'}">
+							<p:outputLabel value="#{messages['prestaciones.add.muestra.title']}:"/>
+							<br/>
+							<h:outputText value="#{messages['prestaciones.muestra.empty']}" rendered="#{not solicitudPrestaciones.operacionModificar() and empty solicitudPrestaciones.prestacionEdit.muestras}" styleClass="margen5"/>
+							<p:commandButton type="button" title="#{messages['prestaciones.add.muestra']}" ariaLabel="#{messages['prestaciones.add.muestra']}" 
+											 value="#{messages['prestaciones.add.muestra']}" onclick="PF('dialogMuestraAdd').show();saveLastFocus(event);" rendered="#{solicitudPrestaciones.operacionModificar()}" icon="fa fa-plus"/>
+							<p:dataTable id="tableMuestras" value="#{solicitudPrestaciones.prestacionEdit.muestras}" rowHover="true"
+					 					 var="muestra" tableStyleClass="tablaAuto fuente08" rendered="#{not empty solicitudPrestaciones.prestacionEdit.muestras}">
+								<p:column headerText="#{messages['prestaciones.muestra.fecha']}" styleClass="centrado">	
+									<h:outputText value="#{muestra.fechaEntrega}" title="#{messages['prestaciones.muestra.fecha']}" >
+										<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+									</h:outputText>
+								</p:column>
+								<p:column headerText="#{messages['prestaciones.muestra.referencia']}" >
+									<h:outputText value="#{muestra.referencia}"  title="#{messages['prestaciones.muestra.referencia']}"/>
+								</p:column>
+								<p:column headerText="#{messages['prestaciones.muestra.descripcion']}">
+									<h:outputText value="#{muestra.descripcion}" title="#{messages['prestaciones.muestra.descripcion']}" />
+								</p:column>
+								<p:column headerText="#{messages['prestaciones.muestra.accion']}" styleClass="centrado"
+										  rendered="#{(identity.tienePerfilEnServicio('SUPERVISOR', solicitudPrestaciones.servicioPrestacion.cod) or solicitudPrestaciones.esTecnicoSolicitud()) and solicitudPrestaciones.operacionModificar()}">
+									<p:commandLink id="eliminarMuestra" process="@this" actionListener="#{solicitudPrestaciones.eliminarMuestra(muestra)}" update="@form" title="#{messages['value.delete']}" ariaLabel="#{messages['value.delete']}" >
+										<em class="fa fa-trash fuente17" />
+										<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['prestaciones.muestra.del.confirm']}" icon="ui-icon-alert" />
+									</p:commandLink>
+							 	</p:column>
+							</p:dataTable>
+						</s:div>
+						<s:div styleClass="p-col-12 p-md-5" rendered="#{solicitudPrestaciones.prestacionEdit.producto.consumoAsociado == 'SI'}">
+							<p:outputLabel value="#{messages['prestaciones.add.consumohijo.title']}:" />
+							<br/>
+							<h:outputText value="#{messages['prestaciones.consumohijo.empty']}" rendered="#{not solicitudPrestaciones.operacionSubconsumo() and empty solicitudPrestaciones.getConsumosHijos()}" styleClass="margen5"/>
+							<p:commandButton type="button" title="#{messages['prestaciones.add.consumohijo']}" ariaLabel="#{messages['prestaciones.add.consumohijo']}"  
+										     value="#{messages['prestaciones.add.consumohijo']}" onclick="PF('dialogConsumoHijoAdd').show();saveLastFocus(event);" rendered="#{solicitudPrestaciones.operacionSubconsumo() and solicitudPrestaciones.operacionModificar()}" icon="fa fa-plus"/>
+							<p:dataTable id="tablaConsumosHijos" value="#{solicitudPrestaciones.getConsumosHijos()}" var="consumoHijo" rowHover="true" 
+										 tableStyleClass="tablaAuto fuente08" rendered="#{not empty solicitudPrestaciones.getConsumosHijos()}">							
+								<p:column headerText="#{messages['solicitudes.codigo']}" sortBy="#{consumoHijo.cod}">
+									<h:outputText value="#{consumoHijo.cod}" />
+									<br/>
+									<h:outputText value="#{solicitudPrestaciones.getDescripcionTipoConsumo(consumoHijo.tipo)}" title="#{messages['producto.tipo']}" styleClass="fuente09"/>
+								</p:column>
+								<p:column headerText="#{messages['prestaciones.estado']}" rendered="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'NO'}" styleClass="centrado">
+									<h:outputText value="#{consumoHijo.estado}" styleClass="negrita #{solicitudPrestaciones.getColorEstado(consumoHijo)}"/>
+								</p:column>
+								<p:column headerText="#{messages['prestaciones.muestra.descripcion']}" sortBy="#{consumoHijo.producto.descripcion}">
+									<h:outputText value="#{solicitudPrestaciones.formatCantidad(consumoHijo.cantidad)}">
+										<f:convertNumber pattern="#0.00"/>
+									</h:outputText>
+									<h:outputText value=" x #{consumoHijo.producto.descripcion}"  />
+								</p:column>
+								<p:column headerText="#{messages['producto.factorconversion.corto']}" rendered="#{(identity.tienePerfilEnServicio('SUPERVISOR', solicitudPrestaciones.servicioPrestacion.cod) or solicitudPrestaciones.esTecnicoSolicitud() or solicitudPrestaciones.prestacionEdit.presupuesto == 'SI') and solicitudPrestaciones.prestacionEdit.entidadPagadora != null}">
+									<h:outputText value="x #{consumoHijo.producto.factor}" rendered="#{consumoHijo.producto.factor != null}" />
+									<h:outputText value="x 1" rendered="#{consumoHijo.producto.factor == null}" />
+								</p:column>
+								<p:column headerText="#{messages['prestaciones.precio']}" rendered="#{(identity.tienePerfilEnServicio('SUPERVISOR', solicitudPrestaciones.servicioPrestacion.cod) or solicitudPrestaciones.esTecnicoSolicitud() or solicitudPrestaciones.prestacionEdit.presupuesto == 'SI') and solicitudPrestaciones.prestacionEdit.entidadPagadora != null}" styleClass="derecha">
+									<h:outputText value="#{solicitudPrestaciones.getTarifaConsumo(consumoHijo)}" title="#{messages['prestaciones.precio']}" />
+									<h:outputText value=" #{messages['simbolo.euro']}" rendered="#{solicitudPrestaciones.getTarifaConsumo(consumoHijo) != null}" />
+								</p:column>
+								<p:column headerText="#{messages['prestaciones.precioxcantidad']}" rendered="#{(identity.tienePerfilEnServicio('SUPERVISOR', solicitudPrestaciones.servicioPrestacion.cod) or solicitudPrestaciones.esTecnicoSolicitud() or solicitudPrestaciones.prestacionEdit.presupuesto == 'SI') and solicitudPrestaciones.prestacionEdit.entidadPagadora != null}" styleClass="derecha">
+									<h:outputText value="#{solicitudPrestaciones.getPrecioConsumo(consumoHijo)}" title="#{messages['prestaciones.precioxcantidad']}" />
+									<h:outputText value=" #{messages['simbolo.euro']}" rendered="#{solicitudPrestaciones.getPrecioConsumo(consumoHijo) != null}" />
+								</p:column>
+								<p:column headerText="#{messages['value.action']}" styleClass="centrado" rendered="#{identity.tienePerfilEnServicio('SUPERVISOR', solicitudPrestaciones.servicioPrestacion.cod) or solicitudPrestaciones.esTecnicoSolicitud() or solicitudPrestaciones.prestacionEdit.interno == 'NO'}">
+									<div class="p-grid p-justify-center">
+										<div class="p-col">
+											<p:commandLink rendered="#{consumoHijo.tipo == 'P'}" id="buttonEditPrestacion" process="@this"
+									  					   action="#{solicitudPrestaciones.establecerPrestacionEditFromConsumoPadre(consumoHijo)}" ariaLabel="#{messages['solicitudes.prestacionEdit']} #{consumoHijo.cod}" title="#{messages['solicitudes.prestacionEdit']} #{consumoHijo.cod}">
+												<em class="fa fa-pencil-square-o fuente17" />
+											</p:commandLink>
+											<p:commandLink rendered="#{consumoHijo.tipo == 'F'}" id="buttonEditFungible" process="@this"
+														   action="#{solicitudFungibles.establecerFungibleEditFromConsumoPadre(consumoHijo)}" ariaLabel="#{messages['solicitudes.fungibleEdit']} #{consumoHijo.cod}" title="#{messages['solicitudes.fungibleEdit']} #{consumoHijo.cod}">
+												<em class="fa fa-pencil-square-o fuente17" />
+											</p:commandLink>
+											<p:commandLink rendered="#{consumoHijo.tipo == 'R'}" id="buttonEditReserva" process="@this"
+														   action="#{solicitudReservas.establecerReservaEditFromConsumoPadre(consumoHijo)}" ariaLabel="#{messages['solicitudes.reservaEdit']} #{consumoHijo.cod}" title="#{messages['solicitudes.reservaEdit']} #{consumoHijo.cod}">
+												<em class="fa fa-pencil-square-o fuente17" />
+											</p:commandLink>
+										</div>
+									</div>	
+								</p:column>
+							</p:dataTable>
+						</s:div>
+						
+						<s:div styleClass="p-col-12 p-md-4" rendered="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'NO' and solicitudPrestaciones.prestacionEdit.presupuestoOrigen != null}">
+							<p:outputLabel value="#{messages['prestaciones.presupuesto.origen.reservas']}:" />
+							<br/>
+							<h:outputText value="#{messages['prestaciones.presupuesto.origen.reservas.empty']}" rendered="#{empty solicitudPrestaciones.getPresupuestosHijosDeTipoReserva()}" styleClass="margen5"/>
+							<p:dataTable id="tablaPresupuestosHijosTipoReserva" value="#{solicitudPrestaciones.getPresupuestosHijosDeTipoReserva()}" var="prh" rowHover="true" 
+										 tableStyleClass="tablaAuto fuente08" rendered="#{not empty solicitudPrestaciones.getPresupuestosHijosDeTipoReserva()}">							
+								<p:column headerText="#{messages['prestaciones.muestra.descripcion']}" sortBy="#{prh.producto.descripcion}">
+									<h:outputText value="#{solicitudPrestaciones.formatCantidad(prh.cantidad)}">
+										<f:convertNumber pattern="#0.00"/>
+									</h:outputText>
+									<h:outputText value=" x #{prh.producto.descripcion}"  />
+								</p:column>
+								<p:column headerText="#{messages['producto.factorconversion.corto']}" rendered="#{(identity.tienePerfilEnServicio('SUPERVISOR', solicitudPrestaciones.servicioPrestacion.cod) or solicitudPrestaciones.esTecnicoSolicitud()) and solicitudPrestaciones.prestacionEdit.entidadPagadora != null}">
+									<h:outputText value="x #{prh.producto.factor}" rendered="#{prh.producto.factor != null}" />
+									<h:outputText value="x 1" rendered="#{prh.producto.factor == null}" />
+								</p:column>
+								<p:column headerText="#{messages['prestaciones.precio']}" rendered="#{(identity.tienePerfilEnServicio('SUPERVISOR', solicitudPrestaciones.servicioPrestacion.cod) or solicitudPrestaciones.esTecnicoSolicitud()) and solicitudPrestaciones.prestacionEdit.entidadPagadora != null}" styleClass="derecha">
+									<h:outputText value="#{solicitudPrestaciones.getTarifaConsumo(prh)}" title="#{messages['prestaciones.precio']}" />
+									<h:outputText value=" #{messages['simbolo.euro']}" rendered="#{solicitudPrestaciones.getTarifaConsumo(prh) != null}" />
+								</p:column>
+								<p:column headerText="#{messages['prestaciones.precioxcantidad']}" rendered="#{(identity.tienePerfilEnServicio('SUPERVISOR', solicitudPrestaciones.servicioPrestacion.cod) or solicitudPrestaciones.esTecnicoSolicitud()) and solicitudPrestaciones.prestacionEdit.entidadPagadora != null}" styleClass="derecha">
+									<h:outputText value="#{solicitudPrestaciones.getPrecioConsumo(prh)}" title="#{messages['prestaciones.precioxcantidad']}" />
+									<h:outputText value=" #{messages['simbolo.euro']}" rendered="#{solicitudPrestaciones.getPrecioConsumo(prh) != null}" />
+								</p:column>
+							</p:dataTable>
+						</s:div>
+						
+						<s:div styleClass="p-col-12 p-md-4" rendered="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'NO' and not empty solicitudPrestaciones.listaEquipos and (identity.tienePerfilEnServicio('SUPERVISOR', solicitudPrestaciones.servicioPrestacion.cod) or solicitudPrestaciones.esTecnicoSolicitud())}">
+							<p:outputLabel value="#{messages['prestaciones.add.equipo.title']}:" rendered="#{solicitudPrestaciones.operacionSetEquipos() or not empty solicitudPrestaciones.prestacionEdit.listaEquipos}"/>
+							<br/>
+							<p:commandButton type="button" title="#{messages['prestaciones.add.equipo']}" ariaLabel="#{messages['prestaciones.add.equipo']}" 
+											 value="#{messages['prestaciones.add.equipo']}" onclick="PF('dialogEquipoAdd').show();saveLastFocus(event);" rendered="#{solicitudPrestaciones.operacionSetEquipos()}" icon="fa fa-plus"/>
+							<p:dataTable id="tableEquipos" value="#{solicitudPrestaciones.prestacionEdit.listaEquipos}" rowHover="true"
+					 					 var="ce" tableStyleClass="tablaAuto fuente08" rendered="#{not empty solicitudPrestaciones.prestacionEdit.listaEquipos}">
+								<p:column headerText="#{messages['producto.productoequipo.equipo']}" >	
+									<h:outputText value="#{ce.equipo.descripcion}" title="#{messages['producto.productoequipo.equipo']}" />
+								</p:column>
+								<p:column headerText="#{messages['producto.productoequipo.minutos']}" styleClass="derecha">
+									<h:outputText value="#{solicitudPrestaciones.prestacionEdit.cantidad} x #{solicitudPrestaciones.getMinutosUsoByEquipo(ce.equipo)}" />
+								</p:column>
+								<p:column headerText="#{messages['prestaciones.muestra.accion']}" styleClass="centrado" rendered="#{solicitudPrestaciones.operacionSetEquipos()}">
+									<p:commandLink id="eliminarEquipo" process="@this" actionListener="#{solicitudPrestaciones.eliminarConsumoEquipo(ce)}" update="@form" 
+												   title="#{messages['value.delete']}" ariaLabel="#{messages['value.delete']}" >
+										<em class="fa fa-trash fuente17" />
+										<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['prestaciones.equipo.del.confirm']}" icon="ui-icon-alert" />
+									</p:commandLink>
+							 	</p:column>
+							</p:dataTable>
+						</s:div>
+						
+					</s:fragment>				
+				</s:div>
+				<s:fragment rendered="#{solicitudPrestaciones.prestacionEdit.cod != null}">
+					<s:div styleClass="p-grid ui-fluid" rendered="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'NO'}">
+						<s:div styleClass="p-col-4 p-md-4" rendered="#{solicitudPrestaciones.operacionComentarFacturacion()}">
+							<p:outputLabel for="comentarioFacturacionEdicion" value="#{messages['fungibles.comentariofacturacion']}:" />
+							<p:inputTextarea id="comentarioFacturacionEdicion" value="#{solicitudPrestaciones.prestacionEdit.comentarioFacturacion}" rows="2" maxlength="4000" title="#{messages['fungibles.comentariofacturacion']}"/>
+						</s:div>
+						<s:div styleClass="p-col-4 p-md-4" rendered="#{solicitudPrestaciones.prestacionEdit.estado == 'Finalizado' or solicitudPrestaciones.operacionFinalizar()}">
+							<p:outputLabel for="comentarioRes" value="#{messages['prestaciones.comentarioRes']}:"  />
+							<p:inputTextarea id="comentarioRes" title="#{messages['prestaciones.comentarioRes']}" value="#{solicitudPrestaciones.prestacionEdit.comentarioResolucion}" rows="2" maxlength="4000"
+											 disabled="#{!solicitudPrestaciones.operacionModificar()}"/>
+						</s:div>
+						<s:div styleClass="p-col-2 p-md-2" rendered="#{solicitudPrestaciones.prestacionEdit.fechaResolucion != null}">
+							<p:outputLabel value="#{messages['prestaciones.fecharesolucion']}:"/>
+							<br/>
+							<h:outputText  value="#{solicitudPrestaciones.prestacionEdit.fechaResolucion}" title="#{messages['prestaciones.fecharesolucion']}" styleClass="margen5" >
+								<f:convertDateTime type="date" pattern="dd/MM/yyyy"/>
+							</h:outputText>
+						</s:div>
+					</s:div>
+					<br/>
+					<div class="p-grid">
+						<s:div styleClass="p-col-5 p-md-5" rendered="#{solicitudPrestaciones.prestacionEdit.bitacoraUsuario != null}">
+							<p:panel id="panelHistorico" header="#{messages['prestaciones.historico']}" >
+								<h:outputText title="#{messages['prestaciones.historico']}" value="#{solicitudPrestaciones.prestacionEdit.bitacoraUsuario}" escape="false" styleClass="fuente08"/>
+							</p:panel>
+						</s:div>
+						<s:div styleClass="p-col-5 p-md-5 " rendered="#{solicitudPrestaciones.prestacionEdit.bitacora != null and (identity.tienePerfilEnServicio('SUPERVISOR',solicitudPrestaciones.servicioPrestacion.cod) or solicitudPrestaciones.esTecnicoSolicitud())}">
+							<p:panel id="panelHistoricoPriv" header="#{messages['prestaciones.historicoPriv']}"  >
+								<h:outputText title="#{messages['prestaciones.historicoPriv']}" value="#{solicitudPrestaciones.prestacionEdit.bitacora}" escape="false" styleClass="fuente08"/>
+							</p:panel>
+						</s:div>
+						<s:div styleClass="p-col-2 p-md-2" rendered="#{solicitudPrestaciones.operacionComentar()}">
+							<p:commandButton id="buttonAddComentario" ajax="true" title="#{messages['reservas.comentario.add']}" ariaLabel="#{messages['reservas.comentario.add']}"
+											 icon="fa fa-plus" value="#{messages['reservas.comentario.add']}" onclick="PF('dialogComentario').show();saveLastFocus(event);"
+											 process="@this"/>		
+						</s:div> 
+					</div>
+				</s:fragment>
+				<s:div styleClass="p-grid ui-fluid" rendered="#{solicitudPrestaciones.prestacionEdit.cod != null and solicitudPrestaciones.prestacionEdit.presupuesto == 'SI' and solicitudPrestaciones.prestacionEdit.consumoPadre == null}">
+					<s:fragment rendered="#{solicitudPrestaciones.mostrarImportesTotales()}">
+						<s:fragment rendered="#{solicitudPrestaciones.prestacionEdit.producto.facturable == 'SI'}">
+							<div class="col-md-2">
+								<p:outputLabel value="#{messages['prestaciones.precio']}:"/>
+								<br/>
+								<s:fragment rendered="#{solicitudPrestaciones.getTarifaConsumo(solicitudPrestaciones.prestacionEdit) != null}">
+									<h:outputText value="#{solicitudPrestaciones.getTarifaConsumo(solicitudPrestaciones.prestacionEdit)}" title="#{messages['prestaciones.precio']}" styleClass="margen5 negrita"/>
+									<h:outputText value=" #{messages['simbolo.euro']}" styleClass="negrita"/>
+								</s:fragment>	
+								<h:outputText value="#{messages['producto.sintarifas']}" styleClass="margen5 textoAlerta negrita" rendered="#{solicitudPrestaciones.getTarifaConsumo(solicitudPrestaciones.prestacionEdit) == null}"/>
+							</div>
+							<div class="col-md-2">
+								<p:outputLabel value="#{messages['producto.factorconversion']}:"/>
+								<br/>
+								<h:outputText value="x #{solicitudPrestaciones.prestacionEdit.producto.factor}" styleClass="margen5 negrita" rendered="#{solicitudPrestaciones.prestacionEdit.producto.factor != null}"/>
+								<h:outputText value="x 1" styleClass="margen5 negrita" rendered="#{solicitudPrestaciones.prestacionEdit.producto.factor == null}"/>
+							</div>
+							<div class="col-md-2">
+								<p:outputLabel value="#{messages['prestaciones.precioxcantidad']}:"/>
+								<br/>
+								<s:fragment rendered="#{solicitudPrestaciones.getPrecioConsumo(solicitudPrestaciones.prestacionEdit) != null}">
+									<h:outputText value="#{solicitudPrestaciones.getPrecioConsumo(solicitudPrestaciones.prestacionEdit)}" title="#{messages['prestaciones.precioxcantidad']}" styleClass="margen5 negrita"/>
+									<h:outputText value=" #{messages['simbolo.euro']}" styleClass="negrita" />
+								</s:fragment>	
+								<h:outputText value="#{messages['producto.sintarifas']}" styleClass="textoAlerta negrita" rendered="#{solicitudPrestaciones.getPrecioConsumo(solicitudPrestaciones.prestacionEdit) == null}"/>
+							</div>
+						</s:fragment>
+						<s:div styleClass="col-md-2" rendered="#{not empty solicitudPrestaciones.getConsumosHijos()}">
+							<p:outputLabel value="#{messages['prestaciones.precioxcantidad.conconsumoshijos']}:"/>
+							<br/>
+							<h:outputText value="#{solicitudPrestaciones.getPrecioConsumoConHijos()}" title="#{messages['prestaciones.precioxcantidad']}" styleClass="margen5 negrita"/>
+							<h:outputText value=" #{messages['simbolo.euro']}" styleClass="negrita"/>
+						</s:div>
+					</s:fragment>
+					<s:div styleClass="p-col-2 p-md-2" rendered="#{solicitudPrestaciones.operacionModificar() and (identity.tienePerfilEnServicio('SUPERVISOR', solicitudPrestaciones.servicioPrestacion.cod) or solicitudPrestaciones.esTecnicoSolicitud())}">
+						<p:outputLabel value="#{messages['prestaciones.finvalidezpresupuesto']}:"/>
+						<br/>
+						<p:calendar id="fechaFinValidezPresupuesto" title="#{messages['prestaciones.finvalidezpresupuesto']}" label="#{messages['prestaciones.finvalidezpresupuesto']}"
+							 		value="#{solicitudPrestaciones.prestacionEdit.finValidezPresupuesto}" pattern="dd/MM/yyyy" mask="99/99/9999" locale="es" size="10" maxlength="10"/>
+					</s:div>
+					<s:div styleClass="p-col-2 p-md-2" rendered="#{!solicitudPrestaciones.operacionModificar() and solicitudPrestaciones.prestacionEdit.finValidezPresupuesto != null}">
+						<p:outputLabel value="#{messages['prestaciones.finvalidezpresupuesto']}:"/>
+						<br/>
+						<h:outputText  value="#{solicitudPrestaciones.prestacionEdit.finValidezPresupuesto}" title="#{messages['prestaciones.finvalidezpresupuesto']}" styleClass="margen5" >
+							<f:convertDateTime type="date" pattern="dd/MM/yyyy"/>
+						</h:outputText>
+					</s:div>
+				</s:div>
+				<br/>
+				<s:div styleClass="p-grid" rendered="#{solicitudPrestaciones.prestacionEdit.producto != null}">
+					<s:div styleClass="p-col-12">
+						<!-- Alta de consumos -->
+						<p:commandButton id="buttonCrear" action="#{solicitudPrestaciones.crearSolicitud}" process="@form" title="#{messages['prestaciones.crear.detalles']}" ariaLabel="#{messages['prestaciones.crear.detalles']}"
+										 styleClass="botonVerde" value="#{messages['prestaciones.crear']}" update="@form :messages" icon="fa fa-save" oncomplete="haCambiado=false;"
+										 rendered="#{solicitudPrestaciones.prestacionEdit.cod == null and solicitudPrestaciones.operacionGuardar() and solicitudPrestaciones.prestacionEdit.presupuesto == 'NO'}">
+							<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['prestaciones.crear.confirm']}" icon="ui-icon-alert" />
+						</p:commandButton>
+						<!-- Alta de presupuestos -->
+						<p:commandButton id="buttonPresupuestoCrear" action="#{solicitudPrestaciones.crearSolicitud}" process="@form" 
+										 value="#{solicitudPrestaciones.prestacionEdit.consumoPadre == null ? messages['prestaciones.crear'] : messages['presupuestos.hijo.crear']}"
+										 title="#{solicitudPrestaciones.prestacionEdit.consumoPadre == null ? messages['prestaciones.presupuesto.crear.detalles'] : messages['presupuestos.hijo.crear.prestacion.detalles']}" 
+										 ariaLabel="#{solicitudPrestaciones.prestacionEdit.consumoPadre == null ? messages['prestaciones.presupuesto.crear.detalles'] : messages['presupuestos.hijo.crear.prestacion.detalles']}"
+										 styleClass="botonVerde"  update="@form :messages" icon="fa fa-save" oncomplete="haCambiado=false;"
+										 rendered="#{solicitudPrestaciones.prestacionEdit.cod == null and solicitudPrestaciones.operacionGuardar() and solicitudPrestaciones.prestacionEdit.presupuesto == 'SI'}">
+							<p:confirm header="#{messages['fungibles.confirmar']}" message="#{solicitudPrestaciones.prestacionEdit.consumoPadre == null ? messages['prestaciones.presupuesto.crear.confirm'] : messages['presupuestos.hijo.crear.prestacion.confirm']}" icon="ui-icon-alert" />
+						</p:commandButton>
+						<s:fragment id="fragmentBotonesEdicion" rendered="#{solicitudPrestaciones.prestacionEdit.cod != null}">
+							<!-- Edición de consumos (Modificar compartido con presupuestos) -->
+							<p:commandButton id="buttonModificar" action="#{solicitudPrestaciones.modificarSolicitud}" process="@form" update="@form :messages" 
+											 value="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'NO' ? messages['prestaciones.modificar'] : messages['presupuestos.hijo.modificar']}" 
+											 title="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'NO' ? messages['prestaciones.modificar.detalles'] : messages['presupuestos.hijo.modificar.detalles']}" 
+											 ariaLabel="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'NO' ? messages['prestaciones.modificar.detalles'] : messages['presupuestos.hijo.modificar.detalles']}"
+											 styleClass="botonVerde" icon="fa fa-save" oncomplete="haCambiado=false;"
+											 rendered="#{solicitudPrestaciones.operacionModificar()}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'NO' ? messages['prestaciones.modificar.confirm'] : messages['presupuestos.hijo.modificar.confirm']}" icon="ui-icon-alert" />
+							</p:commandButton>
+							<p:commandButton id="buttonValidarIr" action="#{solicitudPrestaciones.validarIr}" process="@form" title="#{messages['prestaciones.validarir.detalles']}" ariaLabel="#{messages['prestaciones.validarir.detalles']}" 
+											 styleClass="botonVerde" value="#{messages['prestaciones.validarir']}" update="@form :messages" icon="fa fa-check-circle-o" oncomplete="haCambiado=false;"
+											 rendered="#{solicitudPrestaciones.operacionValidar()}">
+								<p:confirm header="#{messages['prestaciones.validar']}" message="#{messages['prestaciones.validarir.confirm']}" icon="ui-icon-alert" />
+							</p:commandButton>
+							<p:commandButton id="buttonValidar" action="#{solicitudPrestaciones.validar}" process="@form" title="#{messages['prestaciones.validar.detalles']}" ariaLabel="#{messages['prestaciones.validar.detalles']}" 
+											 styleClass="botonVerde" value="#{messages['prestaciones.validar']}" update="@form :messages" icon="fa fa-check" oncomplete="haCambiado=false;"
+											 rendered="#{solicitudPrestaciones.operacionAceptar()}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['prestaciones.validar.confirm']}" icon="ui-icon-alert" />
+							</p:commandButton>
+							<p:commandButton id="buttonReactivar" action="#{solicitudPrestaciones.reactivar}" process="@form" title="#{messages['prestaciones.reactivar.detalles']}" ariaLabel="#{messages['prestaciones.reactivar.detalles']}" 
+				 							 styleClass="botonVerde" value="#{messages['prestaciones.reactivar']}" update="@form" icon="fa fa-undo" oncomplete="haCambiado=false;"
+				 							 rendered="#{solicitudPrestaciones.operacionReactivar()}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['prestaciones.reactivar.confirm']}" icon="ui-icon-alert" />
+							</p:commandButton>
+							<p:commandButton id="buttonReadmitir" action="#{solicitudPrestaciones.readmitir}" process="@this" title="#{messages['prestaciones.readmitir.detalles']}" ariaLabel="#{messages['prestaciones.readmitir.detalles']}"
+											 styleClass="botonVerde" value="#{messages['prestaciones.readmitir']}" update="@form :messages" icon="fa fa-undo" oncomplete="haCambiado=false;"
+											 rendered="#{solicitudPrestaciones.operacionReadmitir()}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['prestaciones.readmitir.confirm']}" icon="ui-icon-alert" />
+							</p:commandButton>
+							<p:commandButton id="buttonFinalizar" action="#{solicitudPrestaciones.finalizar}" process="@form" title="#{prestaciones.esFinalizacionParcial() ? messages['prestaciones.finalizarparcial.detalles'] : messages['prestaciones.finalizar.detalles']}"
+											 ariaLabel="#{prestaciones.esFinalizacionParcial() ? messages['prestaciones.finalizarparcial.detalles'] : messages['prestaciones.finalizar.detalles']}"
+											 styleClass="botonVerde" value="#{prestaciones.esFinalizacionParcial() ? messages['prestaciones.finalizarparcial'] : messages['prestaciones.finalizar']}"
+											 update="@form :messages" icon="fa fa-arrow-down" oncomplete="haCambiado=false;"
+											 rendered="#{solicitudPrestaciones.operacionFinalizar()}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{prestaciones.esFinalizacionParcial() ? messages['prestaciones.finalizarparcial.confirm'] : messages['prestaciones.finalizar.confirm']}" icon="ui-icon-alert" />
+							</p:commandButton>
+							<p:commandButton id="buttonAnular" action="#{solicitudPrestaciones.anular}" process="@this" update="@form :messages" 
+											 value="#{messages['prestaciones.anular']}"
+											 title="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'NO' ? messages['prestaciones.anular.detalles'] : messages['presupuestos.hijo.anular.prestacion.detalles']}" 
+											 ariaLabel="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'NO' ? messages['prestaciones.anular.detalles'] : messages['presupuestos.hijo.anular.prestacion.detalles']}"  
+			 							     styleClass="botonRojo" icon="fa fa-times" oncomplete="haCambiado=false;"
+			 							     rendered="#{solicitudPrestaciones.operacionAnular()}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'NO' ? messages['prestaciones.anular.confirm'] : messages['presupuestos.hijo.anular.prestacion.confirm']}" icon="ui-icon-alert" />
+							</p:commandButton>
+							<p:commandButton id="buttonRechazar" action="#{solicitudPrestaciones.rechazar}" process="@this" title="#{messages['prestaciones.rechazar.detalles']}" ariaLabel="#{messages['prestaciones.rechazar.detalles']}"
+			 								 styleClass="botonRojo" value="#{messages['prestaciones.rechazar']}" update="@form :messages" icon="fa fa-ban" oncomplete="haCambiado=false;"
+			 								 rendered="#{solicitudPrestaciones.operacionRechazar()}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['prestaciones.rechazar.confirm']}" icon="ui-icon-alert" />
+							</p:commandButton>
+							<!-- Edición de presupuestos -->
+							<p:commandButton id="buttonPresupuestoEnviarIr" action="#{solicitudPrestaciones.enviarPresupuestoIr}" process="@form" title="#{messages['prestaciones.presupuesto.enviarir.detalles']}" ariaLabel="#{messages['prestaciones.presupuesto.enviarir.detalles']}" 
+											 styleClass="botonVerde" value="#{messages['prestaciones.presupuesto.enviarir']}" update="@form :messages" icon="fa fa-check" oncomplete="haCambiado=false;"
+											 rendered="#{solicitudPrestaciones.operacionPresupuestoEnviarAIr()}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['prestaciones.presupuesto.enviarir.confirm']}" icon="ui-icon-alert" />
+							</p:commandButton>
+							<p:commandButton id="buttonPresupuestoAceptar" action="#{solicitudPrestaciones.aceptarPresupuesto}" process="@form" title="#{messages['prestaciones.presupuesto.aceptar.detalles']}" ariaLabel="#{messages['prestaciones.presupuesto.aceptar.detalles']}" 
+											 styleClass="botonVerde" value="#{messages['prestaciones.presupuesto.aceptar']}" update="@form :messages" icon="fa fa-check" oncomplete="haCambiado=false;"
+											 rendered="#{solicitudPrestaciones.operacionPresupuestoAceptarPorIr()}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['prestaciones.presupuesto.aceptar.confirm']}" icon="ui-icon-alert" />
+							</p:commandButton>
+							<p:commandButton id="buttonPresupuestoReabrir" action="#{solicitudPrestaciones.estableceModoComentarioReabrirRechazar('REABRIR')}" process="@this" title="#{messages['prestaciones.presupuesto.reabrir.detalles']}" ariaLabel="#{messages['prestaciones.presupuesto.reabrir.detalles']}"
+											 styleClass="botonVerde" value="#{messages['prestaciones.presupuesto.reabrir']}" update="@form :formAddComentarioReabrirRechazar :messages" icon="fa fa-undo" oncomplete="PF('dialogComentarioReabrirRechazar').show(); saveLastFocus(event);"
+											 rendered="#{solicitudPrestaciones.operacionPresupuestoReabrir()}"/>
+							<p:commandButton id="buttonPresupuestoReactivar" action="#{solicitudPrestaciones.reactivarPresupuesto}" process="@form" title="#{messages['prestaciones.presupuesto.reactivar.detalles']}" ariaLabel="#{messages['prestaciones.presupuesto.reactivar.detalles']}" 
+				 							 styleClass="botonVerde" value="#{messages['prestaciones.reactivar']}" update="@form" icon="fa fa-undo" oncomplete="haCambiado=false;"
+				 							 rendered="#{solicitudPrestaciones.operacionPresupuestoReactivar()}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['prestaciones.presupuesto.reactivar.confirm']}" icon="ui-icon-alert" />
+							</p:commandButton>
+							<p:commandButton id="buttonPresupuestoAnular" action="#{solicitudPrestaciones.anularPresupuesto}" process="@this" title="#{messages['prestaciones.presupuesto.anular.detalles']}" ariaLabel="#{messages['prestaciones.presupuesto.anular.detalles']}"  
+			 							     styleClass="botonRojo" value="#{messages['prestaciones.anular']}" update="@form :messages" icon="fa fa-times" oncomplete="haCambiado=false;"
+			 							     rendered="#{solicitudPrestaciones.operacionPresupuestoAnular()}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['prestaciones.presupuesto.anular.confirm']}" icon="ui-icon-alert" />
+							</p:commandButton>
+							<p:commandButton id="buttonPresupuestoRechazar" action="#{solicitudPrestaciones.estableceModoComentarioReabrirRechazar('RECHAZAR')}" process="@this" title="#{messages['prestaciones.presupuesto.rechazar.detalles']}" ariaLabel="#{messages['prestaciones.presupuesto.rechazar.detalles']}"
+			 								 styleClass="botonRojo" value="#{messages['prestaciones.presupuesto.rechazar']}" update="@form :formAddComentarioReabrirRechazar :messages" icon="fa fa-ban" oncomplete="PF('dialogComentarioReabrirRechazar').show(); saveLastFocus(event);"
+			 								 rendered="#{solicitudPrestaciones.operacionPresupuestoRechazarPorIr()}"/>
+							<p:commandButton id="buttonPresupuestoClonar" action="#{solicitudPrestaciones.clonarPresupuesto}" process="@form" title="#{messages['prestaciones.presupuesto.clonar.detalles']}" ariaLabel="#{messages['prestaciones.presupuesto.clonar.detalles']}" 
+											 value="#{messages['prestaciones.presupuesto.clonar']}" update="@form :messages" icon="fa fa-files-o" oncomplete="haCambiado=false;"
+											 rendered="#{solicitudPrestaciones.operacionPresupuestoClonar()}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['prestaciones.presupuesto.clonar.confirm']}" icon="ui-icon-alert" />
+							</p:commandButton>
+						</s:fragment>
+					</s:div>	
+				</s:div>					
+			</h:form>
+			<h:form id="formImprimir" target="_blank">
+				<s:div styleClass="p-grid" rendered="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'NO'}">
+					<div class="p-col-12">
+						<p:commandButton id="buttonImprimir" rendered="#{solicitudPrestaciones.prestacionEdit.cod != null}" action="#{misSolicitudes.obtenerConsumoHtml(solicitudPrestaciones.prestacionEdit.cod)}" 
+										 ajax="false" update=":messages" icon="fa fa-print" ariaLabel="#{messages['value.print']}"
+										 title="#{messages['value.print']}" value="#{messages['value.print']}"/>
+					</div>
+				</s:div>	
+			</h:form>
+			<h:form id="formRetorno">
+				<div class="p-grid">	
+					<s:div styleClass="p-col-12">				
+						<p:commandButton id="buttonVolver" icon="fa fa-reply" action="#{solicitudPrestaciones.volverListado}" ajax="false" process="@this"
+										 value="#{messages['value.return.listado']}" title="#{messages['value.return.listado']}" ariaLabel="#{messages['value.return.listado']}"
+										 onclick="if (haCambiado) {return confirm('Debe pulsar en Guardar Solicitud para guardar los cambios. Si continúa perderá los cambios realizados. ¿Seguro que desea volver?');}"
+										 rendered="#{solicitudPrestaciones.prestacionEdit.cod != null and solicitudPrestaciones.accesoDesdeListado}"/>
+						<p:commandButton id="buttonVolverPadre" icon="fa fa-arrow-up" action="#{solicitudPrestaciones.volverConsumoPadre}" ajax="false" process="@this"
+										 value="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'NO' ? messages['fungibles.volver.consumopadre'] : messages['presupuestos.volver.consumopadre']}"
+										 title="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'NO' ? messages['fungibles.volver.consumopadre'] : messages['presupuestos.volver.consumopadre']}" 
+										 ariaLabel="#{solicitudPrestaciones.prestacionEdit.presupuesto == 'NO' ? messages['fungibles.volver.consumopadre'] : messages['presupuestos.volver.consumopadre']}"
+										 onclick="if (haCambiado) {return confirm('Debe pulsar en Guardar Solicitud para guardar los cambios. Si continúa perderá los cambios realizados. ¿Seguro que desea volver?');}"
+										 rendered="#{solicitudPrestaciones.prestacionEdit.consumoPadre != null}"/>
+					</s:div>
+				</div>		
+			</h:form>	
+		</p:panel>		
+
+		<h:form id="formConfirm">
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<p:commandButton label="#{messages['value.yes']}" title="#{messages['value.yes']}" ariaLabel="#{messages['value.yes']}" value="#{messages['value.yes']}" type="button"
+					 			 styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton label="#{messages['value.no']}" title="#{messages['value.no']}" ariaLabel="#{messages['value.no']}" value="#{messages['value.no']}" type="button"
+								 styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+		</h:form>
+			
+		<p:dialog header="#{messages['prestaciones.add.anexo']}" widgetVar="dialogAnexoAdd" modal="true" width="60%" onHide="goToLastFocus();">
+			<h:form id="formAnexoAdd">				
+				<div class="p-grid ui-fluid">
+					<div class="p-col-4 p-md-4">			
+   						<p:outputLabel for="anexoAdd" value="#{messages['prestaciones.anexo.documento']}:" title="#{messages['prestaciones.anexo.documento']}" />
+   						<br/>
+   						<p:fileUpload id="anexoAdd" label="#{messages['prestaciones.seleccionar']}" value="#{solicitudPrestaciones.ficheroAnexoPrestacion}" process="@this" 
+   									  fileUploadListener="#{solicitudPrestaciones.subidoFicheroAnexo}" required="true" requiredMessage="#{messages['prestaciones.reqMessage']}" 
+   									  converterMessage="#{messages['anexos.fileallowed']}" invalidFileMessage="#{messages['anexos.fileallowed']}" auto="true" 
+									  update="@form" mode="advanced" skinSimple="true" allowTypes="/(\.|\/)(xls|docx|doc|pdf|ppt|pptx|xlsx|tiff|txt|zip|rar)$/"/>
+						<p:messages for="anexoAdd" showDetail="true" />
+						<br/>
+						<h:outputText value="#{solicitudPrestaciones.ficheroAnexoPrestacion.fileName}" rendered="#{solicitudPrestaciones.ficheroAnexoPrestacion != null}"/>
+   					</div>
+					<div class="p-col-8 p-md-8">
+						<p:outputLabel for="comentarioAnexoAdd" value="#{messages['prestaciones.anexo.comentario']}:"/>	
+						<br/>
+						<p:inputTextarea id="comentarioAnexoAdd" value="#{solicitudPrestaciones.comentarioAnexoAdd}" title="#{messages['prestaciones.anexo.comentario']}" rows="2" maxlength="400"/>									
+					</div>
+				</div>
+				<br/>
+				<div class="p-grid">								
+					<div class="p-col-12">
+						<p:commandButton id="buttonAddAnexo" value="#{messages['value.save']}" title="#{messages['prestaciones.anexo.add.detalles']}" ariaLabel="#{messages['prestaciones.anexo.add.detalles']}" 
+										 action="#{solicitudPrestaciones.guardarAnexo()}" oncomplete="comprobarArgsModal(xhr, status, args, 'dialogAnexoAdd');"
+										 process="@form" update="@form :formPrestacionEdit :messages" icon="fa fa-floppy-o">
+							<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['prestaciones.anexo.add.confirm']}" icon="ui-icon-alert" />
+						</p:commandButton>				 
+						<p:commandButton id="buttonCancelAddAnexo" value="#{messages['value.cancel']}" title="#{messages['value.cancel']}" ariaLabel="#{messages['value.cancel']}"
+								  		 type="button" onclick="PF('dialogAnexoAdd').hide();" icon="fa fa-times"/>
+					</div>
+				</div>	
+			</h:form>
+		</p:dialog>			
+
+		<p:dialog header="#{messages['prestaciones.add.muestra']}" widgetVar="dialogMuestraAdd" modal="true" width="60%" onHide="goToLastFocus();">    																	
+			<h:form id="formMuestraAdd">				
+				<div class="p-grid ui-fluid">
+					<div class="p-col-4 p-md-4">			
+						<p:outputLabel for="referenciaMuestraAdd" value="#{messages['prestaciones.muestra.referencia']}:" />
+						<br/>
+	    				<p:inputText id="referenciaMuestraAdd" value="#{solicitudPrestaciones.muestraAdd.referencia}" title="#{messages['prestaciones.muestra.referencia']}" required="true" maxlength="10"/>									  
+    					<p:message for="referenciaMuestraAdd"/>
+					</div>
+					<div class="p-col-8 p-md-8 ">	
+						<p:outputLabel for="descripcionMuestraAdd" value="#{messages['prestaciones.muestra.descripcion']}:"/>	
+						<br/>
+						<p:inputTextarea id="descripcionMuestraAdd" value="#{solicitudPrestaciones.muestraAdd.descripcion}" rows="2" maxlength="200"/>									
+					</div>
+				</div>
+				<br/>
+				<div class="p-grid">
+					<div class="p-col-12">
+						<p:commandButton id="buttonAddMuestra" value="#{messages['value.save']}" title="#{messages['prestaciones.muestra.add.detalles']}" ariaLabel="#{messages['prestaciones.muestra.add.detalles']}"
+										 action="#{solicitudPrestaciones.guardarMuestra()}" oncomplete="comprobarArgsModal(xhr, status, args, 'dialogMuestraAdd');"									
+										 process="@form" update="@form :formPrestacionEdit :messages" icon="fa fa-floppy-o">
+							<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['prestaciones.muestra.add.confirm']}" icon="ui-icon-alert" />
+						</p:commandButton>				 
+						<p:commandButton id="buttonCancelAddMuestra" value="#{messages['value.cancel']}" title="#{messages['value.cancel']}" ariaLabel="#{messages['value.cancel']}"
+										 type="button" onclick="PF('dialogMuestraAdd').hide();" icon="fa fa-times"/>
+					</div>
+				</div>	
+			</h:form>
+		</p:dialog>			
+
+		<p:dialog header="#{messages['prestaciones.add.equipo']}" widgetVar="dialogEquipoAdd" modal="true" width="60%" onHide="goToLastFocus();">    																	
+			<h:form id="formEquipoAdd">				
+				<div class="p-grid ui-fluid">
+					<div class="p-col-4 p-md-4">			
+						<p:outputLabel for="equipo" value="#{messages['producto.productoequipo.equipo']}:" />
+						<br/>
+						<p:selectOneMenu id="equipo" value="#{solicitudPrestaciones.consumoEquipoAdd.equipo}" title="#{messages['producto.productoequipo.equipo']}" 
+										 filter="true" filterMatchMode="contains" required="true">
+							<f:selectItem itemLabel="#{messages['producto.productoequipo.equipo.seleccion']}" itemValue="" />
+							<f:selectItems var="_eq" value="#{solicitudPrestaciones.listaEquipos}" itemValue="#{_eq}"  
+										   itemLabel="#{_eq.descripcion} (#{solicitudPrestaciones.getMinutosUsoByEquipo(_eq)} #{messages['producto.productoequipo.minutos.min']})"/>									
+							<s:convertEntity />
+						</p:selectOneMenu>
+						<p:message for="equipo" />
+					</div>
+				</div>
+				<br/>
+				<div class="p-grid">
+					<div class="p-col-12">
+						<p:commandButton id="buttonAddEquipo" value="#{messages['value.save']}" title="#{messages['prestaciones.equipo.add.detalles']}" ariaLabel="#{messages['prestaciones.equipo.add.detalles']}"
+										 action="#{solicitudPrestaciones.guardarConsumoEquipo()}" oncomplete="comprobarArgsModal(xhr, status, args, 'dialogEquipoAdd');"									
+										 process="@form" update="@form :formPrestacionEdit :messages" icon="fa fa-floppy-o">
+							<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['prestaciones.equipo.add.confirm']}" icon="ui-icon-alert" />
+						</p:commandButton>				 
+						<p:commandButton id="buttonCancelAddEquipo" value="#{messages['value.cancel']}" title="#{messages['value.cancel']}" ariaLabel="#{messages['value.cancel']}"
+										 type="button" onclick="PF('dialogEquipoAdd').hide();" icon="fa fa-times"/>
+					</div>
+				</div>	
+			</h:form>
+		</p:dialog>	
+		
+		<p:dialog header="#{messages['prestaciones.add.consumohijo']}"  widgetVar="dialogConsumoHijoAdd" modal="true" width="40%"  onHide="goToLastFocus();">
+			<h:form id="formConsumoHijoAdd">
+				<div class="p-grid ui-fluid">
+					<div class="p-col-12 p-md-12 ">
+						<p:outputLabel for="radioConsumo" value="#{messages['prestaciones.tipoConsumo']}:" />
+						<br/>
+        				<p:selectOneRadio id="radioConsumo" value="#{solicitudPrestaciones.tipoConsumoAddHijo}" required="true">
+            				<f:selectItem itemLabel="#{messages['producto.fungible']}" itemValue="F" />
+            				<f:selectItem itemLabel="#{messages['producto.prestacion']}" itemValue="P" />
+            				<f:selectItem itemLabel="#{messages['producto.reserva']}" itemValue="R" />
+        				</p:selectOneRadio>
+        				<p:message for="radioConsumo"/>
+					</div>
+				</div>		
+				<br/>
+				<div class="p-grid">
+					<div class="p-col-12">
+						<p:commandButton id="buttonAddConsumoHijo" value="#{messages['value.add']}" ariaLabel="#{messages['value.add']}" title="#{messages['value.add']}"
+										 action="#{solicitudPrestaciones.addConsumoHijo}" oncomplete="comprobarArgsModal(xhr, status, args, 'dialogConsumoHijoAdd');" process="@form" update="@form :formPrestacionEdit" icon="fa fa-plus"/>
+						<p:commandButton id="buttonCancelAddConsumoHijo" value="#{messages['value.cancel']}" ariaLabel="#{messages['value.cancel']}" title="#{messages['value.cancel']}" 
+										 type="button" onclick="PF('dialogConsumoHijoAdd').hide();" icon="fa fa-times"/>
+					</div>
+				</div>				
+			</h:form>
+		</p:dialog>	
+
+		<p:dialog id="dialogComentario" header="#{messages['reservas.comentario.add']}" widgetVar="dialogComentario" modal="true" width="50%" onHide="goToLastFocus();">    																	
+			<h:form id="formAddComentario" styleClass="editFundeweb">
+				<div class="p-grid ui-fluid">
+					<div class="p-col-12 p-md-12 ">
+						<p:outputLabel for="comentarioDlg" value="#{messages['fungibles.comentario']}:" />
+						<br/>
+						<p:inputTextarea id="comentarioDlg" value="#{solicitudPrestaciones.comentarioAdd}" title="#{messages['fungibles.comentario']}" required="true" rows="2" maxlength="4000"/>
+					</div>
+				</div>	
+				<br/>
+				<div class="p-grid">
+					<div class="p-col-12">
+						<p:commandButton id="buttonGuardarBitacora" icon="fa fa-save" ajax="true" process="@form" update="@form :formPrestacionEdit :messages"
+										 value="#{messages['prestaciones.guardarCom']}" title="#{messages['prestaciones.guardarCom']}" ariaLabel="#{messages['prestaciones.guardarCom']}"
+										 action="#{solicitudPrestaciones.guardarBitacoraUsuario()}" oncomplete="comprobarArgsModal(xhr, status, args, 'dialogComentario'); haCambiado=false;">
+							<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['reservas.comentario.add.confirm']}" icon="ui-icon-alert" />
+						</p:commandButton>				 
+						<p:commandButton id="buttonGuardarBitacoraMail" icon="fa fa-envelope-o" ajax="true" process="@form" update="@form :formPrestacionEdit :messages"
+										 value="#{messages['prestaciones.guardarComMail']}" title="#{messages['prestaciones.guardarComMail']}" ariaLabel="#{messages['prestaciones.guardarComMail']}"
+										 action="#{solicitudPrestaciones.guardarBitacoraMail()}" oncomplete="comprobarArgsModal(xhr, status, args, 'dialogComentario'); haCambiado=false;"
+										 rendered="#{identity.tienePerfilEnServicio('SUPERVISOR',solicitudPrestaciones.prestacionEdit.producto.servicio.cod) or solicitudPrestaciones.esTecnicoSolicitud()}">
+							<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['reservas.comentario.email.add.confirm']}" icon="ui-icon-alert" />
+						</p:commandButton>
+						<p:commandButton id="buttonGuardarBitacoraPrivada" icon="fa fa-user-secret" ajax="true" process="@form" update="@form :formPrestacionEdit :messages"
+										 value="#{messages['prestaciones.guardarComPriv']}" title="#{messages['prestaciones.guardarComPriv']}" ariaLabel="#{messages['prestaciones.guardarComPriv']}"
+										 action="#{solicitudPrestaciones.guardarBitacora()}" oncomplete="comprobarArgsModal(xhr, status, args, 'dialogComentario'); haCambiado=false;"
+										 rendered="#{identity.tienePerfilEnServicio('SUPERVISOR',solicitudPrestaciones.prestacionEdit.producto.servicio.cod) or solicitudPrestaciones.esTecnicoSolicitud()}">	
+							<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['reservas.comentario.add.confirm']}" icon="ui-icon-alert"/>
+						</p:commandButton>				 
+						<p:commandButton id="buttonCancelarAddComentario" icon="fa fa-times" type="button" value="#{messages['label.cancel']}" title="#{messages['label.cancel']}"
+										 process="@this" ariaLabel="#{messages['label.cancel']}" onclick="PF('dialogComentario').hide();" />
+					</div>
+				</div>				
+			</h:form>
+		</p:dialog>	
+
+		<h:form id="formAddComentarioReabrirRechazar" styleClass="editFundeweb">
+			<p:dialog id="dialogComentarioReabrirRechazar" header="#{messages['reservas.comentario.add']}" widgetVar="dialogComentarioReabrirRechazar" modal="true" width="50%" onHide="goToLastFocus();">    																	
+				<div class="p-grid ui-fluid">
+					<div class="p-col-12 p-md-12 ">
+						<p:outputLabel for="comentarioDlg" value="#{messages['fungibles.comentario']}:" />
+						<br/>
+						<p:inputTextarea id="comentarioDlg" value="#{solicitudPrestaciones.comentarioAdd}" title="#{messages['fungibles.comentario']}" required="true" rows="2" maxlength="4000"/>
+					</div>
+				</div>	
+				<br/>
+				<div class="p-grid">
+					<s:div styleClass="p-col-12" >
+						<s:fragment rendered="#{solicitudPrestaciones.prestacionEdit.cod != null}">
+							<p:commandButton id="buttonPresupuestoReabrir" action="#{solicitudPrestaciones.reabrirPresupuesto}" process="@form" title="#{messages['prestaciones.presupuesto.reabrir.detalles']}" ariaLabel="#{messages['prestaciones.presupuesto.reabrir.detalles']}"
+											 styleClass="botonVerde" value="#{messages['prestaciones.presupuesto.reabrir']}" update="@form :formPrestacionEdit :messages" icon="fa fa-undo" oncomplete="comprobarArgsModal(xhr, status, args, 'dialogComentarioReabrirRechazar'); haCambiado=false;"
+											 rendered="#{solicitudPrestaciones.operacionPresupuestoReabrir() and solicitudPrestaciones.modoComentarioPresupuesto == 'REABRIR'}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['prestaciones.presupuesto.reabrir.confirm']}" icon="ui-icon-alert" />
+							</p:commandButton>
+							<p:commandButton id="buttonPresupuestoRechazar" action="#{solicitudPrestaciones.rechazarPresupuesto}" process="@form" title="#{messages['prestaciones.presupuesto.rechazar.detalles']}" ariaLabel="#{messages['prestaciones.presupuesto.rechazar.detalles']}"
+			 								 styleClass="botonRojo" value="#{messages['prestaciones.presupuesto.rechazar']}" update="@form :formPrestacionEdit :messages" icon="fa fa-ban" oncomplete="comprobarArgsModal(xhr, status, args, 'dialogComentarioReabrirRechazar'); haCambiado=false;"
+			 								 rendered="#{solicitudPrestaciones.operacionPresupuestoRechazarPorIr() and solicitudPrestaciones.modoComentarioPresupuesto == 'RECHAZAR'}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['prestaciones.presupuesto.rechazar.confirm']}" icon="ui-icon-alert" />
+							</p:commandButton>
+						</s:fragment>	
+						<p:commandButton id="buttonCancelarAddComentario" icon="fa fa-times" type="button" value="#{messages['label.cancel']}" title="#{messages['label.cancel']}"
+										 process="@this" ariaLabel="#{messages['label.cancel']}" onclick="PF('dialogComentarioReabrirRechazar').hide();" />
+					</s:div>
+				</div>				
+			</p:dialog>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

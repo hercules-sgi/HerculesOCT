@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/layout/template.xhtml">
+	<ui:define name="page-header">
+		<h1>
+			<h:outputText title="#{messages['equipos.productividad.title']}" value="#{messages['equipos.productividad.title']}" />
+		</h1>
+		<h2>
+			<h:outputText title="#{messages['equipos.productividad.subtitle']}" value="#{messages['equipos.productividad.subtitle']}" />
+		</h2>
+	</ui:define>
+
+	<ui:define name="body">
+		<p:panel>
+			<h:form id="formBusqueda">
+				<div class="p-grid ui-fluid">
+					<div class="p-col-12 p-sm-6 p-md-3 p-lg-2">
+						<p:outputLabel value="#{messages['fungible.service']}:" title="#{messages['fungible.service']}"	for="servicio" />
+						<br/>
+						<p:selectOneMenu id="servicio" value="#{productividadEquipos.servicioBuscar}" title="#{messages['fungible.service']}" 
+				 						 required="true" filter="true" filterMatchMode="contains" >
+							<f:selectItem itemValue="" itemLabel="#{messages['servicio.seleccion']}"/>
+							<f:selectItems value="#{productividadEquipos.listaServicios}" var="serv" itemValue="#{serv}" itemLabel="#{serv.nombre}" />
+							<s:convertEntity />
+							<p:ajax event="valueChange" listener="#{productividadEquipos.seleccionadoServicio()}" update="@form"/>
+						</p:selectOneMenu>
+						<p:message for="servicio"/>
+					</div>
+					<s:fragment rendered="#{productividadEquipos.servicioBuscar != null}">
+						<div class="p-col-12 p-sm-6 p-md-4 p-lg-3">
+							<p:outputLabel for="arrayEquipos" value="#{messages['equipos.productividad.equipos']}:" />
+							<br/>
+		               		<p:selectCheckboxMenu id="arrayEquipos" value="#{productividadEquipos.arrayEquiposBuscar}" filter="true" filterMatchMode="contains"
+		                        	      			  label="#{messages['equipos.productividad.equipos.todos']}"
+		                            	  			  multiple="true" updateLabel="true">
+	            				<f:selectItems value="#{productividadEquipos.listaEquipos}" var="equipo" itemLabel="#{equipo.descripcion}" />
+	        					<s:convertEntity/>
+	        				</p:selectCheckboxMenu>
+						</div>
+						<div class="p-col-12 p-sm-6 p-md-2 p-lg-1">
+							<p:outputLabel for="fechaDesde" value="#{messages['reservas.fechadesde']}:"/>
+							<br/>
+							<p:calendar id="fechaDesde" title="#{messages['reservas.fechadesde']}" label="#{messages['reservas.fechadesde']}"
+							 			value="#{productividadEquipos.fechaDesdeBuscar}" pattern="dd/MM/yyyy" mask="99/99/9999" size="10" maxlength="10" locale="es" />
+							<p:message for="fechaDesde"/>			
+						</div>
+						<div class="p-col-12 p-sm-6 p-md-2 p-lg-1">
+							<p:outputLabel for="fechaHasta" value="#{messages['reservas.fechahasta']}:"/>
+							<br/>
+							<p:calendar id="fechaHasta" title="#{messages['reservas.fechahasta']}" label="#{messages['reservas.fechahasta']}"
+							 			value="#{productividadEquipos.fechaHastaBuscar}" pattern="dd/MM/yyyy" mask="99/99/9999" size="10" maxlength="10" locale="es" />
+							 <p:message for="fechaHasta"/>			
+						</div>
+					</s:fragment>	
+				</div>			
+				<br/>
+				<div class="p-grid">
+					<div class="p-col-12">
+						<p:commandButton action="#{productividadEquipos.obtenerInforme()}" title="#{messages['equipos.productividad.informe.obtener']}" ariaLabel="#{messages['equipos.productividad.informe.obtener']}"
+										 value="#{messages['equipos.productividad.informe.obtener']}" icon="fa fa-search" ajax="true" process="@form" update="@form :formInforme" />
+						<p:commandButton action="#{productividadEquipos.limpiar}" title="#{messages['fungible.limpiar']}" ariaLabel="#{messages['fungible.limpiar']}"
+										 value="#{messages['fungible.limpiar']}" icon="fa fa-eraser" update="@form :formInforme"/>
+					</div>
+				</div>
+			</h:form>	
+			<br/>
+			<h:form id="formInforme">
+				<p:dataTable id="informeTable" value="#{productividadEquipos.informe}" var="inf" rendered="#{productividadEquipos.busquedaRealizada}"
+		 					 emptyMessage="#{messages['table.no.results']}" reflow="true" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							 rowsPerPageTemplate="10, 25, 50" paginatorPosition="bottom" paginatorAlwaysVisible="false" currentPageReportTemplate="{totalRecords} #{messages['table.registros']}" 
+							 tableStyleClass="tablaAuto fuente08" sortOrder="ASCENDING" sortBy="#{inf.equipo.descripcion}" rowHover="true" rows="25" >
+					<p:column headerText="#{messages['generico.equipo']}" sortBy="#{inf.equipo.descripcion}">
+						<p:commandLink value="#{inf.equipo.descripcion}" process="@this" action="#{equipoEdit.establecerEquipoEdit(inf.equipo)}" styleClass="enlaceTexto" 
+									   title="#{messages['equipos.equipo.editar']} #{inf.equipo.descripcion}" ariaLabel="#{messages['equipos.equipo.editar']} #{inf.equipo.descripcion}"/> 
+					</p:column>
+					<p:column headerText="#{messages['equipos.productividad.fechacompra.corto']}" sortBy="#{inf.equipo.fechaCompra}" styleClass="centrado">
+						<h:outputText value="#{inf.equipo.fechaCompra}" title="#{messages['equipos.productividad.fechacompra']}">
+							<f:convertDateTime pattern="dd/MM/yyyy" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="#{messages['equipos.productividad.sumpreventivas.corto']}" sortBy="#{inf.importePreventivas}" styleClass="derecha">
+						<h:outputText value="#{productividadEquipos.mostrarDosDec(inf.importePreventivas)} #{messages['simbolo.euro']}" title="#{messages['equipos.productividad.sumpreventivas']}"/>
+					</p:column>
+					<p:column headerText="#{messages['equipos.productividad.sumcorrectivas.corto']}" sortBy="#{inf.importeCorrectivas}" styleClass="derecha">
+						<h:outputText value="#{productividadEquipos.mostrarDosDec(inf.importeCorrectivas)} #{messages['simbolo.euro']}" title="#{messages['equipos.productividad.sumcorrectivas']}"/>
+					</p:column>
+					<p:column headerText="#{messages['equipos.productividad.sumevolutivas.corto']}" sortBy="#{inf.importeEvolutivas}" styleClass="derecha">
+						<h:outputText value="#{productividadEquipos.mostrarDosDec(inf.importeEvolutivas)} #{messages['simbolo.euro']}" title="#{messages['equipos.productividad.sumevolutivas']}"/>
+					</p:column>
+					<p:column headerText="#{messages['equipos.productividad.totalintervenciones.corto']}" sortBy="#{inf.importeTotalIntervenciones}" styleClass="derecha">
+						<h:outputText value="#{productividadEquipos.mostrarDosDec(inf.importeTotalIntervenciones)} #{messages['simbolo.euro']}" title="#{messages['equipos.productividad.totalintervenciones']}"/>
+					</p:column>
+					<p:column headerText="#{messages['equipos.productividad.numunidadesreserva.corto']}" sortBy="#{inf.numUnidadesReserva}" styleClass="derecha">
+						<h:outputText value="#{inf.numUnidadesReserva}" title="#{messages['equipos.productividad.numunidadesreserva']}"/>
+					</p:column>
+					<p:column headerText="#{messages['equipos.productividad.numunidadesprestacion.corto']}" sortBy="#{inf.numUnidadesPrestacion}" styleClass="derecha">
+						<h:outputText value="#{inf.numUnidadesPrestacion}" title="#{messages['equipos.productividad.numunidadesprestacion']}"/>
+					</p:column>
+					<p:column headerText="#{messages['equipos.productividad.numunidadestotal.corto']}" sortBy="#{inf.numUnidadesTotal}" styleClass="derecha">
+						<h:outputText value="#{inf.numUnidadesTotal}" title="#{messages['equipos.productividad.numunidadestotal']}"/>
+					</p:column>
+					<p:column headerText="#{messages['equipos.productividad.summinutosreserva.corto']}" sortBy="#{inf.minutosReserva}" styleClass="derecha">
+						<h:outputText value="#{inf.minutosReserva}" title="#{messages['equipos.productividad.summinutosreserva']}"/>
+					</p:column>
+					<p:column headerText="#{messages['equipos.productividad.summinutosprestacion.corto']}" sortBy="#{inf.minutosPrestacion}" styleClass="derecha">
+						<h:outputText value="#{inf.minutosPrestacion}" title="#{messages['equipos.productividad.summinutosprestacion']}"/>
+					</p:column>
+					<p:column headerText="#{messages['equipos.productividad.summinutostotal.corto']}" sortBy="#{inf.minutosTotal}" styleClass="derecha">
+						<h:outputText value="#{inf.minutosTotal}" title="#{messages['equipos.productividad.summinutostotal']}"/>
+					</p:column>
+					<p:column headerText="#{messages['equipos.productividad.importereservas.corto']}" sortBy="#{inf.importeReservas}" styleClass="derecha">
+						<h:outputText value="#{productividadEquipos.mostrarDosDec(inf.importeReservas)} #{messages['simbolo.euro']}" title="#{messages['equipos.productividad.importereservas']}"/>
+					</p:column>
+					<p:column headerText="#{messages['equipos.productividad.importeprestaciones.corto']}" sortBy="#{inf.importePrestaciones}" styleClass="derecha">
+						<h:outputText value="#{productividadEquipos.mostrarDosDec(inf.importePrestaciones)} #{messages['simbolo.euro']}" title="#{messages['equipos.productividad.importeprestaciones']}"/>
+					</p:column>
+					<p:column headerText="#{messages['equipos.productividad.importetotalconsumos.corto']}" sortBy="#{inf.importeTotalConsumos}" styleClass="derecha">
+						<h:outputText value="#{productividadEquipos.mostrarDosDec(inf.importeTotalConsumos)} #{messages['simbolo.euro']}" title="#{messages['equipos.productividad.importetotalconsumos']}"/>
+					</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:panel>
+	</ui:define>
+</ui:composition>
+
+</html>

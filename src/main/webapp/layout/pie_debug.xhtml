@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:s="http://jboss.org/schema/seam/taglib"
+	  xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+                 
+		<span id="pieDebugDiv">
+			Conversacion: id = #{conversation.id}, #{conversation.longRunning ? 'largo recorrido (long running)' : 'temporal'}#{conversation.nested ? ', anidada (nested), padre id = '.concat(conversation.parentId) : ''}. 
+			<p:commandLink onclick="PF('dialogDebug').show();" title="Debug INFO">
+		        Debug Info
+		    </p:commandLink> 	
+		</span>
+      
+       <!-- Modal -->
+	  <p:dialog id="modalDebug" header="Debug Info" widgetVar="dialogDebug" 
+	  	 modal="true" showEffect="fade" closeOnEscape="true" responsive="true">
+		     <h:form id="pieDebugForm">
+			      <div class="modal-body panel-dialog-body">
+			      <p><strong>Seam:</strong> <a href="#{'http://www.seamframework.org/Seam2'}" target="_blank">Seam</a> #{org.jboss.seam.version} </p> 
+			      <p><a href="#{'https://javaserverfaces.java.net/'}" target="_blank">JSF</a> #{environmentManagerBean.jsfVersion} - <a href="#{'http://primefaces.org/'}" target="_blank">PrimeFaces</a> #{environmentManagerBean.primefacesVersion} </p>
+			      <p>
+	            		<strong>Conversacion: id = #{conversation.id}, #{conversation.longRunning ? 'largo recorrido (long running)' : 'temporal'}#{conversation.nested ? ', anidada (nested), padre id = '.concat(conversation.parentId) : ''}</strong>
+	            		#{' - '}
+	            		Ajax4jsf Log (Ctrl+Shift+D)
+	             </p>
+	             <p>
+	            		<s:link id="debugConsole" view="/debug.xhtml" value="Consola Debug" target="debugConsole" propagation="none"/>
+	            		<br/>
+	            		<s:link id="resetSession"  view="/login.xhtml" action="#{org.jboss.seam.web.session.invalidate}" propagation="end" value="Terminar session"/>
+	            		<br/>
+	            		<h:commandButton action="#{resourceBundleManagerBean.reloadResourceBundle}" value="Recargar Mensajes" />
+	         		</p>					
+			      </div>
+			      <div class="modal-footer">
+			      		<p:commandButton value="Cerrar" icon="fa fa-times" onclick="PF('dialogDebug').hide();" title="Cerrar Panel"/>
+			      </div>
+		      </h:form>
+	 </p:dialog>
+      
+</ui:composition>
+
+</html>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/layout/template.xhtml">
+	<ui:define name="page-header">
+		<h1><h:outputText value="#{messages['tiporeservable.title']}" title="#{messages['tiporeservable.title']}" ></h:outputText></h1>
+		<h2><h:outputText value="#{messages['tiporeservable.subtitle']}" title="#{messages['tiporeservable.subtitle']}"></h:outputText></h2>
+	</ui:define>
+
+	<ui:define name="body">
+		<p:panel>
+			<h:form id="formTipoReservables">
+				<div class="p-grid ui-fluid">
+					<div class="p-col-12 p-sm-7 p-md-4 p-lg-3">
+						<p:outputLabel for="descri" value="#{messages['tiporeservable.description']}" />
+						<br/>
+						<p:inputText id="descri" value="#{tiposReservables.descripcionBuscar}" title="#{messages['tiporeservable.description']}" /> 
+					</div>
+					<div class="p-col-2">
+						<p:outputLabel for="servicio" value="#{messages['label.servicio']}" />
+						<p:selectOneMenu id="servicio" value="#{tiposReservables.servicioBuscar}" title="#{messages['label.servicio']}" 
+										 filter="true" filterMatchMode="contains">
+							<f:selectItem itemLabel="#{messages['servicio.cualquiera']}" itemValue="" />								
+							<f:selectItems value="#{tiposReservables.listaServicios}" var="servicio" 
+										   itemLabel="#{servicio.nombre}" itemValue="#{servicio}" />
+							<s:convertEntity />
+						</p:selectOneMenu>
+					</div>
+					<div class="p-col-1">
+						<p:outputLabel for="estado" value="#{messages['table.estado']}" />
+						<p:selectOneMenu id="estado" value="#{tiposReservables.estadoBuscar}" title="#{messages['table.estado']}" >
+							<f:selectItem itemValue="" itemLabel="#{messages['generico.cualquiera']}"/>
+							<f:selectItem itemValue="ALTA" itemLabel="ALTA"/>
+							<f:selectItem itemValue="BAJA" itemLabel="BAJA"/>
+						</p:selectOneMenu>
+					</div>
+				</div>	
+				<br/>			
+				<div class="p-grid">
+					<div class="p-col-12">
+						<p:commandButton id="buttonSearch" value="#{messages['label.buscar']}" title="#{messages['label.buscar']}"
+										 ariaLabel="#{messages['label.buscar']}" icon="fa fa-search" process="@form" 
+										 action="#{tiposReservables.buscar}" update="@form" />
+						<p:commandButton id="buttonClean" value="#{messages['label.clean']}" title="#{messages['label.clean']}"
+										 ariaLabel="#{messages['label.clean']}" icon="fa fa-eraser"
+										 process="@this" action="#{tiposReservables.limpiar}" update="@form" />
+					</div>
+				</div>
+				<br/>	
+				<p:dataTable value="#{tiposReservables.listaTiposReservables}" rows="25" reflow="true" emptyMessage="#{messages['label.empty_table']}"
+							 var="tr" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="false" styleClass="header-right"
+							 tableStyleClass="tablaAuto fuente08" rowHover="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							 rowsPerPageTemplate="10,25,50">
+					<f:facet name="header">
+						<p:commandLink action="#{tipoReservableEdit.establecerTipoReservableCreate()}" title="#{messages['tiporeservable.add']}" ariaLabel="#{messages['tiporeservable.add']}" styleClass="enlaceTexto">
+							<em class="fa fa-plus"/>#{' '} 
+							<h:outputText title="#{messages['tiporeservable.add']}" styleClass="enlaceAdd" value="#{messages['tiporeservable.add']}" />
+						</p:commandLink>							
+					</f:facet>
+					<p:column headerText="#{messages['tiporeservable.description']}" sortBy="#{tr.descripcion}">
+						<h:outputText value="#{tr.descripcion}" title="#{messages['tiporeservable.description']}" />
+					</p:column>
+					<p:column headerText="#{messages['tiporeservable.servicio']}" sortBy="#{tr.servicio.nombre}">
+						<h:outputText value="#{tr.servicio.nombre}" title="#{messages['tiporeservable.servicio']}" />
+					</p:column>
+					<p:column headerText="#{messages['tiporeservable.estado']}" styleClass="centrado" sortBy="#{tr.estado}">
+						<h:outputText value="#{tr.estado}" title="#{messages['tiporeservable.estado']}" />
+					</p:column>
+					<p:column id="dmin" styleClass="derecha" sortBy="#{tr.duracionMinima}">
+						<f:facet name="header">
+							<h:outputText value="#{messages['tiporeservable.duracionminima.corto']}" title="#{messages['tiporeservable.duracionminima.info']}" />
+						</f:facet>
+						<h:outputText value="#{tr.duracionMinima}" title="#{messages['tiporeservable.duracionminima.info']}" />
+					</p:column>
+					<p:column id="dante" styleClass="derecha" sortBy="#{tr.diasAntelacion}">
+						<f:facet name="header">
+							<h:outputText value="#{messages['tiporeservable.diasantelacion.corto']}" title="#{messages['tiporeservable.diasantelacion.info']}"/>
+						</f:facet>
+						<h:outputText value="#{tr.diasAntelacion}" title="#{messages['tiporeservable.diasantelacion.info']}" />
+					</p:column>
+					<p:column id="hante" styleClass="derecha" sortBy="#{tr.horasAntelacionMinima}">
+						<f:facet name="header">
+							<h:outputText value="#{messages['tiporeservable.diasantelacionminima.corto']}" title="#{messages['tiporeservable.diasantelacionminima.info']}"/>
+						</f:facet>
+						<h:outputText value="#{tr.horasAntelacionMinima}" title="#{messages['tiporeservable.diasantelacionminima.info']}" />
+					</p:column>
+					<p:column id="dias" styleClass="derecha" sortBy="#{tr.vistaMaxima}">
+						<f:facet name="header">
+							<h:outputText value="#{messages['tiporeservable.vistamaxima.corto']}" title="#{messages['tiporeservable.vistamaxima.info']}" />
+						</f:facet>
+						<h:outputText value="#{tr.vistaMaxima}" title="#{messages['tiporeservable.vistamaxima.info']}" />
+					</p:column>
+					<p:column id="hanul" styleClass="derecha" sortBy="#{tr.horasAnulacion}">
+						<f:facet name="header">
+							<h:outputText value="#{messages['tiporeservable.horasanulacion.corto']}" title="#{messages['tiporeservable.horasanulacion.title']}" />
+						</f:facet>
+						<h:outputText value="#{tr.horasAnulacion}" title="#{messages['tiporeservable.horasanulacion.title']}" rendered="#{tr.horasAnulacion != null}"/>
+						<h:outputText value="#{messages['tiporeservable.horasanulacion.vacio']}" title="#{messages['tiporeservable.horasanulacion.title']}" rendered="#{tr.horasAnulacion == null}"/>
+					</p:column>
+					<p:column id="minutosTecnico" >
+						<f:facet name="header">
+							<h:outputText value="#{messages['tiporeservable.minutostecnico.corto']}" title="#{messages['tiporeservable.minutostecnico.info']}" />
+						</f:facet>
+						<s:fragment id="fragmentEstandar" rendered="#{tr.minutosTecnico != null}" >
+							<p:outputLabel value="#{messages['tiporeservable.minutostecnicoestandar']}: " title="#{messages['tiporeservable.minutostecnico.info']}" styleClass="fuente09"/>
+							<h:outputText value="#{tr.minutosTecnico}" title="#{messages['tiporeservable.minutostecnico.info']}" styleClass="margen5 fuente09"/>
+							<br/>					
+						</s:fragment>
+						<s:fragment id="fragmentBajo" rendered="#{tr.minutosTecnicoBajo != null}">
+							<p:outputLabel value="#{messages['tiporeservable.minutostecnicobajo.corto']}: " title="#{messages['tiporeservable.minutostecnicobajo.info']}" styleClass="fuente09"/>
+							<h:outputText value="#{tr.minutosTecnicoBajo}" title="#{messages['tiporeservable.minutostecnicobajo.info']}" styleClass="margen5 fuente09"/>
+							<br/>					
+						</s:fragment>	
+						<s:fragment id="fragmentMedio" rendered="#{tr.minutosTecnicoMedio != null}">
+							<p:outputLabel value="#{messages['tiporeservable.minutostecnicomedio.corto']}: " title="#{messages['tiporeservable.minutostecnicomedio.info']}" styleClass="fuente09"/>
+							<h:outputText value="#{tr.minutosTecnicoMedio}" title="#{messages['tiporeservable.minutostecnicomedio.info']}" styleClass="margen5 fuente09"/>
+							<br/>					
+						</s:fragment>	
+						<s:fragment id="fragmentAlto" rendered="#{tr.minutosTecnicoAlto != null}">
+							<p:outputLabel value="#{messages['tiporeservable.minutostecnicoalto.corto']}: " title="#{messages['tiporeservable.minutostecnicoalto.info']}" styleClass="fuente09"/>
+							<h:outputText value="#{tr.minutosTecnicoAlto}" title="#{messages['tiporeservable.minutostecnicoalto.info']}" styleClass="margen5 fuente09"/>
+						</s:fragment>	
+					</p:column>
+					<p:column id="accion" headerText="#{messages['tiporeservable.accion']}" styleClass="centrado">
+						<p:commandLink id="buttonEditarReservable" title="#{messages['value.edit']}" ariaLabel="#{messages['value.edit']}" action="#{tipoReservableEdit.establecerTipoReservableEdit(tr)}">								
+							<em class="fa fa-edit fuente17" />
+						</p:commandLink>
+					</p:column>
+				</p:dataTable>				
+			</h:form>
+		</p:panel>
+	</ui:define>
+</ui:composition>
+
+</html>

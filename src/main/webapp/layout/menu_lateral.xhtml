@@ -1,0 +1,291 @@
+<h:form id="menuLateralForm" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" prependId="false"
+	xmlns:s="http://jboss.org/schema/seam/taglib">
+
+	<ul class="nav nav-list menuFundeweb">
+
+		<s:fragment rendered="#{identity.loggedIn}">
+			<li id="home">
+				<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/home.xhtml')}" ajax="false" 
+							   ariaLabel="#{messages['menu.home']}" styleClass="fuente115">
+					<em class="menu-icon fa fa-home" />#{' '}<span class="menu-text negrita">#{messages['menu.home']}</span>
+				</p:commandLink> 
+				<strong class="arrow" />
+			</li>
+		</s:fragment>
+		<s:fragment rendered="#{identity.tienePerfil('SUPERGESTOR')}">
+			<li id="menuSuperGestor">
+				<a href="#" class="dropdown-toggle fuente115" role="button" title="#{messages['menu.supergestor.title']}">
+					<em class="fa fa-user-circle-o fa-fw"/>#{' '}<span class="negrita">#{messages['menu.supergestor']}</span> <em class="fa fa-fw fa-angle-down negrita"/>
+				</a>
+				<ul class="collapse menuFundeweb">
+					<li id="submenuTipoTarifas">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/gestor/tipoTarifa.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-eur"/>#{' '}<span class="negrita">#{messages['menu.gestor.tipotarifas']}</span>
+						</p:commandLink>
+					</li>
+				</ul>
+			</li>
+		</s:fragment>
+
+		<s:fragment rendered="#{identity.tienePerfil('GESTOR')}">
+			<li id="menuGestor">
+				<a href="#" class="dropdown-toggle fuente115" role="button" title="#{messages['menu.gestor.title']}">
+					<em class="fa fa-user-circle fa-fw"/>#{' '}<span class="negrita">#{messages['menu.gestor']}</span> <em class="fa fa-fw fa-angle-down negrita"/>
+				</a>
+				<ul class="collapse">
+					<li id="submenuGestionUsuariosGestor">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/compartido/usuarios.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-users"/>#{' '}<span class="negrita">#{messages['menu.gestor.usuarios']}</span>
+						</p:commandLink>
+					</li>
+					<li id="submenuServicios">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/gestorsai/servicio.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-cogs" />#{' '}<span class="negrita">#{messages['menu.gestor.servicios']}</span>
+						</p:commandLink>
+					</li>
+					<li id="submenuUnidadesMedida">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/gestorsai/unidadMedida.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-thermometer" />#{' '}<span class="negrita">#{messages['menu.gestor.unidades']}</span>
+						</p:commandLink>
+					</li>
+				</ul>
+			</li>
+		</s:fragment>
+
+		<s:fragment rendered="#{identity.tienePerfil('SUPERVISOR')}">
+			<li id="menuSupervisor">
+				<a href="#" class="fuente115" role="button" title="#{messages['menu.supervisor.title']}">
+					<em class="fa fa-eye fa-fw"/>#{' '}<span class="negrita">#{messages['menu.supervisor']}</span> <em class="fa fa-fw fa-angle-down negrita"/>
+				</a>
+				<ul class="collapse">
+					<li id="submenuGestionUsuariosSupervisor">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/compartido/usuarios.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-users"/>#{' '}<span class="negrita">#{messages['menu.gestor.usuarios']}</span> 
+						</p:commandLink>
+					</li>
+					<li id="submenuProductos">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/supervisor/productos.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-archive"/>#{' '}<span class="negrita">#{messages['menu.supervisor.productos']}</span>
+						</p:commandLink>
+					</li>
+					<li id="submenuProyectos">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/compartido/proyectos.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-briefcase"/>#{' '}<span class="negrita">#{messages['menu.supervisor.proyectos']}</span>
+						</p:commandLink>
+					</li>
+					<li id="submenuFungibles">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/supervisor/fungibles.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-flask"/>#{' '}<span class="negrita">#{messages['menu.supervisor.fungibles']}</span>
+						</p:commandLink>
+					</li>
+					<li id="submenuTiposReservables">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/supervisor/tiposReservables.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-ticket"/>#{' '}<span class="negrita">#{messages['menu.supervisor.reservables']}</span>
+						</p:commandLink>
+					</li>
+					<li id="submenuEquipos">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/supervisor/equipos.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-laptop"/>#{' '}<span class="negrita">#{messages['menu.supervisor.equipos']}</span>
+						</p:commandLink>
+					</li>
+					<li id="submenuProductividadEquipos">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/supervisor/productividadEquipos.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-line-chart"/>#{' '}<span class="negrita">#{messages['menu.supervisor.productividadequipos']}</span>
+						</p:commandLink>
+					</li>
+					<li id="submenuHorarios">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/supervisor/tiposHorarios.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-calendar"/>#{' '}<span class="negrita">#{messages['menu.supervisor.horarios']}</span> 
+						</p:commandLink>
+					</li>
+					<li id="submenuSolicitudesSupervisor">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/compartido/misSolicitudes.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-folder-open"/>#{' '}<span class="negrita">#{messages['menu.supervisor.solicitudes']}</span> 
+						</p:commandLink>
+					</li>
+					<li id="submenuPresupuestosSupervisor">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/compartido/misSolicitudes.xhtml?esPresupuesto=SI')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-folder-open-o"/>#{' '}<span class="negrita">#{messages['menu.supervisor.presupuestos']}</span> 
+						</p:commandLink>
+					</li>
+					<li id="submenuResumenConsumos">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/supervisor/consumoResumen.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-bar-chart"/>#{' '}<span class="negrita">#{messages['menu.supervisor.consumoresumen']}</span>
+						</p:commandLink>
+					</li>
+					<li id="submenuEstadisticaConsumo">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/supervisor/estadisticaConsumo.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-signal"/>#{' '}<span class="negrita">#{messages['menu.supervisor.estadisticaConsumo']}</span>
+						</p:commandLink>
+					</li>
+				</ul>
+			</li>
+		</s:fragment>
+
+		<s:fragment rendered="#{identity.tienePerfil('ADMINISTRATIVO')}">
+			<li id="menuAdministrativo">
+				<a href="#" class="fuente115" role="button" title="#{messages['menu.administrativo.title']}">
+					<em class="fa fa-address-book-o"/>#{' '}<span class="negrita">#{messages['menu.administrativo']}</span> <em class="fa fa-fw fa-angle-down negrita"/>
+				</a>
+				<ul class="collapse">
+					<li id="submenuFacturas">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/administrativo/facturacion.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-file-text"/>#{' '}<span class="negrita">#{messages['menu.administrativo.facturas']}</span>
+						</p:commandLink>
+					</li>
+					<li id="submenuEntidades">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/administrativo/entidadesPagadoras.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-university"/>#{' '}<span class="negrita">#{messages['menu.administrativo.entidades']}</span> 
+						</p:commandLink>
+					</li>
+					<li id="submenuUsuariosIr">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/administrativo/usuariosIr.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-user-plus"/>#{' '}<span class="negrita">#{messages['menu.administrativo.usuariosir']}</span>
+						</p:commandLink>
+					</li>
+					<li id="submenuUsuariosPendientes">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/administrativo/usuariosPendientes.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-user-o"/>#{' '}<span class="negrita">#{messages['menu.administrativo.usuarios']}</span>
+						</p:commandLink>
+					</li>
+					<li id="submenuTipoCertificaciones">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/administrativo/tipoCertificacion.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-book"/>#{' '}<span class="negrita">#{messages['menu.administrativo.tipoCertificaciones']}</span>
+						</p:commandLink>
+					</li>
+					<li id="submenuCertificaciones">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/administrativo/certificacionBusqueda.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-check-square-o"/>#{' '}<span class="negrita">#{messages['menu.administrativo.certificaciones']}</span>
+						</p:commandLink>
+					</li>
+				</ul>
+			</li>
+		</s:fragment>
+		
+		<s:fragment rendered="#{identity.tienePerfil('IR')}">
+			<li id="menuIR">
+				<a href="#" class="fuente115" role="button" title="#{messages['menu.ir.title']}">
+					<em class="fa fa-user-md"/>#{' '}<span class="negrita">#{messages['menu.ir']}</span><em class="fa fa-fw fa-angle-down negrita"/>
+				</a>
+				<ul class="collapse">
+					<li id="submenuGestionUsuariosIr">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/compartido/usuarios.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-users"/>#{' '}<span class="negrita">#{messages['menu.ir.miembros']}</span>
+						</p:commandLink>
+					</li>
+					<li id="submenuProyectosIr">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/compartido/proyectos.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-briefcase"/>#{' '}<span class="negrita">#{messages['menu.supervisor.proyectos']}</span>
+						</p:commandLink>
+					</li>
+					<li id="submenuSolicitudesIr">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/compartido/misSolicitudes.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-folder-open"/>#{' '}<span class="negrita">#{messages['menu.ir.solicitudes']}</span>
+						</p:commandLink>
+					</li>
+					<li id="submenuPresupuestosIr">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/compartido/misSolicitudes.xhtml?esPresupuesto=SI')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-folder-open-o"/>#{' '}<span class="negrita">#{messages['menu.ir.presupuestos']}</span>
+						</p:commandLink>
+					</li>
+					<li id="submenuEstimacionConsumos">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/irproyecto/estimacion.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-calculator"/>#{' '}<span class="negrita">#{messages['menu.ir.estimacion']}</span>
+						</p:commandLink>
+					</li>
+				</ul>
+			</li>	
+		</s:fragment>
+		
+		<s:fragment rendered="#{identity.tienePerfil('TECNICO')}">
+			<li id="menuTecnico">
+				<a href="#" class="fuente115" role="button" title="#{messages['menu.tecnico.title']}">
+					<em class="fa fa-user"/>#{' '}<span class="negrita">#{messages['menu.tecnico']}</span><em class="fa fa-fw fa-angle-down negrita"/>
+				</a>
+				<ul class="collapse">
+					<li id="submenuSolicitudesTecnico">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/compartido/misSolicitudes.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-folder-open"/>#{' '}<span class="negrita">#{messages['menu.tecnico.solicitudes']}</span>
+						</p:commandLink>
+					</li>
+					<li id="submenuPresupuestosTecnico">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/compartido/misSolicitudes.xhtml?esPresupuesto=SI')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-folder-open-o"/>#{' '}<span class="negrita">#{messages['menu.tecnico.presupuestos']}</span>
+						</p:commandLink>
+					</li>
+				</ul>	
+			</li>
+		</s:fragment>
+		
+		<s:fragment rendered="#{identity.tienePerfil('SUPERVISOR') or identity.tienePerfil('IR') or identity.tienePerfil('TECNICO') or identity.tienePerfil('MIEMBRO')}" >
+			<li id="menuSolicitudes">
+				<a href="#" class="fuente115" role="button" title="#{messages['menu.solicitudes.title']}">
+					<em class="fa fa-folder-open"/>#{' '}<span class="negrita">#{messages['menu.solicitudes']}</span><em class="fa fa-fw fa-angle-down negrita"/>
+				</a>
+				<ul class="collapse">
+					<li id="submenuSolicitudFungible">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/solicitudes/solicitudFungibles.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-flask"/>#{' '}<span class="negrita">#{messages['menu.solicitudes.fungible']}</span>
+						</p:commandLink>
+					</li>
+					<li id="submenuSolicitudReserva">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/solicitudes/solicitudReservas.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-ticket"/>#{' '}<span class="negrita">#{messages['menu.solicitudes.reservas']}</span>
+						</p:commandLink>
+					</li>
+					<li id="submenuSolicitudPrestacion">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/solicitudes/solicitudPrestaciones.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-wrench"/>#{' '}<span class="negrita">#{messages['menu.solicitudes.prestacion']}</span>
+						</p:commandLink>
+					</li>
+					<li id="submenuSolicitudPresupuesto">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/solicitudes/solicitudPrestaciones.xhtml?esPresupuesto=SI')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-money"/>#{' '}<span class="negrita">#{messages['menu.solicitudes.presupuesto']}</span>
+						</p:commandLink>
+					</li>
+					<li id="submenuSolicitudesMiembro">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/compartido/misSolicitudes.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-folder-open"/>#{' '}<span class="negrita">#{messages['menu.solicitudes.solicitudes']}</span>
+						</p:commandLink>
+					</li>
+					<li id="submenuSolicitudesPresupuestoMiembro">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/compartido/misSolicitudes.xhtml?esPresupuesto=SI')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-folder-open-o"/>#{' '}<span class="negrita">#{messages['menu.solicitudes.solicitudes.presupuesto']}</span>
+						</p:commandLink>
+					</li>
+					
+					<li id="submenuSolicitudCertificacion">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/solicitudes/certificacionSolicitud.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-certificate"/>#{' '}<span class="negrita">#{messages['certificaciones.solicitud.title']}</span>
+						</p:commandLink>
+					</li>
+					<li id="submenuProyectosMiembro">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/compartido/proyectos.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-briefcase"/>#{' '}<span class="negrita">#{messages['menu.solicitudes.proyectos']}</span>
+						</p:commandLink>
+					</li>
+					
+				</ul>
+			</li>
+		</s:fragment>
+
+		<s:fragment rendered="#{identity.usuarioExterno}">
+			<li id="menuUsuarioExterno">
+				<a href="#" class="fuente115" role="button"  title="#{messages['menu.acceso.title']}">
+					<em class="fa fa-sign-in"/>#{' '}<span class="negrita">#{messages['menu.acceso']}</span><em class="fa fa-fw fa-angle-down negrita"/>
+				</a>
+				<ul class="collapse">
+					<li id="accesoUsuarioExterno">
+						<p:commandLink action="#{menuManagerBean.clickAndKillLastConversation('/paginas/cambioPasswordExterno.xhtml')}" ajax="false" styleClass="fuente115">
+							<em class="fa fa-id-card"/>#{' '}<span class="negrita">#{messages['menu.acceso.credenciales']}</span>
+						</p:commandLink>
+					</li>
+				</ul>
+			</li>
+		</s:fragment>
+	</ul>
+</h:form>

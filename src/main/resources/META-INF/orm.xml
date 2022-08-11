@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd"
+	version="2.0">
+
+	<named-native-query name="getProductosSai" result-set-mapping="mappingProducto">
+		<query>{call PLS_PCI.WEB_SAI.GET_PRODUCTOS_SAI(?,?)}</query>
+		<hint name="org.hibernate.callable" value="true" />
+		<hint name="org.hibernate.readOnly" value="true" />
+	</named-native-query> 
+	
+	<named-native-query name="getSubterceros" result-set-mapping="mappingSubtercero">
+		<query>{call CONSULTAS_FUNDEWEB.CONSULTA_SUBTERCEROS(?,:CIF)}</query>
+		<hint name="org.hibernate.callable" value="true" />
+		<hint name="org.hibernate.readOnly" value="true" />
+	</named-native-query>
+	
+	<named-native-query name="getTiposGasto" result-set-mapping="mappingTipoGasto">
+		<query>{call INTERFAZ_FACTURAS.CONSULTA_TIPOSGASTOS(?)}</query>
+		<hint name="org.hibernate.callable" value="true" />
+		<hint name="org.hibernate.readOnly" value="true" />
+	</named-native-query>
+	
+		<named-native-query name="getFacriPartides" result-set-mapping="mappingPartida">
+		<query>{call PLS_PCI.WEB_SAI.CONSULTA_FACRI_PARTIDES_SAI(?)}</query>
+		<hint name="org.hibernate.callable" value="true" />
+		<hint name="org.hibernate.readOnly" value="true" />
+	</named-native-query>
+	
+	<named-native-query name="getFacemiPartiing" result-set-mapping="mappingPartida">
+		<query>{call PLS_PCI.WEB_SAI.CONSULTA_FACEMI_PARTIING_SAI(?)}</query>
+		<hint name="org.hibernate.callable" value="true" />
+		<hint name="org.hibernate.readOnly" value="true" />
+	</named-native-query>
+	
+	<!-- EJEMPLOS <named-native-query name="funcionComentario" result-class="model.entity.Comentario"> 
+		<query>{? = call FUNDAWEB.selectAllComentario()}</query> <hint name="org.hibernate.callable" 
+		value="true" /> <hint name="org.hibernate.readOnly" value="true" /> </named-native-query> 
+		<named-native-query name="procedimientoComentario" result-class="model.entity.Comentario"> 
+		<query>{call FUNDAWEB.findComentariosLike(?, :VAR)}</query> <hint name="org.hibernate.callable" 
+		value="true" /> <hint name="org.hibernate.readOnly" value="true" /> </named-native-query> -->
+
+	<sql-result-set-mapping name="CountMapping">
+		<column-result name="COUNT" />
+	</sql-result-set-mapping>
+
+	<sql-result-set-mapping name="nextvalue">
+		<column-result name="nextvalue" />
+	</sql-result-set-mapping>
+
+	<sql-result-set-mapping name="mappingProducto">
+		<column-result name="IMPORTE" />
+		<column-result name="DESCRIPCION" />
+		<column-result name="UNIDAD" />
+		<column-result name="COD_PRODUCTO_JUSTO" />
+	</sql-result-set-mapping>
+	
+	<sql-result-set-mapping name="mappingSubtercero">
+		<column-result name="SUBTER" />
+		<column-result name="NOM" />
+	</sql-result-set-mapping>
+
+	<sql-result-set-mapping name="mappingTipoGasto">
+		<column-result name="TIPGASTO" />
+		<column-result name="DESCRI" />
+	</sql-result-set-mapping>
+
+	<sql-result-set-mapping name="mappingPartida">
+		<column-result name="EJE" />
+		<column-result name="EJEPROCE" />
+		<column-result name="VIC" />
+		<column-result name="UNID" />
+		<column-result name="PRO" />
+		<column-result name="ECO" />
+		<column-result name="NUMPROY" />
+	</sql-result-set-mapping>
+	
+	<!-- Activar los test de seguridad en beans de entidad durante operaciones 
+		CRUD -->
+	<!-- <persistence-unit-metadata> <persistence-unit-defaults> <entity-listeners> 
+		<entity-listener class="org.jboss.seam.security.EntitySecurityListener"/> 
+		</entity-listeners> </persistence-unit-defaults> </persistence-unit-metadata> -->
+
+</entity-mappings>

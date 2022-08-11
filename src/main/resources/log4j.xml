@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/xml/doc-files/log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<appender name="consola" class="org.apache.log4j.ConsoleAppender"> 
+        <param name="Target" value="System.out"/> 
+        <layout class="org.apache.log4j.PatternLayout"> 
+            <param name="ConversionPattern" value="${pattern_console}"/>
+        </layout>
+    </appender>
+
+	<appender name="fichero" class="org.apache.log4j.rolling.RollingFileAppender">
+		<rollingPolicy name="file"
+			class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
+			<param name="FileNamePattern"
+				value="${log.directory.path}/${log.rolled.directory.path}/${log.file.name}.%d{yyyy-MM-dd}.log.gz" />
+			<param name="ActiveFileName" value="${log.directory.path}/${log.file.name}.log" />
+		</rollingPolicy>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%d{DATE} %5p %c{1}:%L - Usuario: %X{username} - %m%n" />
+		</layout>
+	</appender>
+<!--
+    <appender name="database" class="es.um.atica.log4j.db.DbAppenderGeneral">
+    	<param name="AplicationId" value="1"/>
+    </appender>
+-->
+	<!-- Niveles de log: DEBUG < INFO < WARN < ERROR < FATAL -->
+
+	<logger name="javax.faces">
+		<level value="WARN"/>
+	</logger>
+
+	<logger name="com.sun.faces">
+		<level value="WARN"/>
+	</logger>
+
+	<logger name="org.apache">
+		<level value="WARN"/>
+	</logger>
+
+    <logger name="org.jboss">
+        <level value="WARN"/> 
+    </logger>
+
+    <logger name="org.jboss.seam">
+        <level value="${org.jboss.seam.level}"/> 
+    </logger>
+
+	<logger name="org.quartz">
+        <level value="${org.quartz.level}"/> 
+    </logger>
+
+    <logger name="org.quartz.simpl">
+        <level value="${org.quartz.level}"/>
+    </logger>
+
+	<logger name="org.jasig.cas.client">
+		<level value="${org.jasig.cas.client.level}"/>
+	</logger> 
+
+	<logger name="org.jboss.logging">
+		<level value="${org.jboss.logging.level}"/>
+	</logger>
+
+	<logger name="es.um.atica.jaxrs">
+		<level value="${es.um.atica.jaxrs.level}"/>
+	</logger>
+
+	<logger name="es.um.atica.seam">
+		<level value="${es.um.atica.seam.level}"/>
+	</logger>
+
+	<!-- Hibernate logging -->
+
+	<logger name="org.hibernate">
+        <level value="${org.hibernate.level}"/>
+    </logger>
+
+	<logger name="org.hibernate.ejb.Ejb3Configuration">
+        <level value="DEBUG"/> 
+    </logger>
+
+    <logger name="org.hibernate.cfg.annotations.Version">
+        <level value="WARN"/> 
+    </logger>
+
+	<logger name="org.hibernate.SQL">
+		<level value="${org.hibernate.sql.level}"/>
+	</logger>
+
+	<logger name="org.opensaml">
+		<level value="${org.opensaml.level}"/>
+	</logger>
+<!--
+	<logger name="org.hibernate.ejb">
+		<level value="DEBUG"/>
+	</logger>  
+
+	<logger name="org.hibernate.type">
+		<level value="INFO"/>
+	</logger>
+
+	<logger name="org.hibernate.loader">
+		<level value="INFO"/>
+	</logger>
+
+	<logger name="org.hibernate.cache">
+		<level value="TRACE"/>
+	</logger>  
+
+	<logger name="org.hibernate.tool.hbm2ddl">
+		<level value="DEBUG"/>
+	</logger>
+-->
+
+	<!-- Seam logging - These things are too noisy 
+	<logger name="org.jboss.seam.jsf.SeamVariableResolver">
+		<level value="INFO"/>
+	</logger>
+
+	<logger name="org.jboss.seam.contexts.Contexts">
+		<level value="DEBUG"/>
+	</logger>
+
+	<logger name="org.jboss.seam.Component">
+		<level value="INFO"/> 
+	</logger>
+
+	<logger name="org.jboss.seam.deployment.Scanner">
+		<level value="INFO"/>
+	</logger>
+
+	<logger name="org.jboss.seam.util.Naming">
+		<level value="INFO"/>
+	</logger>
+
+	<logger name="org.jboss.seam.debug.hot">
+		<level value="INFO"/>
+ 	</logger>
+
+	<logger name="org.jboss.seam.core.Events">
+		<level value="DEBUG"/> 
+	</logger>
+ -->
+
+ <!-- Debugging conversations and persistence contexts 
+	<logger name="org.jboss.seam.core.Manager">
+		<level value="DEBUG"/>
+	</logger>
+
+	<logger name="org.jboss.seam.core.ManagedPersistenceContext">
+		<level value="DEBUG"/>
+	</logger>
+
+	<logger name="org.jboss.seam.jsf.AbstractSeamPhaseListener">
+		<level value="INFO"/>
+	</logger>
+
+	<logger name="org.jboss.seam.interceptors.ConversationInterceptor">
+		<level value="DEBUG"/>
+	</logger>
+
+	<logger name="org.jboss.seam.contexts.Lifecycle">
+		<level value="DEBUG"/>
+	</logger>
+
+	<logger name="org.hibernate.impl.SessionImpl">
+		<level value="DEBUG"/>
+	</logger>
+
+	<logger name="org.jboss.seam.web">
+		<level value="DEBUG"/>
+	</logger>
+-->
+	
+	<!-- Nivel de Captura General -->
+    <root>
+    	<priority value="${priority}"/>
+        <appender-ref ref="${appender}"/>
+        <appender-ref ref="fichero"/>
+<!--        <appender-ref ref="database" />  -->
+    </root>
+
+</log4j:configuration>

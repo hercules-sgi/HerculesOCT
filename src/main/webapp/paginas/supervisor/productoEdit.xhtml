@@ -1,0 +1,947 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/layout/template.xhtml">
+	<ui:define name="page-header">
+		<h1>
+			<h:outputText title="#{messages['producto.title']}" value="#{messages['producto.title']}" />
+		</h1>
+		<h2>
+			<h:outputText title="#{messages['producto.creacion']}" value="#{messages['producto.creacion']}" rendered="#{productoEdit.productoEdit.cod == null}" />
+			<h:outputText title="#{messages['producto.modificacion']}" value="#{messages['producto.modificacion']}" rendered="#{productoEdit.productoEdit.cod != null}" />
+		</h2>
+	</ui:define>
+
+	<ui:define name="body">
+		<p:panel>
+			<h:form id="formProducto" enctype="multipart/form-data">
+				<div class="p-grid ui-fluid">
+					<s:div styleClass="p-col-12 p-md-3 p-lg-2" rendered="#{productoEdit.productoEdit.cod == null}">
+						<p:outputLabel for="servicio" value="#{messages['producto.servicio']}:" />
+						<br/>
+						<p:selectOneMenu id="servicio" value="#{productoEdit.productoEdit.servicio}" title="#{messages['producto.servicio']}" 
+										 required="true" requiredMessage="#{messages['required.field']}">
+							<f:selectItem itemLabel="#{messages['servicio.seleccion']}" itemValue="" />
+							<f:selectItems value="#{productoEdit.listaServicios}" var="serv" itemLabel="#{serv.nombre}" itemValue="#{serv}" />
+							<s:convertEntity />
+							<p:ajax event="valueChange" listener="#{productoEdit.seleccionadoServicioOTipo}" update="@form"/>
+						</p:selectOneMenu>
+						<p:message for="servicio" />
+					</s:div>
+					<s:div styleClass="p-col-12 p-md-3 p-lg-2" rendered="#{productoEdit.productoEdit.cod != null}">
+						<p:outputLabel value="#{messages['producto.servicio']}:" />
+						<br/>
+						<h:outputText value="#{productoEdit.productoEdit.servicio.nombre}" title="#{messages['producto.servicio']}" styleClass="margen5"/>
+					</s:div>
+					<s:div styleClass="p-col-12 p-md-2 p-lg-1" rendered="#{productoEdit.productoEdit.cod == null}">
+						<p:outputLabel for="tipo" value="#{messages['producto.tipo']}:" />
+						<br/>				
+						<p:selectOneMenu id="tipo" value="#{productoEdit.productoEdit.tipo}" required="true" requiredMessage="#{messages['required.field']}">
+							<f:selectItem itemValue="" itemLabel="#{messages['producto.tipo.seleccion']}" />
+							<f:selectItem itemValue="F" itemLabel="#{messages['producto.fungible']}" />
+							<f:selectItem itemValue="P" itemLabel="#{messages['producto.prestacion']}" />
+							<f:selectItem itemValue="R" itemLabel="#{messages['producto.reserva']}" />
+							<p:ajax event="change" listener="#{productoEdit.seleccionadoServicioOTipo}" update="@form"/>
+						</p:selectOneMenu>
+						<p:message for="tipo" />
+					</s:div>
+					<s:div styleClass="p-col-12 p-md-2 p-lg-1" rendered="#{productoEdit.productoEdit.cod != null}">
+						<p:outputLabel value="#{messages['producto.tipo']}:"/>
+						<br/>
+						<h:outputText value="#{productoEdit.getDescripcionTipoProducto(productoEdit.productoEdit.tipo)}" title="#{messages['producto.tipo']}" styleClass="margen5"/>
+					</s:div>
+					<div class="p-col-12 p-md-3 p-lg-2">
+						<p:outputLabel for="descrip" value="#{messages['producto.descripcion']}:" />
+						<p:inputText id="descrip" value="#{productoEdit.productoEdit.descripcion}" title="#{messages['producto.descripcion']}" maxlength="50" required="true" requiredMessage="#{messages['required.field']}"/>
+						<p:message for="descrip" />
+					</div>
+					<div class="p-col-12 p-md-3 p-lg-2">
+						<p:outputLabel for="soloAdmin" value="#{messages['producto.soloadmin']}:"  />
+						<br/>
+						<p:selectOneMenu id="soloAdmin" title="#{messages['producto.soloadmin.info']}" value="#{productoEdit.productoEdit.soloAdmin}" required="true" requiredMessage="#{messages['required.field']}" styleClass="fuenteSmall">
+							<f:selectItem itemLabel="#{messages['producto.soloadmin.seleccion']}" itemValue="" />
+							<f:selectItem itemLabel="NO" itemValue="NO" />
+							<f:selectItem itemLabel="SI" itemValue="SI" />
+						</p:selectOneMenu>
+						<p:message for="soloAdmin"/>
+					</div>
+					<s:div styleClass="p-col-12 p-md-3 p-lg-2">
+						<p:outputLabel  value="#{messages['producto.facturable']}:" for="facturable" />
+						<br/>
+						<p:selectOneMenu id="facturable" value="#{productoEdit.productoEdit.facturable}" title="#{messages['producto.facturable']}" 
+										 required="true" requiredMessage="#{messages['required.field']}">
+							<f:selectItem itemLabel="#{messages['producto.facturable.detalles']}" itemValue=""/>
+							<f:selectItem itemLabel="SI" itemValue="SI" />
+							<f:selectItem itemLabel="NO" itemValue="NO" />
+						</p:selectOneMenu>
+						<p:message for="facturable" />
+					</s:div>
+					<div class="p-col-12 p-md-2 p-lg-1">
+						<p:outputLabel for="requiereProyecto" id="proyecto" value="#{messages['producto.requiereproyecto']}:" />
+						<br/>
+						<p:selectOneMenu id="requiereProyecto" value="#{productoEdit.productoEdit.requiereProyecto}" title="#{messages['producto.requiereproyecto']}" 
+										 required="true" requiredMessage="#{messages['required.field']}">
+							<f:selectItem itemLabel="#{messages['producto.requiereproyecto.seleccion']}" itemValue="" />
+							<f:selectItem itemLabel="SI" itemValue="SI" />
+							<f:selectItem itemLabel="NO" itemValue="NO" />
+						</p:selectOneMenu>
+						<p:message for="requiereProyecto"/>
+					</div>
+					<div class="p-col-12 p-md-2">
+						<p:outputLabel for="factorConv" value="#{messages['producto.factorconversion']}:"/>
+						<br/>
+						<p:inputNumber id="factorConv" maxlength="6" decimalPlaces="4" size="6" value="#{productoEdit.productoEdit.factor}" title="#{messages['producto.factorconversion']}" 
+									   required="true" requiredMessage="#{messages['required.field']}">
+							<f:validateDoubleRange minimum="0.0001" maximum="99.999"/>
+						</p:inputNumber>
+						<br/>	
+						<h:outputText value="#{messages['producto.factorconversion.ejemplo']}" styleClass="fuente07"/>
+						<p:message for="factorConv"/>
+					</div>
+				</div>	
+				<!-- Fungibles -->
+				<s:div id="divFungibles" styleClass="p-grid ui-fluid" rendered="#{productoEdit.productoEdit.tipo == 'F'}">
+					<div class="p-col-12 p-md-3">
+						<p:outputLabel for="categoria" value="#{messages['producto.categoria']}:" />
+						<br/>
+						<p:selectOneMenu id="categoria" value="#{productoEdit.productoEdit.nivel1}" title="#{messages['producto.categoria']}" 
+										 filter="true" filterMatchMode="contains" required="true" requiredMessage="#{messages['required.field']}">
+							<f:selectItem itemLabel="Seleccione tipo de fungible" itemValue="" />
+							<f:selectItems var="nivel" value="#{productoEdit.listaTiposFungible}" itemValue="#{nivel}" itemLabel="#{nivel.nombre}" />
+							<p:ajax process="@this"/>
+							<s:convertEntity />
+						</p:selectOneMenu>
+						<p:message for="categoria"/>
+					</div>
+					<div class="p-col-12 p-md-3">
+						<p:outputLabel for="unidad" value="#{messages['producto.umedida']}:"  />
+						<br/>
+						<p:selectOneMenu id="unidad" value="#{productoEdit.productoEdit.unidadMedida}" title="#{messages['producto.umedida']}" 
+										 required="true" requiredMessage="#{messages['required.field']}">
+							<f:selectItem itemLabel="Seleccione unidad de medida" itemValue="" />
+							<f:selectItems value="#{productoEdit.listaUnidadesMedida}" var="uni" itemValue="#{uni}" itemLabel="#{uni.descripcion} (#{uni.abreviatura})" />
+							<p:ajax process="@this"/>
+							<s:convertEntity />
+						</p:selectOneMenu>
+						<p:message for="unidad"/>
+					</div>
+					<div class="p-col-12 p-md-2">
+						<p:outputLabel for="controlStock" value="#{messages['producto.controlstock']}:" />
+						<br/>
+						<p:selectOneMenu id="controlStock" value="#{productoEdit.productoEdit.controlStock}" title="#{messages['producto.controlstock']}" 
+										 required="true" requiredMessage="#{messages['required.field']}">
+							<f:selectItem itemLabel="#{messages['producto.stockLabel']}" itemValue="" />
+							<f:selectItem itemLabel="NO" itemValue="NO" />
+							<f:selectItem itemLabel="SI" itemValue="SI" />
+							<p:ajax process="@this" update="oPanelControlStock" />
+						</p:selectOneMenu>
+						<p:message for="controlStock"/>
+					</div>
+					<p:outputPanel id="oPanelControlStock">
+						<s:div styleClass="p-col-12 p-md-2" rendered="#{productoEdit.productoEdit.controlStock == 'SI'}">
+							<p:outputLabel for="stock" value="#{messages['producto.stock']}:"  />
+							<br/>
+							<p:inputNumber id="stock" value="#{productoEdit.stockVisualizar}" title="#{messages['producto.stock']}" size="5" maxlength="10" 
+										   thousandSeparator="" decimalPlaces="2" padControl="false" minValue="0" required="true" requiredMessage="#{messages['required.field']}"/>
+							<p:message for="stock"/>				   
+						</s:div>
+					</p:outputPanel>
+				</s:div>
+				<!-- Reservas y Prestaciones -->
+				<s:fragment id="fragmentReservasPrestaciones" rendered="#{productoEdit.productoEdit.tipo == 'R' or productoEdit.productoEdit.tipo == 'P'}">
+					<div class="p-grid ui-fluid"> 
+						<s:div styleClass="p-col-2 p-md-2" rendered="#{productoEdit.productoEdit.tipo == 'R'}"> 
+							<p:outputLabel for="tipoReservable" value="#{messages['producto.tiporeservable']}:"  />
+							<br/>
+							<p:selectOneMenu id="tipoReservable" value="#{productoEdit.productoEdit.tipoReservable}" title="#{messages['producto.tiporeservable']}" 
+											 required="true" requiredMessage="#{messages['required.field']}">
+								<f:selectItem itemValue="" itemLabel="#{messages['producto.seleccionetiporeservable']}" />
+								<f:selectItems value="#{productoEdit.listaTiposReservable}" var="tipoReservable" itemLabel="#{tipoReservable.descripcion}" itemValue="#{tipoReservable}" />
+								<s:convertEntity />
+								<p:ajax event="valueChange" process="@this"/>
+							</p:selectOneMenu>
+							<p:message for="tipoReservable"/>
+						</s:div>
+						<s:div styleClass="p-col-2 p-md-2" rendered="#{productoEdit.productoEdit.tipo == 'R'}">
+							<p:outputLabel for="requiereTecnico" value="#{messages['producto.tecnico']}:" />
+							<br/>
+							<p:selectOneMenu id="requiereTecnico" value="#{productoEdit.productoEdit.requiereTecnico}" title="#{messages['producto.tecnico']}" 
+											 required="true" requiredMessage="#{messages['required.field']}">
+								<f:selectItem itemLabel="#{messages['producto.requieretecnico.seleccion']}" itemValue=""/>
+								<f:selectItem itemLabel="NO" itemValue="NO" />
+								<f:selectItem itemLabel="SI" itemValue="SI" />
+								<f:selectItem itemLabel="#{messages['producto.requieretecnico.pr']}" itemValue="PR" />
+							</p:selectOneMenu>
+							<p:message for="requiereTecnico"/>
+						</s:div>
+						<s:div styleClass="p-col-2" rendered="#{productoEdit.productoEdit.tipo == 'P'}">
+							<p:outputLabel for="presupuesto" value="#{messages['producto.presupuesto']}:" />
+							<br/>
+							<p:selectOneMenu id="presupuesto" value="#{productoEdit.productoEdit.presupuesto}" title="#{messages['producto.presupuesto']}" 
+											 required="true" requiredMessage="#{messages['required.field']}">
+								<f:selectItem itemLabel="#{messages['producto.presupuesto.seleccion']}" itemValue=""/>
+								<f:selectItem itemLabel="NO" itemValue="NO" />
+								<f:selectItem itemLabel="SI" itemValue="SI" />
+							</p:selectOneMenu>
+							<p:message for="presupuesto"/>
+						</s:div>
+						<div class="p-col-2 p-md-2">
+							<p:outputLabel for="requiereValidacion" value="#{messages['producto.requierevalidacion']}:" />
+							<br/>
+							<p:selectOneMenu id="requiereValidacion" value="#{productoEdit.productoEdit.requiereValidacion}" title="#{messages['producto.requierevalidacion']}" 
+											 required="true" requiredMessage="#{messages['required.field']}">
+								<f:selectItem itemLabel="#{messages['producto.requierevalidacion.seleccion']}" itemValue="" />
+								<f:selectItem itemLabel="SI" itemValue="SI" />
+								<f:selectItem itemLabel="NO" itemValue="NO" />
+							</p:selectOneMenu>
+							<p:message for="requiereValidacion"/>
+						</div>
+						<div class="p-col-2">
+							<p:outputLabel for="requiereValidacionIr" value="#{messages['producto.requierevalidacionir']}:"/>
+							<br/>
+							<p:selectOneMenu id="requiereValidacionIr" value="#{productoEdit.productoEdit.requiereValidacionIr}" title="#{messages['producto.requierevalidacionir']}" 
+											 required="true" requiredMessage="#{messages['required.field']}">									
+								<f:selectItem itemLabel="#{messages['producto.requierevalidacionir.seleccion']}" itemValue="" />
+								<f:selectItem itemLabel="NO" itemValue="NO" />
+								<f:selectItem itemLabel="SI" itemValue="SI" />									
+							</p:selectOneMenu>
+							<p:message for="requiereValidacionIr"/>
+						</div>		
+						<div class="p-col-3 p-md-3">
+							<p:outputLabel for="requiereBioSeguridad" id="bioTexto" value="#{messages['producto.requierebioseguridad']}:" />
+							<br/>
+							<p:selectOneMenu id="requiereBioSeguridad" value="#{productoEdit.productoEdit.pedirNivelBioseguridad}" title="#{messages['producto.requierebioseguridad']}" 
+											 required="true" requiredMessage="#{messages['required.field']}">
+								<f:selectItem itemLabel="#{messages['producto.requierebioseguridad.seleccion']}" itemValue="" />
+								<f:selectItem itemLabel="SI" itemValue="SI" />
+								<f:selectItem itemLabel="NO" itemValue="NO" />
+							</p:selectOneMenu>
+							<p:message for="requiereBioSeguridad"/>
+							<h:outputText value="#{messages['producto.requierebioseguridad.info']}" styleClass="fuente07"/>
+						</div>
+					</div>					
+					<s:div id="divAnexos" styleClass="p-grid ui-fluid">
+						<s:div styleClass="p-col-12 p-sm-6 p-md-3" rendered="#{empty productoEdit.productoEdit.anexos}">
+							<p:outputLabel for="anexoRellenar" value="#{messages['producto.documentos.rellenar']}:"  />
+							<p:fileUpload id="anexoRellenar" label="#{messages['reservas.anexo.seleccionar.fichero']}" 
+										  process="@this" fileUploadListener="#{productoEdit.subidoFicheroAnexo}" 
+										  converterMessage="#{messages['anexos.fileallowed']}" invalidFileMessage="#{messages['anexos.fileallowed']}" auto="true" 
+										  update="divAnexos" mode="advanced" skinSimple="true" allowTypes="/(\.|\/)(xls|docx|doc|pdf|ppt|pptx|xlsx|tiff|txt|zip|rar)$/"/>
+							<p:message for="anexoRellenar" />
+						</s:div>
+						<s:div styleClass="p-col-12 p-sm-6 p-md-3" rendered="#{not empty productoEdit.productoEdit.anexos}">
+							<p:outputLabel value="#{messages['producto.documentos.rellenar']}:" />
+							<br/>
+							<h:outputText value="#{productoEdit.productoEdit.anexos.get(0).nomDocumento}" styleClass="margen5" rendered="#{productoEdit.anexoNuevo}"/>
+							<p:commandLink title="#{anexo.nomDocumento}" value="#{productoEdit.productoEdit.anexos.get(0).nomDocumento}" ajax="false" immediate="true" styleClass="enlaceTexto margen5"
+										   rendered="#{!productoEdit.anexoNuevo}"	>
+								<p:fileDownload value="#{anexoBean.showDocument(productoEdit.productoEdit.anexos.get(0).cod)}" />
+							</p:commandLink>
+							<p:commandLink id="anexoEliminar" action="#{productoEdit.eliminarAnexo(productoEdit.productoEdit.anexos.get(0))}" process="@this" styleClass="margen5" 
+										   update="divAnexos, :messages" title="#{messages['value.delete']}" ariaLabel="#{messages['value.delete']}">
+								<em class="fa fa-trash fuente17" />
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['prestaciones.anexo.del.confirm']}"/>
+								</p:commandLink>
+						</s:div>
+						<div class="p-col-6 p-sm-6 p-md-2"> 
+							<p:outputLabel for="requiereAnexo" value="#{messages['producto.requiereanexo']}:" />
+							<br/>
+							<p:selectOneMenu id="requiereAnexo" value="#{productoEdit.productoEdit.requiereAnexo}" title="#{messages['producto.requiereanexo']}" 
+											 required="true" requiredMessage="#{messages['required.field']}">
+								<f:selectItem itemLabel="#{messages['producto.requiereanexo.seleccion']}" itemValue="" />
+								<f:selectItem itemLabel="NO" itemValue="NO" />
+								<f:selectItem itemLabel="SI" itemValue="SI" />
+							</p:selectOneMenu>
+							<p:message for="requiereAnexo"/>
+						</div>
+						<div class="p-col-6 p-md-4 p-lg-3">
+							<p:outputLabel for="preguntaPersonalizada" value="#{messages['producto.preguntapersonalizada']}:"  />
+							<br/>
+							<p:inputTextarea id="preguntaPersonalizada" value="#{productoEdit.productoEdit.preguntaPersonalizada}" title="#{messages['producto.preguntapersonalizada']}" 
+											 maxlength="500" rows="2"/>
+							<p:watermark for="preguntaPersonalizada" value="#{messages['producto.preguntapersonalizada.watermark']}" />
+							<p:message for="preguntaPersonalizada"/>
+						</div>
+						<s:div styleClass="p-col-6 p-md-3 p-lg-2" rendered="#{productoEdit.productoEdit.tipo == 'P'}">
+							<p:outputLabel for="consumosAsociados" value="#{messages['producto.consumosasociados']}:" />
+							<br/>
+							<p:selectOneMenu id="consumosAsociados"	value="#{productoEdit.productoEdit.consumoAsociado}" title="#{messages['producto.consumosasociados']}" 
+											 required="true" requiredMessage="#{messages['required.field']}">
+								<f:selectItem itemLabel="#{messages['producto.consumosasociados.seleccion']}" itemValue="" />
+								<f:selectItem itemLabel="NO" itemValue="NO" />
+								<f:selectItem itemLabel="SI" itemValue="SI" />
+							</p:selectOneMenu>
+							<p:message for="consumosAsociados"/>
+						</s:div>
+					</s:div>		
+				</s:fragment>	
+				<p:outputPanel id="oPanelKronReservas" >
+					<s:div styleClass="p-grid ui-fluid" rendered="#{productoEdit.productoEdit.tipo == 'R'}">
+						<div class="p-col-2 p-sm-2 p-md-2">
+							<p:outputLabel for="vinculacionKronReserva" value="#{messages['producto.kron.vinculacionpuertas']}:" />
+							<br/>
+							<p:selectOneMenu id="vinculacionKronReserva" value="#{productoEdit.vinculacionKronReserva}" title="#{messages['producto.kron.vinculacionpuertas']}" >
+								<f:selectItem itemLabel="#{messages['producto.kron.vinculacionpuertas.no']}" itemValue="NO" />									
+            					<f:selectItem itemLabel="#{messages['producto.kron.vinculacionpuertas.si']}" itemValue="SI" />
+           						<p:ajax event="change" listener="#{productoEdit.seleccionadaVinculacionKronReserva}" process="@this" update="oPanelKronReservas" />            						
+       						</p:selectOneMenu>
+						</div>
+						<s:fragment id="fragmentKronReservasConfig" rendered="#{productoEdit.vinculacionKronReserva == 'SI'}">
+							<div class="p-col-6 p-sm-6 p-md-3">
+								<p:outputLabel for="kronReservaMinutoAntelacion" value="#{messages['producto.kron.minutosreservaantelacion']}:" />
+								<br/>
+								<p:inputText id="kronReservaMinutoAntelacion" value="#{productoEdit.productoEdit.kronReservaMinutoAntelacion}" title="#{messages['producto.kron.minutosreservaantelacion']}" 
+											 maxlength="10" size="5" required="true" requiredMessage="#{messages['required.field']}">										
+									<p:keyFilter for="kronReservaMinutoAntelacion" mask="num"/>
+								</p:inputText>
+								<p:messages for="kronReservaMinutoAntelacion" />
+							</div>
+							<div class="p-col-6 p-sm-6 p-md-5">
+								<p:outputLabel for="kronReservaMinutoPosterior" value="#{messages['producto.kron.minutosreservaposterior']}:" />
+								<br/>
+								<p:inputText id="kronReservaMinutoPosterior" value="#{productoEdit.productoEdit.kronReservaMinutoPosterior}" title="#{messages['producto.kron.minutosreservaposterior']}" 
+											 maxlength="10" size="5" required="true" requiredMessage="#{messages['required.field']}">
+								<p:keyFilter for="kronReservaMinutoPosterior" mask="num"/>
+								</p:inputText>
+								<p:messages for="kronReservaMinutoPosterior" />
+							</div>
+						</s:fragment>
+					</s:div>
+					<s:div styleClass="p-grid" rendered="#{productoEdit.productoEdit.cod != null and productoEdit.vinculacionKronReserva == 'SI' and empty productoEdit.listaPuertasProducto}">
+						<div class="p-md-4">
+							<h:outputText value="#{messages['producto.kron.puerta.required']}" styleClass="fuente08 negrita textoAlerta"/>
+						</div>	
+					</s:div>
+				</p:outputPanel>	
+				<p:outputPanel id="oPanelKronPrestaciones" >
+					<s:div styleClass="p-grid ui-fluid" rendered="#{productoEdit.productoEdit.tipo == 'P'}">
+						<div class="p-col-2 p-sm-2 p-md-2">
+							<p:outputLabel for="tipoVinculacionKronPrestacion" value="#{messages['producto.kron.vinculacionpuertas']}:" />
+							<br/>
+							<p:selectOneMenu id="tipoVinculacionKronPrestacion" value="#{productoEdit.tipoVinculacionKronPrestacion}" title="#{messages['producto.kron.vinculacionpuertas']}">
+								<f:selectItem itemLabel="#{messages['producto.kron.vinculacionpuertas.no']}" itemValue="" />									
+            					<f:selectItem itemLabel="#{messages['producto.kron.vinculacionpuertas.dias']}" itemValue="NUMDIAS" />
+           						<f:selectItem itemLabel="#{messages['producto.kron.vinculacionpuertas.fechalimite']}" itemValue="FECHALIMITE" />	
+           						<p:ajax event="change" listener="#{productoEdit.seleccionadaTipoVinculacionKronPrestacion}" process="@this" update="oPanelKronPrestaciones" />            						
+       						</p:selectOneMenu>
+						</div>
+						<s:div styleClass="p-col-6 p-sm-4 p-md-2" rendered="#{productoEdit.tipoVinculacionKronPrestacion == 'NUMDIAS'}">
+							<p:outputLabel for="numDiasVinculacionKronPrestacion" value="#{messages['producto.kron.vinculacionpuertas.dias.input']}:" />
+							<br/>
+							<p:inputText id="numDiasVinculacionKronPrestacion" value="#{productoEdit.productoEdit.kronPrestacionDias}" 
+										 title="#{messages['producto.kron.vinculacionpuertas.dias.input']}" maxlength="4" size="4" required="true" requiredMessage="#{messages['required.field']}">
+								<p:keyFilter for="numDiasVinculacionKronPrestacion" mask="num"/>
+							</p:inputText>	
+							<p:messages for="numDiasVinculacionKronPrestacion" />
+						</s:div>	
+						<s:div styleClass="p-col-6 p-sm-4 p-md-2" rendered="#{productoEdit.tipoVinculacionKronPrestacion == 'FECHALIMITE'}">
+							<p:outputLabel for="fechaLimiteVinculacionKronPrestacion" value="#{messages['producto.kron.vinculacionpuertas.fechalimite.input']}:" />
+							<br/>
+							<p:calendar id="fechaLimiteVinculacionKronPrestacion" value="#{productoEdit.fechaLimiteVinculacionKronPrestacion}" locale="es" pattern="dd/MM"
+										maxlength="5" size="5" mask="99/99" required="true" requiredMessage="#{messages['required.field']}"/>
+							<p:messages for="fechaLimiteVinculacionKronPrestacion" />
+						</s:div>
+					</s:div>
+					<s:div styleClass="p-grid" rendered="#{productoEdit.productoEdit.cod != null and productoEdit.tipoVinculacionKronPrestacion != null and empty productoEdit.listaPuertasProducto}">
+						<div class="p-md-4">
+							<h:outputText value="#{messages['producto.kron.puerta.required']}" styleClass="fuente08 negrita textoAlerta"/>
+						</div>	
+					</s:div>
+					<s:div styleClass="p-grid" rendered="#{productoEdit.productoEdit.cod != null and productoEdit.tipoVinculacionKronPrestacion != null and empty productoEdit.listaReservableHorarios}">	
+						<div class="p-md-4">
+							<h:outputText value="#{messages['producto.kron.horario.required']}" styleClass="fuente08 negrita textoAlerta"/>
+						</div>	
+					</s:div>																				
+				</p:outputPanel>
+				<s:div styleClass="p-grid ui-fluid" rendered="#{productoEdit.productoEdit.cod != null}">
+					<div class="p-col-12 p-sm-6 p-md-2" >
+						<p:outputLabel for="estado" value="Estado" title="Estado" />
+						<br/>
+						<p:selectOneRadio id="estado" value="#{productoEdit.productoEdit.estado}">
+							<f:selectItem itemLabel="Alta" itemValue="ALTA" />
+							<f:selectItem itemLabel="Baja" itemValue="BAJA" />
+						</p:selectOneRadio>
+					</div>
+				</s:div>
+				<br/>
+				<div class="p-grid">
+					<div class="p-col-12">
+						<p:commandButton action="#{productoEdit.guardarProducto}" value="#{messages['label.save']}" title="#{messages['label.save']}"
+										 icon="fa fa-save" process="@form" update="@form, :oPanelConfiguraProducto, :messages" />
+						<p:commandButton action="#{productoEdit.volver}" icon="fa fa-reply" value="#{messages['value.return']}"  title="#{messages['value.return']}"
+										 process="@this" ajax="false" immediate="true" />
+					</div>
+				</div>
+			</h:form>
+
+			<p:outputPanel id="oPanelConfiguraProducto">
+				<p:tabView id="tabViewConfigProducto" rendered="#{productoEdit.productoEdit.cod != null}" activeIndex="#{productoEdit.tabActivo}">
+					<p:ajax event="tabChange" listener="#{productoEdit.onTabChange}"/>
+					<p:tab id="tabTarifas" title="#{messages['producto.tabs.tarifas']}" ariaLabel="#{messages['producto.tabs.tarifas']}">
+						<h:form id="formListadoTarifas">
+							<div class="p-grid">
+								<div class="p-col-6 p-md-6">
+									<p:dataTable id="tablaTarifas" value="#{productoEdit.productoEdit.tarifas}" var="tarifa" reflow="true" 
+												 tableStyleClass="tablaAuto fuente08" styleClass="header-right" rowHover="true" emptyMessage="No hay tarifas asociadas al producto">
+										<f:facet name="header">
+											<p:commandLink action="#{productoEdit.establecerTarifaCreate}" oncomplete="PF('dialogAddTarifa').show();" update=":tabViewConfigProducto:formAddTarifa" 
+														   title="#{messages['producto.tarifa.add']}" ariaLabel="#{messages['producto.tarifa.add']}" styleClass="enlaceTexto" 
+														    onsuccess="saveLastFocus(event);">
+												<em class="fa fa-plus"/>#{' '} 
+												<h:outputText styleClass="enlaceAdd" title="#{messages['producto.tarifa.add']}" value="#{messages['producto.tarifa.add']}" />
+											</p:commandLink>
+										</f:facet>
+										<p:column headerText="#{messages['producto.tarifa.tipotarifa']}" sortBy="#{tarifa.tipoTarifa.descripcion}">
+											<h:outputText value="#{tarifa.tipoTarifa.descripcion}" title="#{messages['producto.tarifa.tipotarifa']}" />
+										</p:column>
+										<p:column headerText="#{messages['table.header.description']}" sortBy="#{tarifa.descripcion}">
+											<h:outputText value="#{tarifa.descripcion}" title="#{messages['table.header.description']}" />
+										</p:column>
+										<p:column headerText="#{messages['producto.tarifa.cantidadminima']}" sortBy="#{tarifa.id.cantidadInicial}" styleClass="derecha">
+											<h:outputText value="#{tarifa.id.cantidadInicial}" title="#{messages['producto.tarifa.cantidadminima']}" />
+										</p:column>
+										<p:column headerText="#{messages['producto.tarifa.codigojusto']}">
+											<h:outputText value="#{tarifa.codTarifaJusto}" title="#{messages['producto.tarifa.codigojusto']}"/>
+										</p:column>
+										<p:column headerText="#{messages['producto.tarifa.tarifa']}" >
+											<h:outputText value="#{productoEdit.getPrecioJusto(tarifa)}" title="#{messages['producto.tarifa.tarifa']}"/>
+											<h:outputText value=" #{messages['simbolo.euro']}"/>
+										</p:column>
+										<p:column headerText="#{messages['value.action']}" styleClass="centrado">
+											<p:commandLink process="@this" title="#{messages['value.delete']}" ariaLabel="#{messages['value.delete']}" 
+														   action="#{productoEdit.eliminarTarifa(tarifa)}" update="@form, :messages">
+												<em class="fa fa-trash fuente17" />
+												<p:confirm header="#{messages['application.deleting.confirm.title']}" message="#{messages['tarifa.delete.confirm']}"  icon="ui-icon-alert"/>
+											</p:commandLink>
+										</p:column>
+									</p:dataTable>
+								</div>
+							</div>
+						</h:form>	
+						<h:form id="formAddTarifa">
+							<p:dialog id="dialogAddTarifa" header="#{messages['producto.tarifa.asignacion']}" 
+									  widgetVar="dialogAddTarifa" modal="true" width="50%" onHide="goToLastFocus();">
+								<div class="p-grid ui-fluid">
+									<div class="p-col-12 p-md-8">
+										<p:outputLabel for="tarifaJusto" value="#{messages['producto.tarifa.tarifatoadd']}:" />
+										<br/>
+										<p:selectOneMenu id="tarifaJusto" value="#{productoEdit.productoJustoTarifaAdd}" title="#{messages['producto.tarifa.tarifatoadd']}"  
+														 var="p" filter="true" filterMatchMode="contains" converter="productoJustoConverter" style="min-width: auto;"
+														 required="true" requiredMessage="#{messages['required.field']}">
+											<f:selectItem itemLabel="#{messages['producto.tarifa.seleccionetarifa']}" itemValue="" />
+											<f:selectItems var="pj" value="#{productoEdit.listaProductosJusto}" itemLabel="#{pj.descripcion}" itemValue="#{pj}"/>												
+											<p:column>	
+												<f:facet name="header">
+													<h:outputText value="#{messages['table.header.description']}" styleClass="fuenteSmall"/>
+												</f:facet>											
+												<h:outputText value="#{p.descripcion}" title="#{messages['table.header.description']}" />																									
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="#{messages['table.header.code']}" styleClass="fuenteSmall"/>
+												</f:facet>																					
+												<h:outputText value="#{p.codProductoJusto}" title="#{messages['table.header.code']}" />													
+											</p:column>												
+											<p:column>	
+												<f:facet name="header">
+													<h:outputText value="#{messages['producto.tarifa.importe']}" styleClass="fuenteSmall"/>
+												</f:facet>																				
+												<h:outputText value="#{productoEdit.getPrecioJusto(p.unidadAdministrativa, p.codProductoJusto)} #{messages['simbolo.euro']}"/>																										
+											</p:column>
+										</p:selectOneMenu>
+										<p:message for="tarifaJusto"/>
+									</div>
+								</div>	
+								<div class="p-grid ui-fluid">	
+									<div class="p-col-5 p-md-5">
+										<p:outputLabel for="tipoTarifa" value="#{messages['producto.tarifa.tipotarifa']}:" />
+										<br/>
+										<p:selectOneMenu id="tipoTarifa" filter="true" filterMatchMode="contains" 
+														 value="#{productoEdit.tarifaAdd.tipoTarifa}" title="#{messages['producto.tarifa.tipotarifa']}"
+														 required="true" requiredMessage="#{messages['required.field']}">
+											<f:selectItem itemLabel="#{messages['producto.tarifa.selecciontipotarifa']}" itemValue=""/>
+											<f:selectItems value="#{productoEdit.listaTiposTarifa}" var ="tTarifa" itemLabel="#{tTarifa.descripcion}" itemValue="#{tTarifa}"/> 
+											<s:convertEntity />
+										</p:selectOneMenu>
+										<p:message for="tipoTarifa"/>
+									</div>
+									<div class="p-col-2">
+										<p:outputLabel for="mincantidad" value="#{messages['producto.tarifa.cantidadminima']}:"/>
+										<br/>
+										<p:inputNumber id="mincantidad" decimalPlaces="0" value="#{productoEdit.cantidadInicialTarifaAdd}" title="#{messages['producto.tarifa.cantidadminima']}"
+													   required="true" requiredMessage="#{messages['required.field']}"/>
+										<p:tooltip for="mincantidad" value="#{messages['producto.tarifa.cantidadminima.tip']}"/>
+										<p:message for="mincantidad"/>
+									</div>
+								</div>	
+								<br/>
+								<div class="p-grid">	
+									<div class="p-col-12">
+										<p:commandButton action="#{productoEdit.guardarTarifa}" value="#{messages['label.save']}" title="#{messages['label.save']}" 
+														 process="@form" update="@form :tabViewConfigProducto:formListadoTarifas :messages" 
+														 oncomplete="comprobarArgsModal(xhr, status, args, 'dialogAddTarifa');" icon="fa fa-save"/>
+										<p:commandButton icon="fa fa-times" type="button" value="#{messages['label.cancel']}" title="#{messages['label.cancel']}"
+														 process="@this" ariaLabel="#{messages['label.cancel']}" onclick="PF('dialogAddTarifa').hide();" />
+									</div>
+								</div>
+							</p:dialog>
+						</h:form>
+					</p:tab>
+					<p:tab id="tabCertificaciones" title="#{messages['producto.tabs.certificaciones']}">
+						<h:form id="formListadoCertificaciones" >		
+							<div class="p-grid">
+								<div class="p-col-6 p-md-6">
+									<p:dataTable value="#{productoEdit.productoEdit.listaTiposCertificacion}" var="_tc" rowHover="true" tableStyleClass="tablaAuto fuente08" styleClass="header-right" emptyMessage="#{messages['producto.certificacion.empty']}">								
+										<f:facet name="header">
+											<p:commandLink action="#{productoEdit.establecerTipoCertificacionCreate}" oncomplete="PF('dialogAddCertificacion').show();" update=":tabViewConfigProducto:formAddCertificacion" 
+														   title="#{messages['producto.certificacion.add']}" ariaLabel="#{messages['producto.certificacion.add']}" styleClass="enlaceTexto"
+														   onsuccess="saveLastFocus(event)">
+												<em class="fa fa-plus"/>#{' '} 
+												<h:outputText styleClass="enlaceAdd" title="#{messages['producto.certificacion.add']}" value="#{messages['producto.certificacion.add']}" />
+											</p:commandLink>
+										</f:facet>
+										<p:column headerText="#{messages['producto.certificacion']}"> 
+											<h:outputText value="#{_tc.tipoCertificacion.nombre}" title="#{messages['producto.certificacion']}"/>
+										</p:column>
+										<p:column headerText="#{messages['value.action']}" styleClass="centrado">
+											<p:commandLink title="#{messages['value.delete']}" ariaLabel="#{messages['value.delete']}" action="#{productoEdit.eliminarCertificacion(_tc)}" process="@this" update="@form, :messages">
+												<em class="fa fa-trash fuente17" />
+												<p:confirm header="#{messages['application.deleting.confirm.title']}" message="#{messages['producto.certificacion.borrar']}"  icon="ui-icon-alert"/>
+											</p:commandLink>
+										</p:column>
+									</p:dataTable>
+								</div>
+							</div>
+						</h:form>
+						<h:form id="formAddCertificacion">		
+							<p:dialog id="dialogAddCertificacion" header="#{messages['producto.certificacion.add']}" onHide="goToLastFocus();"
+									  widgetVar="dialogAddCertificacion" modal="true" width="50%">
+								<div class="p-grid ui-fluid">
+									<div class="p-col-12 p-md-12">
+										<p:outputLabel for="tipoCertificacion" value="#{messages['certificacion.tipoCertificacion']}:"/>
+										<br/>
+										<p:selectOneMenu id="tipoCertificacion" value="#{productoEdit.tipoCertifiacionAdd}" title="certificacion" 
+														 required="true" requiredMessage="#{messages['required.field']}">
+											<f:selectItem itemLabel="#{messages['certificacion.tipocertificacion.seleccion']}" itemValue="" />
+											<f:selectItems var="_tce" itemLabel="#{_tce.nombre}" itemValue="#{_tce}" value="#{productoEdit.listaTipoCertificacion}" />									
+											<s:convertEntity />
+										</p:selectOneMenu>
+										<p:message for="tipoCertificacion" />
+									</div>
+								</div>
+								<br/>
+								<div class="p-grid">	
+									<div class="p-col-12">								
+										<p:commandButton action="#{productoEdit.addTipoCertificacion}" icon="fa fa-save" value="#{messages['label.save']}" title="#{messages['label.save']}" 
+														 update="@form :tabViewConfigProducto:formListadoCertificaciones :messages" oncomplete="comprobarArgsModal(xhr, status, args, 'dialogAddCertificacion');" 
+														 onsuccess="goToLastFocus();"/>
+										<p:commandButton icon="fa fa-times" type="button" value="#{messages['label.cancel']}" title="#{messages['label.cancel']}"
+														 process="@this" ariaLabel="#{messages['label.cancel']}" onclick="PF('dialogAddCertificacion').hide();" />
+									</div>
+								</div>
+							</p:dialog>					
+						</h:form>
+					</p:tab>
+					<p:tab id="tabTecnicos" rendered="#{productoEdit.requiereConfiguracionTecnicos()}" title="#{messages['producto.tabs.tecnicos']}" ariaLabel="#{messages['producto.tabs.tecnicos']}">
+						<h:form id="formListadoTecnicos">	
+							<div class="p-grid">	
+								<div class="p-col-12 p-md-6">
+									<p:dataTable id="tablaTecnicoProducto" var="tp" value="#{productoEdit.productoEdit.tecnicos}" tableStyleClass="tablaAuto fuente08" styleClass="header-right"
+												 rowHover="true" emptyMessage="No hay técnicos asociados al producto" sortBy="#{tp.prioridad}" sortOrder="DESCENDING" >
+										<f:facet name="header">
+											<p:commandLink action="#{productoEdit.establecerTecnicoProductoCreate}" oncomplete="PF('dialogAddTecnico').show();" update=":tabViewConfigProducto:formAddTecnico" 
+														   title="#{messages['producto.tecnico.add']}" ariaLabel="#{messages['producto.tecnico.add']}" styleClass="enlaceTexto" 
+														    onsuccess="saveLastFocus(event);">
+												<em class="fa fa-plus"/>#{' '} 
+												<h:outputText styleClass="enlaceAdd" title="#{messages['producto.tecnico.add']}" value="#{messages['producto.tecnico.add']}" />
+											</p:commandLink>
+										</f:facet>
+										<p:column headerText="#{messages['producto.tecnicos.tecnico']}" sortBy="#{tp.usuario.datosUsuario.fullName}">
+											<h:outputText value="#{tp.usuario.datosUsuario.fullName}" title="#{messages['producto.tecnicos.tecnico']}"/>
+										</p:column>
+										<p:column headerText="#{messages['producto.tecnicos.automatico']}" sortBy="#{tp.automatico}" styleClass="centrado">
+											<h:outputText value="#{tp.automatico}" title="#{messages['producto.tecnicos.automatico']}" />
+										</p:column>
+										<p:column headerText="#{messages['producto.tecnicos.prioridad']}" rendered="#{productoEdit.productoEdit.tipo == 'R'}" sortBy="#{tp.prioridad}" styleClass="derecha">
+											<h:outputText value="#{tp.prioridad}" title="#{messages['producto.tecnicos.prioridad']}" />
+											<f:facet name="footer">
+												<h:outputText value="#{messages['producto.tecnicos.prioridad.info.corto']}" styleClass="fuente09" />
+											</f:facet>
+										</p:column>
+										<p:column headerText="#{messages['value.action']}" styleClass="centrado">
+											<div class="p-grid p-justify-center">
+												<div class="p-col">
+													<p:commandLink action="#{productoEdit.establecerTecnicoProductoEdit(tp)}" oncomplete="PF('dialogAddTecnico').show();" onsuccess="saveLastFocus(event);"
+																   ariaLabel="#{messages['producto.tecnico.asociacion.edit']}" title="#{messages['producto.tecnico.asociacion.edit']}" process="@this"
+																   update=":tabViewConfigProducto:formAddTecnico"  >
+														<em class="fa fa-pencil-square-o fuente17" />
+													</p:commandLink>
+												</div>
+												<div class="p-col">
+													<p:commandLink process="@this" title="#{messages['value.delete']}" ariaLabel="#{messages['value.delete']}" 
+																   action="#{productoEdit.eliminarTecnico(tp)}" update="@form, :messages">
+														<em class="fa fa-trash fuente17" />
+														<p:confirm header="#{messages['application.deleting.confirm.title']}" message="#{messages['tecnico.delete.confirm']}"  icon="ui-icon-alert"/>
+													</p:commandLink>
+												</div>
+											</div>		
+										</p:column>
+									</p:dataTable>
+								</div>
+							</div>	
+						</h:form>
+						<h:form id="formAddTecnico">
+							<p:dialog id="dialogAddTecnico" header="#{productoEdit.tecnicoProductoAdd.cod == null ? messages['producto.tecnico.asociacion'] : messages['producto.tecnico.asociacion.edit']}" 
+									  widgetVar="dialogAddTecnico" modal="true" width="50%" onHide="goToLastFocus();">
+								<div class="p-grid ui-fluid">
+									<s:div styleClass="p-col-6 p-md-6" rendered="#{productoEdit.tecnicoProductoAdd.cod == null}">
+										<p:outputLabel for="tecnicoAdd" value="#{messages['producto.tecnicos.tecnico']}:" />
+										<br/>
+										<p:selectOneMenu id="tecnicoAdd" value="#{productoEdit.tecnicoProductoAdd.usuario}"
+														 title="#{messages['producto.tecnicos.tecnico']}" filter="true" filterMatchMode="contains"
+														 required="true" requiredMessage="#{messages['required.field']}">
+											<f:selectItem itemLabel="#{messages['producto.tecnicos.select']}" itemValue="" />
+											<f:selectItems value="#{productoEdit.listaUsuariosTecnicos}" var="tec" itemLabel="#{tec.datosUsuario.fullName}"	itemValue="#{tec}" />
+											<s:convertEntity />
+										</p:selectOneMenu>
+										<p:message for="tecnicoAdd" />
+									</s:div>
+									<s:div styleClass="p-col-6 p-md-6" rendered="#{productoEdit.tecnicoProductoAdd.cod != null}">
+										<p:outputLabel value="#{messages['producto.tecnicos.tecnico']}:" />
+										<br/>
+										<h:outputText value="#{productoEdit.tecnicoProductoAdd.usuario.datosUsuario.fullName}" styleClass="margen5"/>
+									</s:div>
+									<div class="p-col-6 p-md-6">
+										<p:outputLabel for="automatico" value="#{messages['producto.tecnicos.asignacionautomatica']}:" />
+										<br />
+										<p:selectOneMenu id="automatico" value="#{productoEdit.tecnicoProductoAdd.automatico}"
+													     title="#{messages['producto.tecnicos.asignacionautomatica']}" 
+														 required="true" requiredMessage="#{messages['required.field']}">
+											<f:selectItem itemLabel="#{messages['producto.tecnicos.asignacionautomatica.seleccion']}" itemValue="" />
+											<f:selectItem itemLabel="SI" itemValue="SI" />
+											<f:selectItem itemLabel="NO" itemValue="NO" />
+											<p:ajax event="valueChange" update="oPanelPrioridad" listener="#{productoEdit.seleccionadaAsignacionAutoTecnico}" />
+										</p:selectOneMenu>
+										<p:message for="automatico" />
+									</div>
+								</div>
+								<p:outputPanel id="oPanelPrioridad">
+									<s:div styleClass="p-grid ui-fluid" rendered="#{productoEdit.productoEdit.tipo == 'R' and productoEdit.tecnicoProductoAdd.automatico == 'SI'}">
+										<div class="p-col-4 p-md-4">
+											<p:outputLabel for="prioridad" value="#{messages['producto.tecnicos.prioridad']}:" />
+											<br />
+											<p:inputText id="prioridad" value="#{productoEdit.tecnicoProductoAdd.prioridad}"
+								 						 title="#{messages['producto.tecnicos.prioridad.info']}" maxlength="2" size="2" 
+								 						 required="true" requiredMessage="#{messages['required.field']}">
+												<p:keyFilter for="prioridad" mask="num" />
+											</p:inputText>
+											<br />
+											<h:outputText value="#{messages['producto.tecnicos.prioridad.info.corto']}" styleClass="fuente07" />
+											<p:message for="prioridad" />
+										</div>
+									</s:div>
+								</p:outputPanel>	
+								<br />
+								<div class="p-grid">
+									<div class="p-col-12">
+										<p:commandButton icon="fa fa-save" action="#{productoEdit.guardarTecnicoProducto}" oncomplete="comprobarArgsModal(xhr, status, args, 'dialogAddTecnico');" process="@form"
+														 update="@form :tabViewConfigProducto:formListadoTecnicos :messages" value="#{messages['label.save']}" title="#{messages['label.save']}" />
+										<p:commandButton icon="fa fa-times" type="button" value="#{messages['label.cancel']}" title="#{messages['label.cancel']}"
+														 process="@this" ariaLabel="#{messages['label.cancel']}" onclick="PF('dialogAddTecnico').hide();" />
+									</div>
+								</div>
+							</p:dialog>
+						</h:form>
+					</p:tab>
+					<p:tab id="tabEquipos" title="#{messages['producto.tabs.equipos']}" rendered="#{productoEdit.productoEdit.tipo == 'P'}">
+						<h:form id="formListadoEquipos" >		
+							<div class="p-grid">
+								<div class="p-col-8 p-md-8">
+									<p:dataTable value="#{productoEdit.listaEquiposProducto}" var="pe" rowHover="true" tableStyleClass="tablaAuto fuente08" styleClass="header-right" emptyMessage="#{messages['producto.productoequipo.empty']}">								
+										<f:facet name="header">
+											<p:commandLink action="#{productoEdit.establecerProductoEquipoCreate}" oncomplete="PF('dialogEditProductoEquipo').show();" update=":tabViewConfigProducto:formEditProductoEquipo" 
+														   title="#{messages['producto.productoequipo.add']}" ariaLabel="#{messages['producto.productoequipo.add']}" styleClass="enlaceTexto"
+														   onsuccess="saveLastFocus(event)">
+												<em class="fa fa-plus"/>#{' '} 
+												<h:outputText styleClass="enlaceAdd" title="#{messages['producto.productoequipo.add']}" value="#{messages['producto.productoequipo.add']}" />
+											</p:commandLink>
+										</f:facet>
+										<p:column headerText="#{messages['producto.productoequipo.equipo']}"> 
+											<p:commandLink value="#{pe.equipo.descripcion}" process="@this" action="#{equipoEdit.establecerEquipoEdit(pe.equipo)}" styleClass="enlaceTexto" 
+														   title="#{messages['equipos.equipo.editar']} #{pe.equipo.descripcion}" ariaLabel="#{messages['equipos.equipo.editar']} #{pe.equipo.descripcion}"/> 
+										</p:column>
+										<p:column headerText="#{messages['equipos.tipo']}">
+											<h:outputText value="#{pe.equipo.tipoReservable.descripcion}" rendered="#{pe.equipo.tipoReservable != null}" />
+											<h:outputText value="#{messages['equipos.tiporeservable.vacio']}" rendered="#{pe.equipo.tipoReservable == null}" />
+										</p:column>
+										<p:column headerText="#{messages['producto.productoequipo.fechacompra']}" styleClass="centrado"> 
+											<h:outputText value="#{pe.equipo.fechaCompra}" title="#{messages['producto.productoequipo.fechacompra']}">
+												<s:convertDateTime pattern="dd/MM/yyyy"/>
+											</h:outputText>	
+										</p:column>
+										<p:column headerText="#{messages['producto.productoequipo.minutos']}" styleClass="derecha"> 
+											<h:outputText value="#{pe.minutos}" title="#{messages['producto.productoequipo.minutos']}"/>
+										</p:column>
+										<p:column headerText="#{messages['value.action']}" styleClass="centrado">
+											<div class="p-grid p-justify-center">
+												<div class="p-col">
+													<p:commandLink action="#{productoEdit.establecerProductoEquipoEdit(pe)}" oncomplete="PF('dialogEditProductoEquipo').show();" onsuccess="saveLastFocus(event);"
+																   ariaLabel="#{messages['producto.tecnico.asociacion.edit']}" title="#{messages['producto.productoequipo.edit']}" process="@this"
+																   update=":tabViewConfigProducto:formEditProductoEquipo"  >
+														<em class="fa fa-pencil-square-o fuente17" />
+													</p:commandLink>
+												</div>
+												<div class="p-col">
+													<p:commandLink title="#{messages['value.delete']}" ariaLabel="#{messages['value.delete']}" action="#{productoEdit.eliminarProductoEquipo(pe)}" process="@this" update="@form, :messages">
+														<em class="fa fa-trash fuente17" />
+														<p:confirm header="#{messages['application.deleting.confirm.title']}" message="#{messages['producto.productoequipo.eliminar.confirm']}"  icon="ui-icon-alert"/>
+													</p:commandLink>
+												</div>
+											</div>		
+										</p:column>
+									</p:dataTable>
+								</div>
+							</div>
+						</h:form>
+						<h:form id="formEditProductoEquipo">		
+							<p:dialog id="dialogEditProductoEquipo" header="#{messages['producto.productoequipo.title']}" onHide="goToLastFocus();"
+									  widgetVar="dialogEditProductoEquipo" modal="true" width="50%">
+								<div class="p-grid ui-fluid">
+									<s:div styleClass="p-col-8 p-md-8" rendered="#{productoEdit.productoEquipoEdit.cod == null}">
+										<p:outputLabel for="equipo" value="#{messages['producto.productoequipo.equipo']}:"/>
+										<br/>
+										<p:selectOneMenu id="equipo" value="#{productoEdit.productoEquipoEdit.equipo}" title="#{messages['producto.productoequipo.equipo']}" 
+														 filter="true" filterMatchMode="contains" required="true" requiredMessage="#{messages['required.field']}">
+											<f:selectItem itemLabel="#{messages['producto.productoequipo.equipo.seleccion']}" itemValue="" />
+											<f:selectItems var="_eq" itemLabel="#{productoEdit.getDescripcionAmpliadaEquipo(_eq)}" itemValue="#{_eq}" value="#{productoEdit.listaEquipos}" />									
+											<s:convertEntity />
+										</p:selectOneMenu>
+										<p:message for="equipo" />
+									</s:div>
+									<s:div styleClass="p-col-8 p-md-8" rendered="#{productoEdit.productoEquipoEdit.cod != null}">
+										<p:outputLabel value="#{messages['producto.productoequipo.equipo']}:"/>
+										<br/>
+										<h:outputText value="#{productoEdit.productoEquipoEdit.equipo.descripcion}" styleClass="margen5"/>
+									</s:div>
+									<div class="p-col-4 p-md-4">
+										<p:outputLabel for="minutos" value="#{messages['producto.productoequipo.minutos']}:"/>
+										<br/>
+										<p:inputText id="minutos" value="#{productoEdit.productoEquipoEdit.minutos}" maxlength="5" size="5" 
+													 required="true" requiredMessage="#{messages['required.field']}">
+											<p:keyFilter mask="num"/>
+										</p:inputText>	
+										<p:message for="minutos"/>
+									</div>
+								</div>
+								<br/>
+								<div class="p-grid">	
+									<div class="p-col-12">								
+										<p:commandButton action="#{productoEdit.guardarProductoEquipo}" icon="fa fa-save" value="#{messages['label.save']}" title="#{messages['label.save']}" 
+														 update="@form :tabViewConfigProducto:formListadoEquipos :messages" oncomplete="comprobarArgsModal(xhr, status, args, 'dialogEditProductoEquipo');" 
+														 onsuccess="goToLastFocus();"/>
+										<p:commandButton icon="fa fa-times" type="button" value="#{messages['label.cancel']}" title="#{messages['label.cancel']}"
+														 process="@this" ariaLabel="#{messages['label.cancel']}" onclick="PF('dialogEditProductoEquipo').hide();" />
+									</div>
+								</div>
+							</p:dialog>					
+						</h:form>
+					</p:tab>
+					<p:tab id="tabPuertasKron" title="#{messages['producto.tabs.puertas']}" rendered="#{productoEdit.vinculacionKronReserva == 'SI' or productoEdit.tipoVinculacionKronPrestacion != null}" >
+						<h:form id="formListadoPuertas" >		
+							<div class="p-grid">
+								<div class="p-col-6 p-md-6">
+									<p:dataTable value="#{productoEdit.listaPuertasProducto}" var="_pu" rowHover="true" rows="25" paginator="true" 
+											 	 paginatorAlwaysVisible="false" emptyMessage="No hay puertas asociadas al producto" sortBy="#{_pu.puertaKron.puertaKronView.nombreEdificio}"
+											 	 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											 	 rowsPerPageTemplate="10,25,50" paginatorPosition="bottom" tableStyleClass="tablaAuto fuente08" styleClass="header-right">								
+										<f:facet name="header">
+											<p:commandLink action="#{productoEdit.establecerPuertaKronCreate}" oncomplete="PF('dialogAddPuerta').show();" update=":tabViewConfigProducto:formAddPuerta" 
+														   title="#{messages['producto.puertakron.add']}" ariaLabel="#{messages['producto.puertakron.add']}" styleClass="enlaceTexto" onsuccess="saveLastFocus(event);">
+												<em class="fa fa-plus"/>#{' '} 
+												<h:outputText styleClass="enlaceAdd" title="#{messages['producto.puertakron.add']}" value="#{messages['producto.puertakron.add']}" />
+											</p:commandLink>
+										</f:facet>
+										<p:column headerText="#{messages['servicio.nombreEdificio']}" sortBy="#{_pu.puertaKron.puertaKronView.nombreEdificio}"> 
+											<h:outputText value="#{_pu.puertaKron.puertaKronView.nombreEdificio}" title="#{messages['servicio.nombreEdificio']}"/>
+										</p:column>
+										<p:column headerText="#{messages['servicio.lector']}" sortBy="#{_pu.puertaKron.puertaKronView.nombreLector}"> 
+											<h:outputText value="#{_pu.puertaKron.puertaKronView.nombreLector}" title="#{messages['servicio.lector']}"/>
+										</p:column>
+										<p:column headerText="#{messages['value.action']}" styleClass="centrado">
+											<p:commandLink id="delServicioPuerta" title="#{messages['value.delete']}" ariaLabel="#{messages['value.delete']}" action="#{productoEdit.eliminarProductoPuerta(_pu)}" process="@this" 
+														   update="@form :formProducto :messages" onsuccess="saveLastFocus(event);">
+												<em class="fa fa-trash fuente17" />
+												<p:confirm header="#{messages['application.deleting.confirm.title']}" message="#{messages['producto.puertakron.del.confirm']}"  icon="ui-icon-alert"/>
+											</p:commandLink>
+											<p:tooltip for="delServicioPuerta" value="#{messages['producto.delServicioPuerta']}"/>
+										</p:column>
+									</p:dataTable>
+								</div>
+							</div>
+						</h:form>
+						<h:form id="formAddPuerta">		
+							<p:dialog id="dialogAddPuerta" header="#{messages['producto.puertakron.asociacion']}" 
+									  widgetVar="dialogAddPuerta" modal="true" width="50%" onHide="goToLastFocus();">
+								<div class="p-grid ui-fluid">
+									<div class="p-col-12 p-md-12">
+										<p:outputLabel for="puertaServicio" value="#{messages['producto.puertakron']}:"/>
+										<br/>
+										<p:selectOneMenu id="puertaServicio" var="p" value="#{productoEdit.puertaAdd}" title="Puerta" filter="true" filterMatchMode="contains" 
+														 required="true" requiredMessage="#{messages['required.field']}">
+											<f:selectItem itemLabel="#{messages['producto.puertakron.seleccion']}" itemValue="" />
+											<f:selectItems var="spk" itemLabel="#{spk.puertaKron.puertaKronView.nombreEdificio}: #{spk.puertaKron.puertaKronView.nombreLector}" itemValue="#{spk.puertaKron}" value="#{productoEdit.listaPuertas}" />									
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="#{messages['servicio.nombreEdificio']}"/>
+												</f:facet>
+												<h:outputText value="#{p.puertaKronView.nombreEdificio}" title="#{messages['servicio.nombreEdificio']}" />
+											</p:column>	
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="#{messages['servicio.lector']}"/>
+												</f:facet>
+												<h:outputText value="#{p.puertaKronView.nombreLector}" title="#{messages['servicio.lector']}"/>
+											</p:column>	
+											<p:ajax event="change" process="@this"/>							
+											<s:convertEntity />
+										</p:selectOneMenu>
+										<p:message for="puertaServicio" />
+									</div>
+								</div>
+								<br/>
+								<div class="p-grid">	
+									<div class="p-col-12">								
+										<p:commandButton action="#{productoEdit.addPuertaProducto}" icon="fa fa-save" value="#{messages['label.save']}" title="#{messages['label.save']}" 
+														 update="@form :tabViewConfigProducto:formListadoPuertas :formProducto :messages" oncomplete="comprobarArgsModal(xhr, status, args, 'dialogAddPuerta');" />
+										<p:commandButton icon="fa fa-times" type="button" value="#{messages['label.cancel']}" title="#{messages['label.cancel']}"
+														 process="@this" ariaLabel="#{messages['label.cancel']}" onclick="PF('dialogAddPuerta').hide();" />
+									</div>
+								</div>
+							</p:dialog>					
+						</h:form>
+					</p:tab>
+					<p:tab id="tabHorariosKron" title="#{messages['producto.tabs.horarios']}" rendered="#{productoEdit.productoEdit.tipo == 'P' and productoEdit.tipoVinculacionKronPrestacion != null}">
+						<h:form id="formHorarios"> 
+							<div class="p-grid">
+								<div class="p-col-12 p-md-6 ">
+									<p:dataTable id="reservableHorarioTable" value="#{productoEdit.listaReservableHorarios}" var="rh" 
+												 emptyMessage="#{messages['producto.reservablehorarios.empty']}" sortBy="#{rh.fechaInicio}"
+												 reflow="true" tableStyleClass="tablaAuto fuente08" styleClass="header-right" rowHover="true">
+										<f:facet name="header">
+											<p:commandLink action="#{productoEdit.establecerReservableHorarioCreate}" oncomplete="PF('dialogReservableHorarioAdd').show();" update=":tabViewConfigProducto:formHorarioAdd" 
+														   title="#{messages['tiporeservable.add.horario']}" ariaLabel="#{messages['tiporeservable.add.horario']}" styleClass="enlaceTexto"
+														   onsuccess="saveLastFocus(event)">
+												<em class="fa fa-plus"/>#{' '} 
+												<h:outputText styleClass="enlaceAdd" title="#{messages['tiporeservable.add.horario']}" value="#{messages['tiporeservable.add.horario']}" />
+											</p:commandLink>
+										</f:facet>
+										<p:column headerText="#{messages['tiporeservable.horario']}" sortBy="#{rh.fechaInicio}">
+											<h:outputText value="#{rh.tipoHorario.descripcion}" title="#{messages['tiporeservable.horario']}" />
+										</p:column>
+										<p:column headerText="Días">
+											<p:dataList styleClass="listaSinBorde fuente09" value="#{productoEdit.getListaHorarioDiaByTipohorario(rh.tipoHorario)}" var="hd" 
+								   						emptyMessage="#{messages['tipohorario.horariodias.vacio']}">
+												#{productoEdit.getDescripcionHorarioDia(hd)}        			   							
+			   								</p:dataList>
+										</p:column>
+										<p:column headerText="#{messages['tiporeservable.fechaInicio']}" styleClass="centrado" sortBy="#{rh.fechaInicio}" >
+											<h:outputFormat value="#{rh.fechaInicio}" title="#{messages['tiporeservable.fechaInicio']}">
+												<f:convertDateTime pattern="dd/MM" />
+											</h:outputFormat>
+										</p:column>
+										<p:column headerText="#{messages['tiporeservable.fechaFin']}" styleClass="centrado" sortBy="#{rh.fechaFin}">
+											<h:outputFormat value="#{rh.fechaFin}" title="#{messages['tiporeservable.fechaFin']}">
+												<f:convertDateTime pattern="dd/MM" />
+											</h:outputFormat>
+										</p:column>
+										<p:column headerText="#{messages['tiporeservable.accion']}" styleClass="centrado">
+											<p:commandLink id="btnDelete" action="#{productoEdit.eliminarReservableHorario(rh)}"
+														   title="#{messages['value.delete']}" ariaLabel="#{messages['value.delete']}"
+														   update="@form, :formProducto, :messages" process="@this">
+												<em class="fa fa-trash fuente17"/>									
+												<p:confirm header="#{messages['application.deleting.confirm.title']}" message="#{messages['tiporeservable.reservablehorario.confirm.delete.message']}"  icon="ui-icon-alert"/>														
+											</p:commandLink>
+										</p:column>
+									</p:dataTable>
+								</div>
+							</div>
+						</h:form>
+						<h:form id="formHorarioAdd">	
+							<p:dialog id="dialogReservableHorarioAdd" header="#{messages['tiporeservable.add.horario']}" onHide="goToLastFocus();"
+									  widgetVar="dialogReservableHorarioAdd" modal="true" width="40%">
+								<div class="p-grid ui-fluid">
+									<div class="p-col-12 p-md-12">
+										<p:outputLabel for="tipoHorario" value="#{messages['tiporeservable.reservablehorario.tipohorario']}:" />
+										<br/>
+										<p:selectOneMenu id="tipoHorario" value="#{productoEdit.reservableHorarioAdd.tipoHorario}" var="h" filter="true" 
+														 filterMatchMode="contains" required="true" requiredMessage="#{messages['required.field']}">
+											<f:selectItem itemLabel="Seleccione el tipo de horario" itemValue=""/>
+											<f:selectItems value="#{productoEdit.listaTiposHorario}" var="th" itemLabel="#{th.descripcion}" itemValue="#{th}" />
+											<p:column>
+												<h:outputText value="#{h.descripcion}" />
+											</p:column>
+											<p:column>
+		       				   					<p:dataList styleClass="listaSinBorde fuente08" value="#{productoEdit.getListaHorarioDiaByTipohorario(h)}" var="hd" 
+							   								emptyMessage="#{messages['tipohorario.horariodias.vacio']}" >
+													#{productoEdit.getDescripcionHorarioDia(hd)}        			   							
+		   										</p:dataList>
+							   				</p:column>
+											<s:convertEntity />
+										</p:selectOneMenu>
+										<p:message for="tipoHorario" />
+									</div>
+								</div>
+								<div class="p-grid ui-fluid">
+									<div class="p-col-12 p-md-6">
+										<p:outputLabel for="fecini" value="#{messages['tiporeservable.reservablehorario.fechainicio']}:" />
+										<br/>
+										<p:calendar id="fecini" title="#{messages['tiporeservable.reservablehorario.fechainicio']}" 
+													value="#{productoEdit.reservableHorarioAdd.fechaInicio}" pattern="dd/MM" size="5" mask="99/99" 
+													required="true" requiredMessage="#{messages['required.field']}"/>
+										<p:message for="fecini" />
+									</div>
+									<div class="p-col-12 p-md-6">
+										<p:outputLabel for="fecfin" value="#{messages['tiporeservable.reservablehorario.fechafin']}:" />
+										<br/>
+										<p:calendar id="fecfin" title="#{messages['tiporeservable.reservablehorario.fechafin']}" 
+													value="#{productoEdit.reservableHorarioAdd.fechaFin}" pattern="dd/MM" size="5" mask="99/99"
+													required="true" requiredMessage="#{messages['required.field']}"/>
+										<p:message for="fecfin" />
+									</div>
+								</div>
+								<br/>
+								<div class="p-grid">	
+									<div class="p-col-12">								
+										<p:commandButton action="#{productoEdit.crearReservableHorario}" icon="fa fa-save" value="#{messages['label.save']}" title="#{messages['label.save']}" 
+															 update="@form :tabViewConfigProducto:formHorarios :formProducto :messages" oncomplete="comprobarArgsModal(xhr, status, args, 'dialogReservableHorarioAdd');" 
+															 onsuccess="goToLastFocus();"/>
+										<p:commandButton icon="fa fa-times" type="button" value="#{messages['label.cancel']}" title="#{messages['label.cancel']}"
+														 process="@this" ariaLabel="#{messages['label.cancel']}" onclick="PF('dialogReservableHorarioAdd').hide();" />
+									</div>
+								</div>
+							</p:dialog>	
+						</h:form>
+					</p:tab>
+				</p:tabView>
+			</p:outputPanel>
+		</p:panel>
+		<h:form id="formConfirm">
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" >
+				<p:commandButton title="Si" label="Si" value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton title="Si" label="Si" value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+		</h:form>
+
+
+		
+	</ui:define>
+</ui:composition>
+
+</html>

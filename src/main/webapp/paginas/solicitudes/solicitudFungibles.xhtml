@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/layout/template.xhtml">
+	<ui:define name="page-header">
+		<s:fragment rendered="#{solicitudFungibles.fungibleEdit.presupuesto == 'NO'}">
+			<h1>
+				<h:outputText value="#{messages['menu.fungibles.title']}" />
+			</h1>
+			<h2>
+				<h:outputText value="#{solicitudFungibles.fungibleEdit.cod==null ? messages['menu.fungibles.subtitle'] : messages['menu.fungibles.subtitle.edicion']}" />
+				<h:outputText value=" #{messages['menu.consumo.subtitle.hijo.add']} #{solicitudFungibles.fungibleEdit.consumoPadre.cod}" rendered="#{solicitudFungibles.fungibleEdit.consumoPadre != null}"/>
+			</h2>
+		</s:fragment>	
+		<s:fragment rendered="#{solicitudFungibles.fungibleEdit.presupuesto == 'SI'}">
+			<h1>
+				<h:outputText value="#{messages['menu.presupuestos.title']}" title="#{messages['menu.presupuestos.title']}"/>
+			</h1>
+			<h2>
+				<h:outputText value="#{solicitudFungibles.fungibleEdit.cod == null ? messages['menu.presupuestos.subtitle'] : messages['menu.presupuestos.subtitle.edicion']}" />
+				<h:outputText value=" #{messages['menu.presupuestos.subtitle.hijo.add']} #{solicitudFungibles.fungibleEdit.consumoPadre.cod}" rendered="#{solicitudFungibles.fungibleEdit.consumoPadre != null}"/>
+			</h2>
+		</s:fragment>
+	</ui:define>
+	<ui:define name="body">
+		<p:panel id="panelFungibleEdit">
+			<h:form id="formFungibleEdit" styleClass="editFundeweb">
+				<s:fragment id="fragmentModoEdicion" rendered="#{solicitudFungibles.fungibleEdit.cod != null}">
+					<div class="p-grid ui-fluid" >
+						<div class="p-col-2 p-md-2 ">
+							<p:outputLabel value="#{solicitudFungibles.fungibleEdit.presupuesto == 'NO' ?  messages['consumos.codigo'] : messages['presupuestos.codigo'] }:" />
+							<br/>
+							<h:outputText value="#{solicitudFungibles.fungibleEdit.cod}" title="#{messages['consumos.codigo']}" styleClass="margen5"/>
+						</div>
+						<div class="p-col-2 p-md-2 ">
+							<p:outputLabel value="#{messages['prestaciones.fechaSolicitud']}:" />
+							<br/>
+							<h:outputText value="#{solicitudFungibles.fungibleEdit.fechaSolicitud}" title="#{messages['prestaciones.fechaSolicitud']}" styleClass="margen5">
+								<f:convertDateTime type="date" pattern="dd/MM/yyyy"/>
+							</h:outputText>
+						</div>
+						<div class="p-col-3 p-md-3 p-lg-2">
+							<p:outputLabel value="#{messages['fungible.service']}:" />
+							<br/>
+							<h:outputText value="#{solicitudFungibles.fungibleEdit.producto.servicio.nombre}" title="#{messages['fungible.service']}" styleClass="margen5"/>
+						</div>
+						<s:div styleClass="p-col-2 p-md-2" rendered="#{(identity.tienePerfilEnServicio('TECNICO',solicitudFungibles.servicioFungible.cod) or identity.tienePerfilEnServicio('SUPERVISOR', solicitudFungibles.servicioFungible.cod)) and solicitudFungibles.fungibleEdit.consumoPadre == null}">
+							<p:outputLabel value="#{messages['fungibles.interno']}:" />
+							<br/>
+							<h:outputText value="#{solicitudFungibles.fungibleEdit.interno}" title="#{messages['fungibles.interno']}" styleClass="margen5"/>
+						</s:div>
+						<s:div styleClass="p-col-4 p-md-3" rendered="#{solicitudFungibles.fungibleEdit.organizacion != null}">
+							<p:outputLabel value="#{messages['fungibles.numPedido']}:" />
+							<br/>
+							<h:outputText value="#{solicitudFungibles.fungibleEdit.organizacion}" title="#{messages['fungibles.numPedido']}" styleClass="margen5"/>
+						</s:div>					
+					</div>
+					<s:div styleClass="p-grid ui-fluid">
+						<div class="p-col-3 p-md-3">
+							<p:outputLabel value="#{messages['fungibles.usuarioSol']}:" />
+							<br/>
+							<h:outputText value="#{solicitudFungibles.fungibleEdit.usuarioSolicitante.datosUsuario.nombreCompleto}" styleClass="margen5" title="#{messages['fungibles.usuarioSol']}"/>
+						</div>
+						<s:div styleClass="p-col-3 p-md-3" rendered="#{solicitudFungibles.fungibleEdit.interno == 'NO'}">
+							<p:outputLabel value="#{messages['fungibles.investigador']}:" />
+							<br/>
+							<h:outputText value="#{solicitudFungibles.fungibleEdit.usuarioIrAsociado.datosUsuario.nombreCompleto}" styleClass="margen5" title="#{messages['fungibles.investigador']}"/>
+						</s:div>
+						<s:div styleClass="p-col-3 p-md-3" rendered="#{solicitudFungibles.fungibleEdit.interno == 'NO'}">
+							<p:outputLabel value="#{messages['fungibles.entidad']}:" />
+							<br/>
+							<h:outputText value="#{solicitudFungibles.getDescripcionEntidad(solicitudFungibles.fungibleEdit.entidadPagadora)}" styleClass="margen5" title="#{messages['fungibles.entidad']}"/>
+						</s:div>
+						<s:div styleClass="p-col-3 p-md-3" rendered="#{solicitudFungibles.fungibleEdit.interno == 'NO'}">
+							<p:outputLabel value="#{messages['fungibles.grupoinvestigacion']}:" />
+							<br/>
+							<h:outputText value="#{solicitudFungibles.fungibleEdit.grupoInvestigacion.grupoInvestigacionDatos.nombre}" styleClass="margen5" title="#{messages['fungibles.grupoinvestigacion']}"/>
+						</s:div>	
+					</s:div>
+				</s:fragment>
+				<s:fragment id="fragmentModoAlta" rendered="#{solicitudFungibles.fungibleEdit.cod == null}">				
+					<div class="p-grid ui-fluid" >
+						<s:div styleClass="p-col-4 p-md-3 p-lg-2" rendered="#{solicitudFungibles.fungibleEdit.consumoPadre == null}">
+							<p:outputLabel for="servicio" value="#{messages['fungible.service']}:" />
+							<br/>
+							<p:selectOneMenu id="servicio" value="#{solicitudFungibles.servicioFungible}" required="true" title="#{messages['fungible.service']}" >
+								<f:selectItem itemLabel="#{messages['servicio.seleccion']}" itemValue="" />
+								<f:selectItems value="#{solicitudFungibles.listaServicios}" var="_ser" itemLabel="#{_ser.nombre}" itemValue="#{_ser}" />
+								<p:ajax event="valueChange" update="@form" process="@this" listener="#{solicitudFungibles.seleccionadoServicio}" />
+								<s:convertEntity />
+							</p:selectOneMenu>
+							<p:message for="servicio"/>
+						</s:div>
+						<s:div styleClass="p-col-3 p-md-3 p-lg-2" rendered="#{solicitudFungibles.fungibleEdit.consumoPadre != null}">
+							<p:outputLabel value="#{messages['fungible.service']}:" />
+							<br/>
+							<h:outputText value="#{solicitudFungibles.servicioFungible.nombre}" title="#{messages['fungible.service']}" styleClass="margen5"/>
+						</s:div>
+						<s:div class="p-col-2 p-md-2" rendered="#{solicitudFungibles.servicioFungible!= null and (identity.tienePerfilEnServicio('TECNICO',solicitudFungibles.servicioFungible.cod) or identity.tienePerfilEnServicio('SUPERVISOR', solicitudFungibles.servicioFungible.cod)) and solicitudFungibles.fungibleEdit.consumoPadre == null}">
+							<p:outputLabel for="consumoInterno" value="#{messages['fungibles.interno']}:" />
+							<br/>
+							<p:selectOneMenu id="consumoInterno" styleClass="ancho100" value="#{solicitudFungibles.fungibleEdit.interno}" title="#{messages['fungibles.interno']}" required="true">
+								<f:selectItem itemLabel="SI" itemValue="SI" />
+								<f:selectItem itemLabel="NO" itemValue="NO" />
+								<p:ajax event="valueChange" update="@form" listener="#{solicitudFungibles.seleccionadoConsumoInterno}" />
+							</p:selectOneMenu>
+							<p:message for="consumoInterno"/>
+						</s:div>
+						<s:div styleClass="p-col-4 p-md-3" rendered="#{solicitudFungibles.servicioFungible!= null and solicitudFungibles.fungibleEdit.interno == 'NO'}">
+							<p:outputLabel for="numPedido" value="#{messages['fungibles.numPedido']}:" />
+							<br/>
+							<p:inputText id="numPedido" value="#{solicitudFungibles.fungibleEdit.organizacion}" title="#{messages['fungibles.numPedido']}" maxlength="40">
+								<p:ajax event="blur" process="@this" />
+							</p:inputText>
+							<br/>
+							<h:outputText value="#{messages['fungibles.notaPedido']}" styleClass="fuente07"/>
+						</s:div>
+					</div>
+					<s:div id="divConsumoNoInterno" styleClass="p-grid ui-fluid" rendered="#{solicitudFungibles.servicioFungible!= null and solicitudFungibles.fungibleEdit.consumoPadre == null and solicitudFungibles.fungibleEdit.interno == 'NO'}">
+						<s:div styleClass="p-col-4 p-md-4 p-lg-3" rendered="#{(identity.tienePerfilEnServicio('TECNICO',solicitudFungibles.servicioFungible.cod) or identity.tienePerfilEnServicio('SUPERVISOR', solicitudFungibles.servicioFungible.cod))}">
+							<p:outputLabel for="usuarioSolicitante" value="#{messages['fungibles.usuarioSol']}:" />
+							<br/>
+							<p:selectOneMenu id="usuarioSolicitante" value="#{solicitudFungibles.fungibleEdit.usuarioSolicitante}" 
+											 filter="true" filterMatchMode="contains" title="#{messages['fungibles.usuarioSol']}" required="true">
+								<f:selectItem itemLabel="#{messages['usuario.seleccion']}" itemValue="" />
+								<f:selectItems value="#{solicitudFungibles.listaUsuariosSolicitantes}" var="_usu" itemLabel="#{_usu.datosUsuario.nombreCompleto}" itemValue="#{_usu}" />
+								<p:ajax event="valueChange" process="@this" update="@form" listener="#{solicitudFungibles.seleccionadoUsuarioSolicitante}" />
+								<s:convertEntity />
+							</p:selectOneMenu>
+							<p:message for="usuarioSolicitante"/>
+						</s:div>
+						<div class="p-col-4 p-md-4 p-lg-3">
+							<p:outputLabel for="usuarioIr" value="#{messages['fungibles.investigador']}:" />
+							<br/>
+							<p:selectOneMenu id="usuarioIr" value="#{solicitudFungibles.fungibleEdit.usuarioIrAsociado}" title="#{messages['fungibles.investigador']}"
+											 filter="true" filterMatchMode="contains" required="true" requiredMessage="#{messages['prestaciones.investigador.required']}">
+								<f:selectItem itemLabel="#{messages['usuario.perfil.ir.seleccion']}" itemValue="" />
+								<f:selectItems value="#{solicitudFungibles.listaUsuariosIr}" var="_inv" itemLabel="#{_inv.datosUsuario.nombreCompleto}" itemValue="#{_inv}" />
+								<p:ajax event="valueChange" update="@form" process="@this" listener="#{solicitudFungibles.seleccionadoUsuarioIr}" />
+								<s:convertEntity />
+							</p:selectOneMenu>
+							<p:message for="usuarioIr" />
+						</div>
+						<div class="p-col-6 p-md-5">
+							<p:outputLabel for="entidad" value="#{messages['fungibles.entidad']}:" />
+							<br/>
+							<p:selectOneMenu id="entidad" required="true" requiredMessage="#{messages['prestaciones.entidad.required']}"						
+											 value="#{solicitudFungibles.fungibleEdit.entidadPagadora}" filter="true" filterMatchMode="contains" title="#{messages['fungibles.entidad']}">
+								<f:selectItem itemLabel="#{messages['entidadpagadora.seleccion']}" itemValue="" />
+								<f:selectItems value="#{solicitudFungibles.listaEntidades}" var="_ent" itemLabel="#{solicitudFungibles.getDescripcionEntidad(_ent)}" itemValue="#{_ent}" />
+								<p:ajax event="valueChange" update="@form" process="@this" listener="#{solicitudFungibles.seleccionadaEntidadPagadora}"/>
+								<s:convertEntity />
+							</p:selectOneMenu>
+							<p:message for="entidad" />
+						</div>
+						<s:div styleClass="p-col-6 p-md-5" rendered="#{solicitudFungibles.fungibleEdit.entidadPagadora != null and solicitudFungibles.listaGruposInvestigacion.size() > 1}">
+							<p:outputLabel for="grupoInvestigacion" value="#{messages['fungibles.grupoinvestigacion']}:" />
+							<br/>
+							<p:selectOneMenu id="grupoInvestigacion" required="true" requiredMessage="#{messages['required.field']}"						
+											 value="#{solicitudFungibles.fungibleEdit.grupoInvestigacion}" title="#{messages['fungibles.grupoinvestigacion']}">
+								<f:selectItem itemLabel="#{messages['grupoinvestigacion.seleccion']}" itemValue="" />
+								<f:selectItems value="#{solicitudFungibles.listaGruposInvestigacion}" var="gi" itemLabel="#{gi.grupoInvestigacionDatos.nombre}" itemValue="#{gi}" />
+								<p:ajax event="valueChange" process="@this" />
+								<s:convertEntity />
+							</p:selectOneMenu>
+							<p:message for="grupoInvestigacion" />
+						</s:div>
+					</s:div>
+				</s:fragment>	
+				<s:div styleClass="p-grid ui-fluid" rendered="#{solicitudFungibles.servicioFungible != null}">
+					<s:div styleClass="p-col-2 p-md-2" rendered="#{solicitudFungibles.fungibleEdit.presupuesto == 'NO' and solicitudFungibles.preguntarEnvioMailUsuario()}">
+						<p:outputLabel for="enviaEmail" value="#{messages['fungibles.email']}:" />
+						<br/>
+						<p:selectOneMenu id="enviaEmail" styleClass="ancho100" value="#{solicitudFungibles.enviaEmail}" title="#{messages['fungibles.email']}" required="true">
+							<f:selectItem itemLabel="NO" itemValue="NO" />
+							<f:selectItem itemLabel="SI" itemValue="SI" />
+							<p:ajax event="valueChange" process="@this" />
+						</p:selectOneMenu>
+						<p:message for="enviaEmail"/>
+					</s:div>
+					<s:div styleClass="p-col-12 p-md-4" rendered="#{solicitudFungibles.fungibleEdit.cod == null or solicitudFungibles.operacionComentar()}">
+						<p:outputLabel for="comentario" value="#{messages['fungibles.obervaciones']}:" />
+						<p:inputTextarea id="comentario" value="#{solicitudFungibles.fungibleEdit.observaciones}" rows="2" maxlength="4000" cols="30" title="#{messages['fungibles.obervaciones']}" 
+										 disabled="#{solicitudFungibles.fungibleEdit.cod != null and !solicitudFungibles.operacionModificar()}">
+							<p:ajax event="blur"/>
+						</p:inputTextarea>
+					</s:div>
+					<s:div styleClass="p-col-12 p-md-4" rendered="#{solicitudFungibles.operacionComentarFacturacion()}">
+						<p:outputLabel for="comentarioFacturacion" value="#{messages['fungibles.comentariofacturacion']}:" />
+						<p:inputTextarea id="comentarioFacturacion" value="#{solicitudFungibles.fungibleEdit.comentarioFacturacion}" rows="2" maxlength="4000" cols="30" title="#{messages['fungibles.comentariofacturacion']}"
+										 disabled="#{solicitudFungibles.fungibleEdit.cod != null and !solicitudFungibles.operacionModificar()}">
+							<p:ajax event="blur"/>
+						</p:inputTextarea>
+					</s:div>
+				</s:div>	
+				<br/>
+				<s:div class="p-grid ui-fluid" rendered="#{solicitudFungibles.fungibleEdit.factura == null and solicitudFungibles.servicioFungible != null and (solicitudFungibles.fungibleEdit.cod == null or (solicitudFungibles.fungibleEdit.cod != null and solicitudFungibles.operacionModificar() and (identity.tienePerfilEnServicio('SUPERVISOR', solicitudFungibles.servicioFungible.cod) or identity.tienePerfilEnServicio('IR', solicitudFungibles.servicioFungible.cod) or identity.tienePerfilEnServicio('TECNICO', solicitudFungibles.servicioFungible.cod))))}">
+					<div class="p-col-4 p-md-4 p-lg-3">
+						<p:outputLabel for="fungible" value="#{messages['fungibles.fungible']}:" />
+						<br/>
+						<p:selectOneMenu id="fungible" value="#{solicitudFungibles.productoLineaFungibleAdd}" filter="true" filterMatchMode="contains" 
+										 required="true" title="#{messages['fungibles.fungible']}">
+							<f:selectItem itemLabel="#{messages['fungible.seleccion']}" itemValue="" />
+							<f:selectItems value="#{solicitudFungibles.listaProductos}" itemLabel="#{_prod.descripcion}" var="_prod" itemValue="#{_prod}" />
+							<p:ajax event="valueChange" update="@form :messages" process="@this" listener="#{solicitudFungibles.seleccionadoProducto}" />
+							<s:convertEntity />
+						</p:selectOneMenu>
+						<p:message for="fungible"/>
+					</div>
+					<s:div styleClass="p-col-3 p-md-3" rendered="#{solicitudFungibles.fungibleEdit.usuarioIrAsociado != null and solicitudFungibles.productoLineaFungibleAdd != null and solicitudFungibles.productoLineaFungibleAdd.requiereProyecto == 'SI'}">
+						<p:outputLabel for="proyecto" value="#{messages['proyecto.label']}:" />
+						<br/>
+						<p:selectOneMenu id="proyecto" value="#{solicitudFungibles.proyectoLineaFungibleAdd}" required="true" title="#{messages['proyecto.label']}">
+							<f:selectItem itemLabel="#{messages['proyecto.seleccion']}" itemValue="" />
+							<f:selectItems value="#{solicitudFungibles.listaProyectos}" var="proy" itemLabel="#{proy.nombre}"  itemValue="#{proy}" />
+							<p:ajax event="valueChange" process="@this"/>
+							<s:convertEntity />
+						</p:selectOneMenu>
+						<p:message for="proyecto"/>
+					</s:div>
+					<div class="p-col-1 p-md-1 ">
+						<p:outputLabel for="cantidad" rendered="#{solicitudFungibles.fungibleEdit.factura == null}" value="#{messages['fungibles.cantidad']}:" />
+						<br/>
+						<p:inputNumber id="cantidad" value="#{solicitudFungibles.cantidadLineaFungibleAdd}" maxlength="6" decimalPlaces="2" title="#{messages['fungibles.cantidad']}" required="true">
+							<f:validateDoubleRange minimum="0.1" maximum="999.1"/>
+						</p:inputNumber>
+						<p:message for="cantidad" />													
+					</div>
+					<div class="p-col-1 p-md-1 ">
+					    <p:spacer height="32px" />
+					    <br/>
+						<p:commandButton id="button" ajax="true" action="#{solicitudFungibles.addLinea}"
+										 process="@form" title="#{messages['fungibles.add']}" ariaLabel="#{messages['fungibles.add']}"
+										 update="@form, :formCarrito, :messages" value="#{messages['fungibles.add']}" icon="fa fa-plus-square" >							
+						</p:commandButton>		
+					</div>
+				</s:div>
+			</h:form>
+			<h:form id="formCarrito" styleClass="editFundeweb">
+				<div class="p-grid">
+					<div class="p-col-8 p-md-8 ">
+						<p:dataTable id="dataCarrito" rendered="#{solicitudFungibles.lineas.size() > 0}" var="_linea" paginator="true" rows="10" editable="true"
+									 paginatorPosition="bottom" paginatorAlwaysVisible="false" rowsPerPageTemplate="10,25,50" value="#{solicitudFungibles.lineas}" 
+									 tableStyleClass="tablaAuto fuente08" summary="#{messages['fungibles.carrito']}" rowHover="true" reflow="true">
+							<p:ajax event="rowEdit" listener="#{solicitudFungibles.editarLinea}" update=":messages" oncomplete="haCambiado = true;" />
+							<f:facet name="header">
+								<h:outputText value="#{messages['fungibles.lineas']}"/>
+				       		</f:facet>
+							<p:column headerText="#{messages['fungible.producto']}">
+								<h:outputText value="#{_linea.producto.descripcion}" />
+							</p:column>
+							<p:column headerText="#{messages['proyecto.label']}">
+								<h:outputText value="#{_linea.proyecto.nombre}" rendered="#{_linea.proyecto != null}" />
+							</p:column>
+							<p:column headerText="#{messages['fungibles.cantidad']}" styleClass="derecha">
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{solicitudFungibles.formatCantidad(_linea.cantidad)}" styleClass="derecha"/>
+									</f:facet>
+									<f:facet name="input">
+										<p:inputNumber id="cantidad2" decimalPlaces="2" value="#{_linea.cantidad}" maxlength="5" title="#{messages['fungibles.cantidad']}" required="true">
+											<f:validateDoubleRange minimum="0.1" maximum="999.1"/>											
+										</p:inputNumber>
+										<p:message for="cantidad2" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+							<p:column headerText="#{messages['fungibles.column.unidad']}" styleClass="centrado">
+								<h:outputText value="#{_linea.producto.unidadMedida.abreviatura}" styleClass="centrado" />
+							</p:column>
+							<p:column headerText="#{messages['fungibles.estado']}" rendered="#{solicitudFungibles.fungibleEdit.presupuesto == 'NO'}"
+									  styleClass="centrado negrita #{solicitudFungibles.getColorEstadoLinea(_linea.estado)}">
+								<h:outputText value="#{_linea.estado}" styleClass="centrado" />
+							</p:column>
+							<p:column headerText="#{messages['fungibles.edit']}" rendered="#{solicitudFungibles.fungibleEdit.cod != null}" styleClass="centrado">
+								<p:rowEditor rendered="#{_linea.cod != null and (solicitudFungibles.puedeRecoger(_linea) or solicitudFungibles.puedeEditarLineaPresupuesto()) and 
+ 														 (solicitudFungibles.fungibleEdit.estado=='Pendiente' or solicitudFungibles.fungibleEdit.estado=='Finalizado') and  
+ 														 (identity.tienePerfilEnServicio('SUPERVISOR',solicitudFungibles.servicioFungible.cod) or identity.tienePerfilEnServicio('TECNICO', solicitudFungibles.servicioFungible.cod)) and  
+ 														 solicitudFungibles.fungibleEdit.factura==null}"												 
+											 editTitle="#{messages['fungibles.linea.editar']} #{_linea.cantidad} x #{_linea.producto.descripcion}" 
+											 saveTitle="#{messages['fungibles.linea.guardar']} #{_linea.cantidad} x #{_linea.producto.descripcion}" 
+											 cancelTitle="#{messages['fungibles.linea.cancelar']} #{_linea.cantidad} x #{_linea.producto.descripcion}"/>
+							</p:column>
+							<p:column headerText="#{messages['fungibles.entregar']}" rendered="#{solicitudFungibles.fungibleEdit.cod != null and solicitudFungibles.fungibleEdit.presupuesto == 'NO'}" styleClass="centrado">
+								<p:commandLink id="linkEntregarLinea" ajax="true" styleClass="centrado" 
+											   title="#{messages['fungibles.entregar.uno.detalles']} #{_linea.cantidad} x #{_linea.producto.descripcion}" 
+											   ariaLabel="#{messages['fungibles.entregar.uno.detalles']} #{_linea.cantidad} x #{_linea.producto.descripcion}"	 
+											   rendered="#{solicitudFungibles.puedeRecoger(_linea) and _linea.estado!='Finalizado'}" action="#{solicitudFungibles.recogerLinea(_linea)}" update="formCarrito"
+											   oncomplete="haCambiado = true;">
+									<em class="fa fa-check-circle-o fuente16" />
+									<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['fungible.entregar.linea.confirm']}" icon="ui-icon-alert" />
+								</p:commandLink>
+							</p:column>
+							<p:column headerText="#{messages['fungibles.delete']}" styleClass="centrado">
+								<p:commandLink id="linkEliminarLinea" ajax="true" styleClass="centrado" 
+											   title="#{messages['fungibles.delete']} #{_linea.cantidad} x #{_linea.producto.descripcion}" 
+											   ariaLabel="#{messages['fungibles.delete']} #{_linea.cantidad} x #{_linea.producto.descripcion}" 
+											   action="#{solicitudFungibles.eliminarLinea(_linea)}" rendered="#{solicitudFungibles.puedeEliminar(_linea)}"
+											   update="@form, :messages" oncomplete="haCambiado = true;">
+									<em class="fa fa-trash fuente16" />
+									<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['fungible.eliminar.linea.confirm']}" icon="ui-icon-alert" />
+								</p:commandLink>
+							</p:column>
+						</p:dataTable>
+					</div>
+				</div>
+				<br/>
+				<div class="p-grid">					
+					<s:fragment id="fragmentHayLineas" rendered="#{solicitudFungibles.lineas.size() > 0}">
+						<s:div styleClass="p-col-12" >
+							<p:commandButton id="buttonCrear" action="#{solicitudFungibles.guardar}" process="@form" update="@form, :formConfirm, :messages" 
+											 value="#{solicitudFungibles.fungibleEdit.presupuesto == 'NO' ? messages['fungibles.crear'] : messages['presupuestos.hijo.crear']}" 
+											 title="#{solicitudFungibles.fungibleEdit.presupuesto == 'NO' ? messages['fungibles.crear.detalles'] : messages['presupuestos.hijo.crear.fungible.detalles']}" 
+											 ariaLabel="#{solicitudFungibles.fungibleEdit.presupuesto == 'NO' ? messages['fungibles.crear.detalles'] : messages['presupuestos.hijo.crear.fungible.detalles']}"
+											 styleClass="botonVerde"  icon="fa fa-save" oncomplete="haCambiado=false;" 
+											 rendered="#{solicitudFungibles.fungibleEdit.cod == null and solicitudFungibles.operacionGuardar()}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{solicitudFungibles.fungibleEdit.presupuesto == 'NO' ? messages['fungibles.crear.confirm'] : messages['presupuestos.hijo.crear.fungible.confirm']}" icon="ui-icon-alert" />
+							</p:commandButton>
+							<p:commandButton id="buttonModificar" action="#{solicitudFungibles.guardar}" process="@form" update="@form, :formConfirm, :messages" 
+										     value="#{solicitudFungibles.fungibleEdit.presupuesto == 'NO' ? messages['fungibles.modificar'] : messages['presupuestos.hijo.modificar']} " 
+										     title="#{solicitudFungibles.fungibleEdit.presupuesto == 'NO' ? messages['fungibles.modificar.detalles'] : messages['presupuestos.hijo.modificar.detalles']}" 
+										     ariaLabel="#{solicitudFungibles.fungibleEdit.presupuesto == 'NO' ? messages['fungibles.modificar.detalles'] : messages['presupuestos.hijo.modificar.detalles']}"
+											 styleClass="botonVerde"  icon="fa fa-save" oncomplete="haCambiado=false;"
+											 rendered="#{solicitudFungibles.fungibleEdit.cod != null and solicitudFungibles.operacionModificar()}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{solicitudFungibles.fungibleEdit.presupuesto == 'NO' ? messages['fungibles.modificar.confirm'] : messages['presupuestos.hijo.modificar.confirm']}" icon="ui-icon-alert" />
+							</p:commandButton>
+							<p:commandButton id="buttonEntregar" action="#{solicitudFungibles.entregarFungibles}" title="#{messages['fungibles.entregar.todos.detalles']}" ariaLabel="#{messages['fungibles.entregar.todos.detalles']}"
+										 	 process="@form" styleClass="botonVerde" value="#{messages['fungibles.entregar.todos']}" update="formCarrito" icon="fa fa-check" oncomplete="haCambiado=false;"
+										 	 rendered="#{solicitudFungibles.fungibleEdit.cod != null and solicitudFungibles.operacionEntregar()}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['fungibles.entregar.todos.confirm']}" icon="ui-icon-alert" />							
+							</p:commandButton>
+							<p:commandButton id="buttonAnular" styleClass="botonRojo" action="#{solicitudFungibles.anularFungibles}" process="@this"  update="@form, :formConfirm, :messages" icon="fa fa-times" 
+										     value="#{messages['fungibles.anular']}" 
+										     title="#{solicitudFungibles.fungibleEdit.presupuesto == 'NO' ? messages['fungibles.anular.todos.detalles'] : messages['presupuestos.hijo.anular.fungible.detalles']}" 
+										     ariaLabel="#{solicitudFungibles.fungibleEdit.presupuesto == 'NO' ? messages['fungibles.anular.todos.detalles'] : messages['presupuestos.hijo.anular.fungible.detalles']}"
+										     rendered="#{solicitudFungibles.fungibleEdit.cod != null and solicitudFungibles.operacionAnular()}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{solicitudFungibles.fungibleEdit.presupuesto == 'NO' ? messages['fungibles.anular.todos.confirm'] : messages['presupuestos.hijo.anular.fungible.confirm']}" icon="ui-icon-alert" oncomplete="haCambiado=false;"/>
+							</p:commandButton>
+							<p:commandButton id="buttonRechazar" styleClass="botonRojo" title="#{messages['fungibles.rechazar.todos.detalles']}" ariaLabel="#{messages['fungibles.rechazar.todos.detalles']}"
+											 action="#{solicitudFungibles.rechazarFungibles}" process="@this" value="#{messages['fungibles.rechazar']}" update="@form, :formConfirm, :messages" icon="fa fa-ban"
+											 rendered="#{solicitudFungibles.operacionRechazar()}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['fungibles.rechazar.todos.confirm']}" icon="ui-icon-alert" oncomplete="haCambiado=false;"/>
+							</p:commandButton>
+							<p:commandButton id="buttonReactivar" styleClass="botonVerde" title="#{messages['fungibles.reactivar.todos.detalles']}" ariaLabel="#{messages['fungibles.reactivar.todos.detalles']}"
+											 action="#{solicitudFungibles.reactivarFungibles}" process="@this" value="#{messages['fungibles.reactivar']}" update="@form, :formConfirm, :messages" icon="fa fa-undo"
+											 rendered="#{solicitudFungibles.operacionReactivar()}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['fungibles.reactivar.todos.confirm']}" icon="ui-icon-alert" oncomplete="haCambiado=false;"/>
+							</p:commandButton>
+						</s:div>
+					</s:fragment>					
+				</div>
+			</h:form>
+			<h:form id="formImprimir" target="_blank">
+				<s:div styleClass="p-grid" rendered="#{solicitudFungibles.fungibleEdit.presupuesto == 'NO'}">
+					<div class="p-col-12">
+						<p:commandButton id="buttonImprimir" rendered="#{solicitudFungibles.fungibleEdit.cod != null}" action="#{misSolicitudes.obtenerConsumoHtml(solicitudFungibles.fungibleEdit.cod)}" 
+										 ajax="false" update=":messages" icon="fa fa-print" value="#{messages['value.print']}" title="#{messages['value.print']}" ariaLabel="#{messages['value.print']}"/>
+					</div>					
+				</s:div>	
+			</h:form>
+			<h:form id="formRetorno">
+				<div class="p-grid">
+					<s:div styleClass="p-col-12" >				
+						<p:commandButton id="buttonVolver" icon="fa fa-reply" action="#{solicitudFungibles.volverListado}" ajax="false" process="@this"
+										 value="#{messages['value.return.listado']}" title="#{messages['value.return']}" ariaLabel="#{messages['value.return']}"
+										 onclick="if (haCambiado) {return confirm('Debe pulsar en Guardar Pedido para guardar los cambios. Si continúa perderá los cambios realizados. ¿Seguro que desea volver?');}"
+										 rendered="#{solicitudFungibles.fungibleEdit.cod != null and solicitudFungibles.accesoDesdeListado}"/>
+						<p:commandButton id="buttonVolverPadre" icon="fa fa-arrow-up" action="#{solicitudFungibles.volverConsumoPadre}" ajax="false" process="@this"
+										 value="#{solicitudFungibles.fungibleEdit.presupuesto == 'NO' ? messages['fungibles.volver.consumopadre'] : messages['presupuestos.volver.consumopadre']}" 
+										 title="#{solicitudFungibles.fungibleEdit.presupuesto == 'NO' ? messages['fungibles.volver.consumopadre'] : messages['presupuestos.volver.consumopadre']}" 
+										 ariaLabel="#{solicitudFungibles.fungibleEdit.presupuesto == 'NO' ? messages['fungibles.volver.consumopadre'] : messages['presupuestos.volver.consumopadre']}"
+										 onclick="if (haCambiado) {return confirm('Debe pulsar en Guardar Pedido para guardar los cambios. Si continúa perderá los cambios realizados. ¿Seguro que desea volver?');}"
+										 rendered="#{solicitudFungibles.fungibleEdit.consumoPadre != null}"/>
+					</s:div>
+				</div>
+			</h:form>
+			<h:form id="formConfirm">
+				<p:confirmDialog id="confirmDialog" global="true" showEffect="fade" hideEffect="fade">
+					<p:commandButton value="#{messages['value.yes']}" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton value="#{messages['value.no']}" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</p:confirmDialog>
+			</h:form>	
+		</p:panel>
+	</ui:define>
+</ui:composition>
+</html>

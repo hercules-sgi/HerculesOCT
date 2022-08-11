@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:s="http://jboss.org/schema/seam/taglib"
+	  xmlns:p="http://primefaces.org/ui" 
+	  lang="es" xml:lang="es">
+	  
+<h:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>
+    	<h:outputText value="#{messages['aplicacion.nombre']}"/>
+    </title>
+       
+    <link rel="shortcut icon" href="#{request.contextPath}/favicon.ico"/>
+	<h:outputScript library="fundeweb" name="primefaces/js/locales.js"/>
+    <h:outputStylesheet library="css" name="fundeweblogin.css"/>
+    <h:outputScript library="js" name="template.js" />
+    <h:outputScript library="js" name="modales.js" />
+    <ui:insert name="head"/>
+    
+</h:head>
+
+<h:body>
+
+<f:view>
+	<!-- Poner como primer elemento de la página al que se puede hacer foco -->
+	<div id="skip">
+		<a href="#maincontent">#{messages['accesibilidad.skipToMain']}</a>
+	</div>
+	
+	<h:form prependId="false">
+		<nav class="navbar navbar-expand-md navbar-dark mb-5">
+			  <s:link styleClass="navbar-brand" action="#{menuManagerBean.clickAndKillLastConversation('/login.xhtml')}">
+					<h:graphicImage styleClass="logo" library="img" name="logo_inst.gif" alt="Logo UM"/>
+					<span>#{messages['aplicacion.nombre']}</span>
+			  </s:link>
+		 </nav>
+	 </h:form>
+	 <s:div id="messagesGlobal" >
+		<p:growl id="messages" globalOnly="true" life="8000" showDetail="true"/>
+	 </s:div>
+		 
+		
+	  <div class="container-fluid">
+	  	
+	  	<main>
+	  		<ui:insert name="content"/>	
+	  	</main>
+	  		<div id="footer">
+			  	<div class="row justify-content-center mt-5">
+			  		<div class="col-sm-10">
+		             	<p><strong><span> © Universidad de Murcia</span>  <span class="text-muted rojo" style="margin-left: 5px;">ATICA</span></strong></p>
+		             	<s:fragment rendered="#{init.debug}">
+		             		<h:form>
+								<ui:include src="pie_debug.xhtml" />
+							</h:form>
+						</s:fragment>
+				  	</div>
+				  	<div class="col-sm-2">
+				  		<p:link title="Accesibilidad" ajax="false" target="_blank" outcome="/declaracionAccesibilidad.xhtml" class="enlaceBlanco negrita">
+										<em class="fafa-braille"/>Accesibilidad
+									</p:link>
+					</div>
+			  	</div>
+			 </div>
+			 
+	  </div>
+		  
+
+	 <ui:insert name="footer-js"/>
+</f:view>
+
+</h:body>
+
+
+</html>

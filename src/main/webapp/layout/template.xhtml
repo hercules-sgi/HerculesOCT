@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui" 
+	lang="es" xml:lang="es">
+<h:head>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title><h:outputText value="#{messages['aplicacion.nombre']}" /></title>
+	<link rel="shortcut icon" href="#{request.contextPath}/resources/img/favicon.png" />
+
+	<link rel="stylesheet" type="text/css" href="#{request.contextPath}/resources/css/custom.css" />
+	<link rel="stylesheet" type="text/css" href="#{request.contextPath}/resources/css/fundeweb.css" />
+	<link rel="stylesheet" type="text/css" href="#{request.contextPath}/resources/css/plantilla.css" />
+	<link rel="stylesheet" type="text/css" href="#{request.contextPath}/resources/css/primeflex.css" />
+	
+	<h:outputScript library="js" name="fundeweb.js" />
+	<h:outputScript library="js" name="layout.js" />
+	<h:outputScript library="js" name="menu.js" />
+	<h:outputScript library="js" name="utils.js" />
+	<h:outputScript library="fundeweb" name="primefaces/js/locales.js" />
+	<ui:insert name="head" />
+	<h:outputScript library="js" name="primefaces_fix.js" />
+</h:head>
+
+<h:body styleClass="#{menuManagerBean.collpased ? 'mini-sidebar' : ''} #{menuManagerBean.horizontal ? 'menu-horizontal' : ''}">
+		<script type="text/javascript">
+ 		    function comprobarArgsModal(xhr, status, args, nombre) {
+ 		        if(args.validationFailed) {
+ 		            PF(nombre).show();
+ 		        }
+ 		        else {
+ 		            PF(nombre).hide();
+ 		        }
+ 		    }
+		</script>
+	<f:view>
+		<!-- Poner como primer elemento de la página al que se puede hacer foco -->
+		<div id="skip">
+			<a href="#maincontent">#{messages['accesibilidad.skipToMain']}</a>
+		</div>
+		
+		<s:div id="panelBloqueoFundeweb" styleClass="panelBloqueo-first-div">
+			<s:div id="panelBloqueoFundewebDos"
+				styleClass="panelBloqueo-second-div">&nbsp;</s:div>
+			<s:div id="panelBloqueoFundewebTres"
+				styleClass="panelBloqueo-third-div">
+				<br />
+				<span class="espere">#{messages['value.wait']}</span>
+				<br />
+				<em class="fa fa-spinner fa-pulse fa-3x loading-img"></em>
+			</s:div>
+		</s:div>
+
+		<p:idleMonitor timeout="${duracion.sesion.segs}">
+			<p:ajax event="idle"
+				listener="#{org.jboss.seam.web.session.invalidate}"
+				oncomplete="PF('noSesionDlg').show();" />
+		</p:idleMonitor>
+
+		<p:dialog id="noSesionDlg" widgetVar="noSesionDlg" resizable="false"
+			      modal="true" width="50%" position="top" closable="false" style="margin-top:10%;">
+			<f:facet name="header">
+				<h:outputText value="#{messages['sesion.cerrada']}" />
+			</f:facet>
+			<h:form>
+				<p:outputLabel> #{messages['sesion.caducada']}
+				<s:link view="/${viewid.pagina.principal}"
+						value="#{messages['sesion.enlace']}" style="color:#ae1b2e;"></s:link>
+				</p:outputLabel>
+			</h:form>
+		</p:dialog>
+		<div id="main-wrapper">
+			<header class="topbar"> 
+				<nav class="navbar"> 
+					<h:form prependId="false">
+						<p:commandLink id="menu-button" actionListener="#{menuManagerBean.toggle}" process="@this"
+									   global="false" styleClass="nobloqueoFundeweb">
+							<em class="fa fa-bars"/>
+						</p:commandLink>
+						<h:graphicImage styleClass="logo" library="img" name="logo_inst.gif" role="presentation" alt="Logo UM"/>
+						<span class="app-name" href="#"> #{messages['aplicacion.nombre']} </span>
+						<ul class="navbar-actions">
+							<li class="navbar-item">
+								<s:link view="/login.xhtml" action="#{identity.logout}" rendered="#{identity.loggedIn}"
+									    propagation="none" includePageParams="false" value="" title="#{messages['value.link.logout']}">
+									<em class="fa fa-power-off navbar-item-icon"/>
+								</s:link>
+							</li>
+							
+							<s:fragment rendered="#{identity.suplantado}">
+								<li class="">
+									<p:commandLink id="deshacerSuplantacion" title="#{messages['suplantacion.restaurar.info']}" 
+												   action="#{usuarios.deshacerSuplantacion}" ariaLabel="#{messages['suplantacion.restaurar.info']}">
+										<em class="fa fa-arrow-circle-o-left fuente17"/>
+									</p:commandLink>	
+								</li>
+							</s:fragment>	
+							<li class="navbar-item">
+								<s:fragment rendered="#{not identity.suplantado}">
+									<em class="fa fa-user-circle-o navbar-item-icon iconoBlancoGrande" />
+								</s:fragment>
+								<s:fragment rendered="#{identity.suplantado}">
+									<em class="fa fa-user-secret navbar-item-icon iconoBlancoGrande" title="#{messages['suplantacion.encurso']} #{identity.usuarioConectado.datosUsuario.nombreCompleto}"/>
+								</s:fragment>	
+								<span class="navbar-item-name textoBlancoGrande"> 
+									<h:outputText value=" #{identity.principal.name}" rendered="#{identity.loggedIn}" />
+								</span>
+							</li>
+						</ul>
+					</h:form> 
+				</nav> 
+			</header>
+			<div class="page-wrapper">
+				<s:div id="messagesGlobal">
+					<p:growl id="messages" globalOnly="true" life="10000" showDetail="true" autoUpdate="true"/>
+				</s:div>
+				<ui:include src="confirmLostChangePanel.xhtml">
+					<ui:param name="title" value="#{messages['application.form.changed.title']}" />
+					<ui:param name="question" value="#{messages['application.form.changed.question']}" />
+				</ui:include>
+				<h:form id="ajaxBloqFundewebForm">
+					<p:ajaxStatus id="ajaxBloqFundeweb" onstart="inicio_ajax();" oncomplete="fin_ajax();" />
+				</h:form>
+				<s:fragment rendered="#{identity.loggedIn}">
+					<div class="sidebar #{menuManagerBean.collpased ? 'sidebar-collapse' : ''}">
+						<div class="sidebar-header">
+							<div class="logo">
+								<h:graphicImage styleClass="logo" library="img" name="logo_inst.gif" alt="Logo UM"/>
+							</div>
+							<div class="info">
+								<h2>Universidad de Murcia</h2>
+							</div>
+						</div>
+						<nav class="sidebar-nav" > 
+							<ui:include src="menu_lateral.xhtml" /> 
+						</nav>
+					</div>
+				</s:fragment>
+				<div class="main-content">
+					<div class="page-title">
+						<ui:insert name="page-header" />
+					</div>
+					<div class="page-content clearfix">
+<!-- 						<div class="ui-fluid"> -->
+							<main>
+								<ui:insert name="body" />
+							</main>
+<!-- 						</div> -->
+					</div>
+
+					<footer class="footer clearfix"> <h:form>
+						<p>
+							<strong><span>Universidad de Murcia</span> - <span>ATICA</span></strong>
+							<s:fragment rendered="#{init.debug}">
+								<ui:include src="pie_debug.xhtml" />
+							</s:fragment>
+						</p>
+
+						<nav>						
+							<ul class="footer-links">
+								<li><p:link title="Accesibilidad" ajax="false" target="_blank" outcome="/declaracionAccesibilidad.xhtml">
+										<em class="fafa-braille"/>Accesibilidad
+									</p:link>
+									
+								</li>
+								<li>
+								<p:spacer width="1" height="22" style="position: relative; bottom: -5px;background-color: #A8A8A8; margin-left: 10px;margin-right: 10px" />
+								</li>
+								<li><p:commandLink onclick="PF('dialogRecomendaciones').show();" title="Recomendaciones de navegación">
+										<em class="fa fa-desktop"/> Recomendaciones de Navegación
+									</p:commandLink>
+								</li>
+							</ul>
+						</nav>
+
+					</h:form> </footer>
+				</div>
+			</div>
+		</div>
+
+		<ui:include src="recomendaciones.xhtml"/>
+
+		<ui:insert name="footer-js" />
+	</f:view>
+</h:body>
+
+</html>

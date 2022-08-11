@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fdw="http://www.um.es/atica/fundeweb">
+
+<ui:composition template="/layout/templateLogin.xhtml">
+	<ui:define name="content">
+
+		<div class="row justify-content-end">
+			<div class="col-md-5 col-xl-12">
+				<div class="panel-login">
+					<div class="panel-heading">
+						<h6>
+							<h:outputText value="#{messages['login.recuperacion.title']}" />
+						</h6>
+						<p>
+							<h:outputText value="#{messages['login.recuperacion.text']}" />
+						</p>
+					</div>
+					<div class="row justify-content-md-center">
+						<div class="col-md-9">
+							<h:form id="formRecuperaPass">
+								<div class="row form-group">
+									<div class="col-sm-6">
+										<p:outputLabel for="username" value="#{messages['login.correo']}" styleClass="control-label" />
+										<p:inputText id="username" maxlength="40" styleClass="form-control form-control-sm" required="true" value="#{recuperaPass.email}"/>
+									</div>
+								</div>	
+								<br />
+								<div class="form-group">
+									<p:commandLink id="recuperaPassButton" title="#{messages['login.recuperacion.button']}"
+												   styleClass="btn btn-danger" update="@form, :messages"
+												   process="@form" action="#{recuperaPass.solicitarNuevoPassword}"
+												   value="#{messages['login.recuperacion.button']}"/>
+								</div>
+								<p:defaultCommand target="recuperaPassButton" />
+							</h:form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</ui:define>
+</ui:composition>
+
+</html>

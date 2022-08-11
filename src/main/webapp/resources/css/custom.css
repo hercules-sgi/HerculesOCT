@@ -1,0 +1,607 @@
+/* CSS para personalizar la aplicacion */
+
+body
+{
+	font-size: 12px !important;
+	font-family: Open Sans !important;
+}
+
+.ui-tabs-panel{
+	  background-color: white  !important;
+}
+
+.paddingPg4{
+    padding: 0.5em !important;
+	}
+
+label.ui-widget{
+	    padding-left: 5px;
+}
+
+label {
+	
+	font-weight: bold;
+}
+
+.izquierda {
+	text-align: left !important;
+}
+
+.block {
+	display: block;
+}
+
+.noHeader.ui-datatable table thead tr {
+    display: none;
+}	
+
+.ui-inputswitch {
+	height: 2.1em;
+}
+
+.ui-inputswitch .ui-inputswitch-handle {
+	height: 2em;
+}
+
+.ui-inputswitch .ui-inputswitch-on {	
+	height: 2em;
+}
+
+.ui-inputswitch .ui-inputswitch-off {	
+	height: 2em;
+}
+
+.auto.ui-datatable table {
+   width: auto;
+}
+
+.minheight.ui-datatable .ui-datatable-tablewrapper{
+	min-height: 250px;
+}
+
+.minheight100.ui-datatable .ui-datatable-tablewrapper{
+	min-height: 100px;
+}
+
+.number {
+	text-align: right;
+	margin-right: 1em;
+}
+
+div.header-right.ui-datatable > div.ui-datatable-header {
+	text-align: right;
+	
+}
+
+.ui-datatable table tbody tr td .ui-row-editor .ui-icon-pencil:hover 
+{
+   color: #0056b3;
+}
+
+.ui-datatable table tbody tr td .ui-row-editor .ui-icon-pencil 
+{
+	font-size: 1.7em !important;
+}
+
+.ui-icon 
+{
+	height: 16px !important;
+}
+
+.enlaceTexto
+{
+	color: #0033CC !important;
+}
+.enlaceTexto:hover
+{
+	color:  #0099CC !important;
+	text-decoration: none;
+}
+
+/* Botones y componentes*/
+button.ui-widget {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+input.ui-widget {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+/* Título y subtítulo de páginas */
+.page-title h1{
+	font-size: 1.3em;
+}
+
+.page-title h2{
+	font-size: 1.1em;
+}
+
+/* Tabla sin bordes*/
+
+.tablaSinBordes.ui-datatable thead th,
+.tablaSinBordes.ui-datatable tbody,
+.tablaSinBordes.ui-datatable tbody tr,
+.tablaSinBordes.ui-datatable tbody td {
+    border-style: none;
+}
+
+/* Lista sin bordes*/
+.listaSinBorde .ui-widget-content {
+	border: 0px !important;
+}
+
+.listaSinBorde .ui-datalist-item {
+	margin: 0px;			
+}
+
+.listaSinBorde .ui-datalist-data {
+    overflow: visible;
+    margin-left: 1%;
+}
+
+/* --- fieldset -------------------------------------------------------------------------------*/
+.legendMedium legend {
+    width: auto;
+    font-size: 0.8em;
+}
+
+/* Cabeceras*/
+.ui-widget-header {
+   background-color: #e5e7e9; 
+}
+
+.ui-datatable table thead th {
+	background-color: #e5e7e9 !important; 	
+}
+
+.tablaSinHeader.ui-datatable table thead tr {
+    display: none;
+}
+
+/* Color de elementos de menú en hover*/
+.sidebar .nav-list > li a:hover {
+    color:  #424949 !important;
+}
+
+/* Fondo tras un mensaje de confirmación*/
+.ui-widget-overlay{
+	opacity: 0.1;
+}
+
+/* Cabecera de columna de tabla*/
+.ui-datatable thead th {
+    text-align: center !important;
+}
+
+/* Comportamiento del cursor cuando estás sobre un botón */
+.ui-button:hover {
+	cursor:pointer !important;
+}
+
+/* Comportamiento del cursor cuando estás sobre una tabla */
+.ui-state-default {
+	cursor:default !important;
+}
+
+/* Color de borde de los botones*/
+.ui-button {
+	border-color: #bfc9ca !important;
+}
+
+.botonVerde.ui-button, 
+.botonVerde button.ui-button.ui-state-default, 
+.botonVerde.ui-button.ui-state-default
+{
+	background: #73C6B6;
+	border-color: #aab7b8 !important;
+	color: #000000;
+}
+
+.botonVerde.ui-button:hover, 
+.botonVerde button.ui-button.ui-state-default:hover, 
+.botonVerde.ui-button.ui-state-default:hover
+{
+	background: #76d7c4;
+}
+
+.botonRojo.ui-button, 
+.botonRojo button.ui-button.ui-state-default, 
+.botonRojo.ui-button.ui-state-default
+{
+	background: #D98880;
+	border-color: #aab7b8 !important;
+	color: #000000;
+}
+
+.botonRojo.ui-button:hover, 
+.botonRojo button.ui-button.ui-state-default:hover, 
+.botonRojo.ui-button.ui-state-default:hover
+{
+	background: #f1948a;
+}
+
+.ui-state-hover {
+	cursor:default !important;
+}
+
+.ui-datatable .ui-sortable-column {
+    cursor: pointer !important;
+}
+
+/* Para que las columnas de las reservas estén siempre arriba */
+.ui-datagrid-column {
+	vertical-align:top;
+}
+
+/* Para que se vean bien los controles en modo disabled */
+.ui-state-disabled {
+	opacity: 0.7 !important;
+}
+
+/* Enlaces de añadir elemento en cabecera de tabla*/
+.enlaceAdd{
+	font-weight: bold;
+}
+
+/* Tablas dentro de selectOneMenu*/
+.ui-selectonemenu-items.ui-selectonemenu-table.ui-widget-content.ui-widget.ui-corner-all.ui-helper-reset
+{
+	table-layout: auto;
+}
+
+/* Elementos dentro de los combos */
+.ui-selectonemenu.ui-widget.ui-state-default.ui-corner-all
+{
+	font-size: 0.8em;
+	min-width: 0 !important;
+}
+
+.ui-selectonemenu-item.ui-selectonemenu-list-item.ui-corner-all
+{
+	font-size: 0.8em;
+}
+.ui-selectonemenu-item.ui-selectonemenu-row.ui-widget-content
+{
+	font-size: 0.8em;
+}
+
+.ui-selectonemenu-panel.ui-selectonemenu-table td
+{
+	font-size: 0.8em;
+}
+
+.ui-selectcheckboxmenu.ui-widget.ui-state-default.ui-corner-all
+{
+	font-size: 0.8em;
+}
+
+.ui-selectcheckboxmenu-item.ui-selectcheckboxmenu-list-item.ui-corner-all
+{
+	font-size: 0.8em;
+}
+
+.ui-selectcheckboxmenu-label.ui-corner-all
+{
+	font-weight: normal;
+}
+
+.ui-selectcheckboxmenu-item.ui-selectcheckboxmenu-list-item.ui-corner-all label 
+{
+	font-weight: normal;
+}
+
+/* Enlaces */
+a:hover{
+	text-decoration: none;
+}
+
+/* Utilidades*/
+.centrado
+{
+	text-align: center !important;
+}
+
+.derecha
+{
+	text-align: right !important;
+}
+
+.negrita
+{
+	font-weight: bold;
+}
+
+.fuente06
+{
+	font-size: 0.6em !important;
+}
+
+.fuente065
+{
+	font-size: 0.65em !important;
+}
+
+.fuente07
+{
+	font-size: 0.7em !important;
+}
+
+.fuente08
+{
+	font-size: 0.8em !important;
+}
+
+.fuente09
+{
+	font-size: 0.9em !important;
+}
+
+.fuente115
+{
+	font-size: 1.15em !important;
+}
+
+
+.fuente12
+{
+	font-size: 1.2em !important;
+}
+
+.fuente13
+{
+	font-size: 1.3em !important;
+}
+.fuente14
+{
+	font-size: 1.4em !important;
+}
+
+.fuente15
+{
+	font-size: 1.5em !important;
+}
+
+.fuente16
+{
+	font-size: 1.6em !important;
+}
+
+.fuente17
+{
+	font-size: 1.7em !important;
+}
+
+.ancho100
+{
+	width: 100% !important;
+}
+
+.ancho75
+{
+	width: 75% !important;
+}
+
+.ancho66
+{
+	width: 66% !important;
+}
+
+.ancho60
+{
+	width: 60% !important;
+}
+
+.ancho50
+{
+	width: 50% !important;
+}
+
+.ancho25
+{
+	width: 25% !important;
+}
+
+.ancho10
+{
+	width: 10% !important;
+}
+
+.tablaAuto
+{
+	table-layout: auto;
+}
+
+.sinPaddingVertical
+{
+	padding-top: 0em !important;
+	padding-bottom: 0em !important;
+}
+
+.ui-datatable table thead th.sinPaddingVerticalTh
+{
+	padding-top: 0.3em !important;
+	padding-bottom: 0em !important;
+}
+
+.info
+{
+	cursor: help;
+}
+
+.iconoInfo
+{
+	color: blue;
+	cursor: help;
+}
+
+.iconoInfoEnlace
+{
+	color: blue;
+	cursor: pointer;
+}
+
+.textoAlerta
+{
+	color :  #b41515;
+}
+
+.textoAlertaSmall
+{
+	color : #b41515;
+	font-weight: bold;
+	font-size: 0.8em;
+}
+
+.iconoNoDisponible
+{
+	color: #b41515;
+	font-size: 1.3em;
+}
+
+.textoGreen
+{
+	color : green;
+}
+
+.aceptada {
+        background-color: #CCCFCE !important;
+        background-image: none !important;
+        color: #000000 !important;
+}
+
+.pendiente {
+        background-color: #f0b27a !important;
+        background-image: none !important;
+        color: #000000 !important;
+}
+
+.finalizada {
+        background-color: #82E0AA !important;
+        background-image: none !important;
+        color: #000000 !important;
+}
+
+.rechazada {
+        background-color: #f1948a !important;
+        background-image: none !important;
+        color: #000000 !important;
+} 
+
+.ui-panel .ui-panel-title{
+	color: #000000 !important;
+}
+
+.verde {
+	color: #196f3d;
+}    
+
+.rojo {
+	color:  #b41515;	
+}    
+
+.lila {
+	color:   #4a235a;
+}    
+
+.amarillo {
+	color:     #7d6608;
+}
+
+.naranja{
+	color:  #bf360c;
+}
+
+.azul {
+ 	color: #1b4f72; 
+}
+
+.azuloscuro{
+	color: #2700FF; 
+}
+
+.fuenteSmall {
+	font-size: 0.8em;
+}
+
+.fuenteXSmall {
+	font-size: 0.7em;
+}
+
+.fuenteXSSmall {
+	font-size: 0.5em;
+}
+
+.margen5 {
+	margin-left: 5px;
+}
+
+.colorFilaRoja
+{
+	background-color:  #f5cba7 !important;
+}
+
+.colorFilaRoja:hover
+{
+	background-color:  #edbb99 !important;
+}
+
+.textoBlancoGrande
+{
+	color: white;
+	font-size: 1.1em;
+}
+
+.iconoBlancoGrande
+{
+	color: white;
+	font-size: 1.5em;	
+}
+
+.ui-chkbox-box
+{
+	cursor: pointer !important;
+}
+
+.ui-growl-warn .ui-growl-item
+{
+	background-color: #d68910 !important;
+}
+
+/* Accesibilidad */
+ /* Para un selectBooleanCheckbox que es necesario que lleve label pero no queremos que se vea*/
+.labelOculto .ui-chkbox-label 
+{
+	visibility: hidden;
+}
+
+#skip a {
+	display: block;
+	position: absolute;
+	left: -999px;
+	top: -999px;
+}
+#skip a:focus {
+	left: 0;
+	top: 0;
+	z-index: 9000;
+	color: #b41515;
+	padding: 3px;
+	background: white;
+	border: 1px solid #990000;
+}
+
+.cke.cke_focus, .ui-sortable-column.ui-state-focus, .ui-chkbox-box.ui-state-focus, .ui-paginator .ui-paginator-next.ui-state-focus, .ui-paginator .ui-paginator-last.ui-state-focus, .ui-paginator .ui-paginator-first.ui-state-focus, .ui-paginator .ui-paginator-prev.ui-state-focus, .ui-paginator .ui-paginator-page.ui-state-focus, .ui-radiobutton .ui-radiobutton-box.ui-state-focus, .ui-tabs-nav .ui-tabs-outline, .ui-accordion .ui-tabs-outline, .ui-toggleswitch.ui-toggleswitch-focus {
+	outline: 2px dotted;
+	outline: 5px auto -webkit-focus-ring-color;
+	outline-offset:-2px;
+}
+
+a {
+    color: #2700FF; 
+    text-decoration: none;
+    background-color: transparent;
+    -webkit-text-decoration-skip: objects;
+}
+

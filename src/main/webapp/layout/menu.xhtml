@@ -1,0 +1,45 @@
+<h:form id="menuForm" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:s="http://jboss.org/schema/seam/taglib">
+
+	<p:menubar id="menuBar">
+
+		<p:menuitem id="homeMenuItem" value="#{messages['value.link.home']}"
+			icon="ui-icon-home" ajax="false" styleClass="bloqueoFundeweb"
+			action="#{menuManagerBean.clickAndKillLastConversation('/paginas/home.xhtml')}" />
+					
+		<p:submenu id="gestorSaiMenuitem" label="#{messages['menu.gestor']}">
+			<p:menuitem id="supUsu"  value="#{messages['menu.gestor.unidades']}"
+					ajax="false" styleClass="bloqueoFundeweb" url="#"/>
+		</p:submenu> 
+
+		<f:facet name="options">
+
+			<s:fragment rendered="#{identity.loggedIn and identity.supplantation}">
+				<p:menuitem id="restaurarMenuItem" value="#{messages['supplant.restore.value']}"
+					icon="fa fa-sign-out" ajax="false" styleClass="bloqueoFundeweb"
+					action="#{suplantarIdentidadBean.restaurar}"
+					title="#{messages['supplant.restore.value']} #{messages['label.user']}" />
+			</s:fragment>
+
+			<s:fragment rendered="#{not identity.supplantation}">
+				<em class="fa fa-user"/>
+			</s:fragment>
+			<s:fragment rendered="#{identity.supplantation}">
+				<em class="fa fa-user-secret"/>
+			</s:fragment>
+
+			#{'  '}
+			<h:outputText styleClass="pagePosition" value="#{identity.username}" />
+			#{'  '}
+			<p:commandButton id="logoutButton" value="Salir" icon="ui-icon-power"
+				action="#{identity.logout}" ajax="false"
+				styleClass="bloqueoFundeweb" />
+		</f:facet>
+
+	</p:menubar>
+	<p:sticky target="menuBar" />
+</h:form>

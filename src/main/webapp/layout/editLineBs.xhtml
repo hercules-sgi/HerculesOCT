@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:s="http://jboss.org/schema/seam/taglib">
+
+	<ui:composition>
+		
+	    <div id="#{clientId}" class="form-group #{styleClass == null ? '' : styleClass} #{ invalid ? 'has-error' : ''}"
+	    	 style="#{style == null ? '' : style}">
+			<ui:insert/>
+	    </div>
+	
+	</ui:composition>
+
+</html>

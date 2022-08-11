@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/layout/template.xhtml">
+	<ui:define name="page-header">
+		<h1>
+			<h:outputText value="#{messages['menu.registroir']} #{registroIr.servicio.nombre}" />
+		</h1>
+		<h2>
+			<h:outputText value="#{messages['menu.registroir.subtitle']}" />
+		</h2>
+	</ui:define>
+
+	<ui:define name="body">
+		<p:panel>
+			<p class="textoAlerta fuente08">#{messages['registroir.alerta']}</p>
+			<h:form id="formEntidadEdit">
+				<s:div styleClass="p-grid ui-fluid" rendered="#{identity.trabajadorUmu}">
+					<div class="p-col-12 p-sm-6 p-md-4 p-lg-3" >
+						<p:outputLabel for="tipoEntidad" value="#{messages['crearentidadpagadora.tipoentidad']}:" />
+						<p:selectOneMenu id="tipoEntidad" value="#{registroIr.tipoEntidad}" required="true"
+										 requiredMessage="#{messages['crearentidadpagadora.requnidad']}">
+							<f:selectItem itemLabel="Seleccione un tipo de entidad" itemValue="" />
+							<f:selectItem itemLabel="Unidad administrativa" itemValue="UDADMIN" />
+							<f:selectItem itemLabel="Tercero" itemValue="TERCERO" />
+							<p:ajax event="valueChange" listener="#{registroIr.seleccionadoTipoEntidad}" update="@form" />
+						</p:selectOneMenu>
+						<p:message for="tipoEntidad" />
+					</div>
+				</s:div>
+				<s:div styleClass="p-grid ui-fluid" rendered="#{registroIr.tipoEntidad != null}">
+					<s:div styleClass="p-col-12 p-md-5" rendered="#{registroIr.tipoEntidad == 'UDADMIN'}">
+						<p:outputLabel for="departamento" value="#{messages['entidadespagadoras.unidad']}:" />
+						<p:selectOneMenu id="departamento" value="#{registroIr.entidadEdit.unidadAdministrativa}"
+										 filter="true" filterMatchMode="contains" required="true">
+							<f:selectItem itemLabel="#{messages['crearentidadpagadora.seleccionarDpto']}" itemValue="" />
+							<f:selectItems value="#{registroIr.listaDepartamentos}" var="_dep" itemLabel="#{_dep.nombre} - #{_dep.codigo}" itemValue="#{_dep.codigo}" />
+						</p:selectOneMenu>
+						<p:messages for="departamento" />	
+					</s:div>
+					<s:div styleClass="p-col-12 p-md-2" rendered="#{registroIr.tipoEntidad == 'TERCERO'}">
+						<p:outputLabel for="cif" value="#{messages['crearentidadpagadora.entidadcif']}:" />
+						<p:inputText id="cif" maxlength="9" required="true" value="#{registroIr.entidadEdit.cif}" validatorMessage="#{messages['validator.cif']}">
+							<f:validateLength minimum="9"/>
+							<f:validateRegex pattern="^[A-Z0-9_]*$" />	
+							<p:ajax event="blur" listener="#{registroIr.introducidoCif}" update="@form, :messages"/>
+						</p:inputText>	
+						<p:message id="msjCif" for="cif" />
+					</s:div>
+					<s:div styleClass="p-col-12 p-md-6" rendered="#{not empty registroIr.listaSubterceros}">
+						<p:outputLabel for="subtercero" value="#{messages['factura.subtercero']}:"/>
+						<p:selectOneMenu id="subtercero" filter="true" filterMatchMode="contains" value="#{registroIr.entidadEdit.codSubtercero}" title="#{messages['factura.subtercero']}">
+							<f:selectItem itemLabel="#{messages['registroir.externos.subtercero.desconocido']}" itemValue="" />
+							<f:selectItems var="_subt" itemLabel="#{_subt.nombre}" itemValue="#{_subt.codigo}" value="#{registroIr.listaSubterceros}" />
+						</p:selectOneMenu>
+						<p:message for="subtercero"/>
+					</s:div>
+				</s:div>	
+				<s:div styleClass="p-grid ui-fluid" rendered="#{registroIr.tipoEntidad == 'TERCERO'}">
+					<s:div styleClass="p-col-12 p-md-4">
+						<p:outputLabel for="nombre" value="#{messages['crearentidadpagadora.nombre']}:" />
+						<p:inputText id="nombre" required="true" requiredMessage="#{messages['crearentidadpagadora.reqnombre']}"
+									 value="#{registroIr.entidadEdit.nombre}"/>
+						<p:message for="nombre" />
+					</s:div>
+					<div class="p-col-12 p-md-4">
+						<p:outputLabel for="entidadDireccion" value="#{messages['crearentidadpagadora.entidadDireccion']}:" />
+						<p:inputText id="entidadDireccion" maxlength="50" required="true"
+									 requiredMessage="#{messages['crearentidadpagadora.reqdir']}"
+									 value="#{registroIr.entidadEdit.direccion}"/>
+						<p:message for="entidadDireccion" />
+					</div>
+					<div class="p-col-12 p-md-3">
+						<p:outputLabel for="entidadLocalidad" value="#{messages['crearentidadpagadora.entidadLocalidad']}:" />
+						<p:inputText id="entidadLocalidad" maxlength="40" required="true"
+									 requiredMessage="#{messages['crearentidadpagadora.reqloc']}"
+									 value="#{registroIr.entidadEdit.localidad}"/>
+						<p:message for="entidadLocalidad" />
+					</div>
+					<div class="p-col-12 p-md-1">
+						<p:outputLabel for="entidadCp" value="#{messages['crearentidadpagadora.entidadCp']}:" />
+						<p:inputText id="entidadCp" maxlength="26" required="true" requiredMessage="#{messages['crearentidadpagadora.reqcp']}"
+									 value="#{registroIr.entidadEdit.cp}">
+							<p:keyFilter for="entidadCp" mask="num"/>
+						</p:inputText>
+						<p:message for="entidadCp" />
+					</div>
+				</s:div>
+				<s:div styleClass="p-grid ui-fluid" rendered="#{registroIr.tipoEntidad != null}">
+					<div class="p-col-12 p-sm-6 p-md-3 p-lg-2">
+						<p:outputLabel for="email" value="#{messages['crearentidadpagadora.email']}:" />
+						<p:inputText id="email" required="true" requiredMessage="#{messages['crearentidadpagadora.reqemail']}"
+									 value="#{registroIr.entidadEdit.email}" validatorMessage="#{messages['validator.email.no']}">
+							<f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"/>
+						</p:inputText>
+						<p:message for="email" />
+					</div>
+					<div class="p-col-12 p-sm-6 p-md-3 p-lg-2">
+						<p:outputLabel for="telefono" value="#{messages['crearentidadpagadora.telefono']}:" />
+						<p:inputText id="telefono" required="true" requiredMessage="#{messages['crearentidadpagadora.reqtelefono']}"
+									 value="#{registroIr.entidadEdit.telefono}">
+							<p:keyFilter for="telefono" mask="num"/>
+						</p:inputText>
+						<p:message for="telefono" />
+					</div>
+				</s:div>
+				<s:div styleClass="p-grid ui-fluid" rendered="#{registroIr.tipoEntidad != null}">	
+					<div class="p-col-12 p-sm-7 p-md-6 ">
+						<p:outputLabel for="observaciones" value="#{messages['crearentidadpagadora.observaciones']}:" />
+							<p:inputTextarea id="observaciones" cols="20" rows="2" maxlength="800"
+											 value="#{registroIr.entidadEdit.observaciones}"/>
+					</div>
+				</s:div>
+				<br/>
+				<div class="p-grid">
+					<div class="p-col-12">
+						<p:commandButton action="#{registroIr.guardar}" value="#{messages['value.save']}" id="buttonGuardar"
+										 process="@form" update="@form :messages" icon="fa fa-floppy-o"
+										 title="#{messages['value.save']}" 
+										 rendered="#{registroIr.tipoEntidad != null}"/>
+						<p:commandButton action="#{registroIr.volver}" value="#{messages['value.return']}" id="buttonCancel"
+										 process="@this" icon="fa fa-reply" title="#{messages['value.return']}" />
+					</div>
+				</div>
+			</h:form>
+		</p:panel>
+	</ui:define>
+</ui:composition>
+</html>

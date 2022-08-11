@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/layout/template.xhtml">
+	<ui:define name="page-header">
+		<h1>
+			<h:outputText value="#{messages['listado.usuariosir']}" title="#{messages['listado.usuariosir']}"  />
+		</h1>
+		<h2>
+			<h:outputText value="#{messages['listado.usuariosir.subtitle']}" title="#{messages['listado.usuariosir.subtitle']}" />
+		</h2>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:form id="formConfirm">
+			<p:confirmDialog id="dialogoConfirmacion" global="true" showEffect="fade" hideEffect="fade" responsive="true">
+				<p:commandButton title="Si" label="Si" ariaLabel="Si" value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" process="@form" />
+				<p:commandButton title="No" label="No" ariaLabel="No" value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+		</h:form>
+
+		<p:panel id="panelPrincipal">
+			<div class="p-grid ui-fluid">
+				<div class="p-col-12 p-md-1">
+					<p:outputLabel value="#{messages['table.dni']}:" title="#{messages['table.dni']}:" />
+					<br/>
+					<h:outputText value="#{usuarioIrEdit.usuarioIrEdit.dni}" title="#{usuarioIrEdit.usuarioIrEdit.dni}" styleClass="margen5"/>
+				</div>
+				<div class="p-col-12 p-md-3" >
+					<p:outputLabel value="#{messages['table.nombre']}:" title="#{messages['table.nombre']}:" />
+					<br/>
+					<h:outputText value="#{usuarioIrEdit.usuarioIrEdit.datosUsuario.nombreCompleto}" title="#{usuarioIrEdit.usuarioIrEdit.datosUsuario.nombreCompleto}" styleClass="margen5"/>
+				</div>
+				<div class="p-col-12 p-md-2">
+					<p:outputLabel value="#{messages['table.email']}:" title="#{messages['table.email']}:" />
+					<br/>
+					<h:outputText value="#{usuarioIrEdit.usuarioIrEdit.datosUsuario.email}" title="#{usuarioIrEdit.usuarioIrEdit.datosUsuario.email}" styleClass="margen5"/>
+				</div>
+				<div class="p-col-12 p-md-1">
+					<p:outputLabel value="#{messages['table.telefono']}:"  title="#{messages['table.telefono']}:"/>
+					<br/>
+					<h:outputText value="#{usuarioIrEdit.usuarioIrEdit.datosUsuario.telefono}" title="#{usuarioIrEdit.usuarioIrEdit.datosUsuario.telefono}" styleClass="margen5"/>
+				</div>
+			</div>
+			<div class="p-grid ui-fluid">
+				<div class="p-col-12 p-md-2">
+					<p:outputLabel value="#{messages['table.estado']}:" title="#{messages['table.estado']}:" />
+					<br/>
+					<h:outputText value="#{usuarioIrEdit.usuarioIrEdit.estado}" title="#{usuarioIrEdit.usuarioIrEdit.estado}" styleClass="margen5"/>
+				</div>
+				<div class="p-col-12 p-md-2">
+					<p:outputLabel value="#{messages['usuario.caduca']}:" title="#{messages['usuario.caduca']}:" />
+					<br/>
+					<h:outputText value="#{messages['usuario.caduca.empty']}" title="#{messages['usuario.caduca.empty']}" styleClass="margen5" rendered="#{usuarioIrEdit.usuarioIrEdit.caduca == null}"/>
+					<h:outputText value="#{messages['usuario.caduca.empty.infopendiente']}" title="#{messages['usuario.caduca.empty.infopendiente']}"  styleClass="margen5" rendered="#{usuarioIrEdit.usuarioIrEdit.caduca == null and usuarioIrEdit.usuarioIrEdit.estado == 'PEND'}"/>
+					<h:outputText value="#{usuarioIrEdit.usuarioIrEdit.caduca}" title="#{usuarioIrEdit.usuarioIrEdit.caduca}" styleClass="margen5" rendered="#{usuarioIrEdit.usuarioIrEdit.caduca != null}">
+						<s:convertDateTime pattern="dd/MM/yyyy"/>
+					</h:outputText>	
+				</div>
+				<div class="p-col-12 p-md-6">
+					<p:outputLabel value="#{messages['dato.observaciones']}:" title="#{messages['dato.observaciones']}:" />
+					<h:outputText value="#{usuarioIrEdit.usuarioIrEdit.observaciones}" title="#{usuarioIrEdit.usuarioIrEdit.observaciones}" />
+				</div>
+			</div>
+			<br/>
+			<h:form id="formVolver">
+				<div class="p-grid">
+					<div class="p-col-12">
+						<p:commandButton value="#{messages['value.return']}" title="#{messages['value.return']}"
+										 label="#{messages['value.return']}" ariaLabel="#{messages['value.return']}"
+										 action="#{usuarioIrEdit.volver()}" icon="fa fa-reply" process="@this"/>
+					</div>
+				</div>
+			</h:form>
+			<p:panel header="#{messages['usuario.entidades']}">
+				<div class="p-grid">
+					<div class="p-col-12 p-md-6">
+						<p:panel header="#{messages['usuario.entidades.asignacion']}">
+							<s:fragment rendered="#{usuarioIrEdit.usuarioIrEdit.entidadPagadoraSolicita != null and usuarioIrEdit.usuarioIrEdit.entidadPagadoraSolicita.estado == 'S'}">
+								<h:form id="formValidarEntidadPendiente">
+									<div class="textoAlerta fuente08 margen5">#{messages['usuariosir.entidadsolicitadapendiente']}</div>
+									<div class="textoAlerta fuente08 margen5">#{messages['usuariosir.entidadsolicitadapendiente2']}</div>
+									<br/>
+								    <div class="margen5">
+	                    				<p:commandLink id="enlaceValidarEntidad" styleClass="enlaceTexto" ajax="false" process="@this"
+	                    							   title="#{messages['usuariosir.entidadsolicitadapendiente.validar']}"                    							   
+	                    							   ariaLabel="#{messages['usuariosir.entidadsolicitadapendiente.validar']}"                    							   
+		                    		   				   value="#{messages['usuariosir.entidadsolicitadapendiente.validar']}" 
+													   action="#{entidadPagadoraEdit.establecerEntidadEdit(usuarioIrEdit.usuarioIrEdit.entidadPagadoraSolicita, usuarioIrEdit.usuarioIrEdit)}">
+										</p:commandLink>
+									    <p:commandLink id="imgValidarEntidad" styleClass="margen5" ajax="false" process="@this" 
+									    			   title="#{messages['usuariosir.entidadsolicitadapendiente.validar']}" 
+									    			   ariaLabel="#{messages['usuariosir.entidadsolicitadapendiente.validar']}"	
+									    			   action="#{entidadPagadoraEdit.establecerEntidadEdit(usuarioIrEdit.usuarioIrEdit.entidadPagadoraSolicita, usuarioIrEdit.usuarioIrEdit)}">
+											<em class="fa fa-arrow-right fuente13" />
+										</p:commandLink>		                    		 
+									</div>
+									<br/>
+								</h:form>			                    		 
+							</s:fragment>
+							<h:form id="formAsignacionEntidades">
+								<div class="p-grid ui-fluid">
+									<div class="p-col-12">									
+										<p:selectOneMenu id="entidadPagadora" value="#{usuarioIrEdit.entidadIrAdd.entidadPagadora}" 
+														 required="true"													 
+														 label="#{messages['usuario.add.entidad.seleccion']}"
+														 labelledBy="labelAsignacion"
+														 filter="true" filterMatchMode="contains"														 												 
+														 title="#{messages['usuario.add.entidad.seleccion']}">
+											<f:selectItem itemLabel="#{messages['usuario.add.entidad.seleccion']}" itemValue=""/>
+											<f:selectItems value="#{usuarioIrEdit.getListaEntidadesPagadoras()}" var="ent" itemLabel="#{usuarioIrEdit.getDescripcionEntidad(ent)}" itemValue="#{ent}" />
+											<s:convertEntity />
+										</p:selectOneMenu>
+										<p:message for="entidadPagadora"/>
+									</div>
+								</div>	
+								<br/>
+								<div class="p-grid">	
+									<div class="p-col-12">
+										<p:commandButton id="addEntidadButton" value="#{messages['usuario.add.entidad']}" 
+														 title="#{messages['usuario.add.entidad']}"
+														 ariaLabel="#{messages['usuario.add.entidad']}"
+														 label="#{messages['usuario.add.entidad']}" 
+														 action="#{usuarioIrEdit.addEntidad()}" update="@form formListadoEntidadesIr :messages" icon="fa fa-plus"/>
+									</div>
+								</div>
+							</h:form>
+						</p:panel>
+					</div>
+					<div class="p-col-12 p-md-6">	
+						<h:form id="formListadoEntidadesIr">	
+							<p:dataTable id="dataTableEntidadesIr" value="#{usuarioIrEdit.getEntidadesUsuario()}" var="eir" rowHover="true"
+										 tableStyleClass="tablaAuto fuente08" emptyMessage="#{messages['usuario.entidades.empty']}" >
+								<f:facet name="header">
+									<p:outputLabel value="#{messages['usuario.entidades.listado']}" title="#{messages['usuario.entidades.listado']}" />
+								</f:facet>
+								<p:column headerText="#{messages['entidadpagadora.title']}" ariaHeaderText="#{messages['entidadpagadora.title']}">
+									<h:outputText value="#{eir.entidadPagadora.nombre}" title="#{eir.entidadPagadora.nombre}"/>
+								</p:column>
+								<p:column headerText="#{messages['entidadpagadora.departamento']}" ariaHeaderText="#{messages['entidadpagadora.departamento']}" styleClass="centrado">
+									<h:outputText value="#{eir.entidadPagadora.unidadAdministrativa}" title="#{eir.entidadPagadora.unidadAdministrativa}"/>
+								</p:column>
+								<p:column headerText="#{messages['entidadpagadora.cif']}" ariaHeaderText="#{messages['entidadpagadora.cif']}" styleClass="centrado">
+									<s:fragment rendered="#{eir.entidadPagadora.cif != null}">
+										<h:outputText value="#{eir.entidadPagadora.cif}" title="#{eir.entidadPagadora.cif}"/>
+										<br/>
+										<h:outputText value="#{usuarioIrEdit.getNombreSubtercero(eir.entidadPagadora)}" />
+									</s:fragment>	
+								</p:column>
+								<p:column headerText="#{messages['value.action']}" ariaHeaderText="#{messages['value.action']}" styleClass="centrado">
+									<div class="p-grid p-justify-center">
+										<s:div styleClass="p-col" >
+											<p:commandLink id="eliminarEntidadIr" title="#{messages['usuario.del.entidad']}" ariaLabel="#{messages['usuario.del.entidad']}"
+														   action="#{usuarioIrEdit.eliminarEntidad(eir)}" update="@form :messages">
+												<em class="fa fa-trash fuente17" />
+												<p:confirm header="#{messages['application.deleting.confirm.title']}" message="#{messages['usuario.del.entidad.confirm']}"  icon="ui-icon-alert"/>
+											</p:commandLink>
+										</s:div>
+									</div>
+								</p:column>
+							</p:dataTable>
+						</h:form>
+					</div>	
+				</div>		
+			</p:panel>
+		</p:panel>
+	</ui:define>
+</ui:composition>
+
+</html>

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fdw="http://www.um.es/atica/fundeweb">
+
+<ui:composition template="/layout/templateLogin.xhtml">
+
+	<ui:define name="head">
+
+		<script type="text/javascript">
+    	function limpiarCampoUsuario() {
+    		document.getElementById('tabAcceso:username').value = '';
+        }
+ 	
+    </script>
+
+	</ui:define>
+
+	<ui:define name="content">
+
+		<div class="row justify-content-end">
+
+			<div class="col-md-7 col-xl-7">
+
+				<h2>
+					<h:outputText title="#{messages['main.title']}" value="#{messages['main.title']}" />
+				</h2>
+
+				<p><h:outputText title="#{messages['login.mensajeacceso']}" value="#{messages['login.mensajeacceso']}"/></p>
+
+				<div class="row" style="text-align: left;">
+				<h:form id="formRegistroNuevoIrExterno">
+					<div class="col-md-12 offset-2">					
+						<ul>
+							<p:repeat value="#{login.servicios}" var="servicio">
+								<li>
+									<p:commandLink id="buttonSolicitar" ajax="false" styleClass="enlaceBlanco"
+												   title="#{messages['registroir.solicitud.servicio']} #{servicio.nombre}"
+												   ariaLabel="#{messages['registroir.solicitud.servicio']} #{servicio.nombre}"										   
+												   value="#{servicio.nombre}" process="@this"
+												   action="#{registroNuevoIrExterno.establecerServicioRegistroIr(servicio)}" onblur="saveLastFocus(event);">
+										<p:confirm header="#{messages['home.confirmar']}" message="#{messages['registroir.alerta.confirm']}"
+												   icon="ui-icon-alert" />							
+									</p:commandLink>
+												
+								</li>											
+							</p:repeat>
+						</ul>	
+					</div>
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+        				<p:commandButton label="Si" title="Si" ariaLabel="Si" value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-check" />
+        				<p:commandButton label="No" title="No" ariaLabel="No" value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-times" onclick="goToLastFocus();"/>
+    				</p:confirmDialog>  
+				</h:form>
+				</div>
+
+				<p />
+				<div class="row">
+					<div class="col-md-3">
+						<a href="https://www.um.es/web/acti/contenido/normativa" class="enlaceBlanco negrita" target="_blank" rel="noopener noreferrer">  
+							<h:outputText title="#{messages['main.normativa']}" value="#{messages['main.normativa']}" />
+						</a>
+					</div>
+					<div class="col-md-3">
+						<a href="https://www.um.es/web/acti" class="enlaceBlanco negrita" target="_blank" rel="noopener noreferrer">
+							<h:outputText title="#{messages['main.sai']}" value="#{messages['main.sai']}" />
+						</a>
+					</div>
+					<div class="col-md-3">
+						<a href="https://www.um.es/web/acti/contenido/solicitud-servicios/g-sai" class="enlaceBlanco negrita">
+							<h:outputText title="#{messages['main.guiaacceso']}" value="#{messages['main.guiaacceso']}" />
+						</a>
+					</div>
+					<div class="col-md-3">
+						<a href="mailto:#{messages['application.mail.acti']}" class="enlaceBlanco negrita"> 
+							<h:outputText value="#{messages['main.buzon']}" />
+						</a>
+					</div>
+				</div>
+
+			</div>
+			<div class="col-md-5 col-xl-5">
+				<div class="panel-login">
+					<div class="panel-heading">
+						<h6>
+							<h:outputText title="#{messages['login.text']}" value="#{messages['login.text']}" />
+						</h6>
+						<p>
+							<h:outputText title="#{messages['login.modoacceso']}" value="#{messages['login.modoacceso']}" />
+						</p>
+					</div>
+					<p:tabView id="tabAcceso" onTabChange="limpiarCampoUsuario();" >
+						<p:tab title="Con cuenta UM" ariaLabel="Con cuenta UM">
+							<p class="text-justify">
+								<h:outputText title="#{messages['login.usuarioum']}" value="#{messages['login.usuarioum']}" />
+							</p>
+							<div class="col-md-9">
+								<a href="paginas/home.seam" class="btn btn-danger"> <h:outputText
+										title="#{messages['value.button.login']}" value="#{messages['value.button.login']}" /></a>
+							</div>
+						</p:tab>
+						<p:tab title="Usuarios Externos" ariaLabel="Usuarios Externos">
+							<p class="text-justify">
+								<h:outputText title="#{messages['login.usuarionoum']}" value="#{messages['login.usuarionoum']}" />
+							</p>
+							<div class="row justify-content-md-center">
+								<div class="col-md-9">
+									<h:form prependId="false">
+										<div class="row form-group">
+											<div class="col-sm-8">
+												<p:outputLabel for="username"  title="#{messages['login.correo']}" value="#{messages['login.correo']}" styleClass="control-label" />
+												<p:inputText id="username" title="#{credentials.username}" label="#{credentials.username}" maxlength="40" styleClass="form-control form-control-sm" required="true" value="#{credentials.username}" />
+												<p:message for="username"/>
+											</div>
+										</div>
+										<div class="row form-group">
+											<div class="col-sm-8">
+												<p:outputLabel for="password" title="#{messages['login.password']}"  value="#{messages['login.password']}" styleClass="control-label" />
+												<p:password id="password" title="#{credentials.password}" label="#{credentials.password}" value="#{credentials.password}" required="true" styleClass="form-control form-control-sm" maxlength="20"/>
+												<p:message for="password"/>
+											</div>
+										</div>
+										<p:link href="./recuperaPass.seam" title="#{messages['login.olvido.pass']}" value="#{messages['login.olvido.pass']}" styleClass="enlaceAzul"/>
+										<br/>
+										<br/>
+										<div class="form-group">
+											<p:commandLink id="radiusButton"
+												title="#{messages['value.button.login']}"
+												ariaLabel="#{messages['value.button.login']}"
+												styleClass="btn btn-danger" update="@form, :messages"
+												oncomplete="checkErrors();"
+												disabled="#{!authenticationManagerBean.radiusAuthentication and !authenticationManagerBean.nifAuthentication and !authenticationManagerBean.noUmuAuthentication}"
+												process="@form" action="#{identity.login}"
+												value="#{messages['value.button.login']}">
+											</p:commandLink>
+										</div>
+										<p:defaultCommand target="radiusButton" />
+									</h:form>
+								</div>
+							</div>
+						</p:tab>
+					</p:tabView>
+				</div>
+			</div>
+		</div>
+
+	</ui:define>
+
+
+	<ui:define name="footer-js">
+		<script type="text/javascript">    	
+    	$(function() {
+    	    limpiarCampoUsuario();
+    	    document.getElementById('tabAcceso:username').focus();
+   	 	});	
+    	</script>
+	</ui:define>
+
+</ui:composition>
+
+</html>

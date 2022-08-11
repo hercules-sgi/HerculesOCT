@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/layout/template.xhtml">
+	<ui:define name="page-header">
+		<h1>
+			<h:outputText title="#{messages['productos.title']}" value="#{messages['productos.title']}" />
+		</h1>
+		<h2>
+			<h:outputText title="#{messages['productos.subtitle']}" value="#{messages['productos.subtitle']}" />
+		</h2>
+	</ui:define>
+
+	<ui:define name="body">
+		<p:panel>
+			<h:form id="formProductos">
+				<div class="p-grid ui-fluid">
+					<div class="p-col-12 p-sm-6 p-md-3 p-lg-2">
+						<p:outputLabel value="#{messages['fungible.service']}:" title="#{messages['fungible.service']}"	for="servicio" />
+						<br/>
+						<p:selectOneMenu id="servicio" value="#{productos.servicioBuscar}" title="#{messages['fungible.service']}" 
+				 						 filter="true" filterMatchMode="contains" >
+							<f:selectItem itemValue="" itemLabel="#{messages['servicio.cualquiera']}"/>
+							<f:selectItems value="#{productos.listaServicios}" var="serv" itemValue="#{serv}" itemLabel="#{serv.nombre}" />
+							<s:convertEntity />
+						</p:selectOneMenu>
+					</div>
+					<div class="p-col-12 p-sm-6 p-md-3 p-lg-2">
+						<p:outputLabel for="tipo" value="#{messages['producto.tipo']}:" />
+						<br/>
+						<p:selectOneMenu id="tipo" value="#{productos.tipoBuscar}" title="#{messages['producto.tipo']}">
+								<f:selectItem itemValue="" itemLabel="#{messages['producto.tipo.cualquiera']}"/>
+								<f:selectItem itemValue="F" itemLabel="#{messages['producto.fungible']}"/>
+								<f:selectItem itemValue="P" itemLabel="#{messages['producto.prestacion']}"/>
+								<f:selectItem itemValue="R" itemLabel="#{messages['producto.reserva']}"/>
+							</p:selectOneMenu>
+					</div>
+					<div class="p-col-12 p-sm-6 p-md-3 p-lg-2" >
+						<h:outputLabel for="descri" value="#{messages['productos.descripcion']}:" />
+						<br/>
+						<p:inputText id="descri" value="#{productos.descripcionBuscar}" title="#{messages['productos.descripcion']}"/>
+					</div>
+					<div class="p-col-12 p-sm-6 p-md-2 p-lg-2">
+						<p:outputLabel for="estado" value="#{messages['table.estado']}:" />
+						<br/>
+						<p:selectOneMenu id="estado" value="#{productos.estadoBuscar}" title="#{messages['table.estado']}" >
+						<f:selectItem itemValue="" itemLabel="Cualquiera"/>
+							<f:selectItem itemValue="ALTA" itemLabel="ALTA"/>
+							<f:selectItem itemValue="BAJA" itemLabel="BAJA"/>
+						</p:selectOneMenu>
+					</div>
+				</div>					
+				<br/>
+				<div class="p-grid">
+					<div class="p-col-12">
+						<p:commandButton action="#{productos.buscarProductos}" title="#{messages['fungible.buscar']}" ariaLabel="#{messages['fungible.buscar']}"
+										 value="#{messages['fungible.buscar']}" icon="fa fa-search" ajax="true" process="@form" update="@form" />
+						<p:commandButton action="#{productos.limpiarBusqueda}" title="#{messages['fungible.limpiar']}" ariaLabel="#{messages['fungible.limpiar']}"
+										 value="#{messages['fungible.limpiar']}" icon="fa fa-eraser" update="@form"/>
+					</div>
+				</div>
+				<br/>
+				<p:dataTable id="tablaProductos" value="#{productos.lazyDataModel}" var="pro" styleClass="header-right" first="#{productos.first}" rows="#{productos.pageSize}" 
+		 					 emptyMessage="#{messages['table.no.results']}" reflow="true" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							 rowsPerPageTemplate="10, 25, 50" paginatorPosition="bottom" paginatorAlwaysVisible="false" currentPageReportTemplate="{totalRecords} #{messages['table.registros']}" 
+							 tableStyleClass="tablaAuto fuente08" sortOrder="ASCENDING" sortBy="#{pro.descripcion}"
+							 rowHover="true" lazy="true">
+					<f:facet name="header">
+						<p:commandLink action="#{productoEdit.establecerProductoCreate}" title="#{messages['producto.addproducto']}" ariaLabel="#{messages['producto.addproducto']}" styleClass="enlaceTexto">
+							<em class="fa fa-plus"/>#{' '} 
+							<h:outputText styleClass="enlaceAdd" title="#{messages['producto.addproducto']}" value="#{messages['producto.addproducto']}" />
+						</p:commandLink>
+					</f:facet>
+					<p:column headerText="#{messages['producto.descripcion']}" sortBy="#{pro.descripcion}">
+						<h:outputText value="#{pro.descripcion}" title="#{messages['producto.descripcion']}"/>
+					</p:column>
+					<p:column headerText="#{messages['producto.servicio']}" sortBy="#{pro.servicio.nombre}" >
+						<h:outputText value="#{pro.servicio.nombre}" title="#{messages['producto.servicio']}"/>
+					</p:column>
+					<p:column headerText="#{messages['producto.facturable']}" sortBy="#{pro.facturable}" styleClass="centrado">
+						<h:outputText value="#{pro.facturable}" title="#{messages['producto.facturable']}"/>
+					</p:column>
+					<p:column headerText="#{messages['producto.requiereproyecto']}" sortBy="#{pro.requiereProyecto}" styleClass="centrado">
+						<h:outputText value="#{pro.requiereProyecto}" title="#{messages['producto.requiereproyecto']}"/>
+					</p:column>
+					<p:column sortBy="#{pro.soloAdmin}" styleClass="centrado">
+						<f:facet name="header">
+							<h:outputText value="#{messages['producto.soloadmin']}" title="#{messages['producto.soloadmin.info']}" />
+						</f:facet>
+						<h:outputText value="#{pro.soloAdmin}" title="#{pro.soloAdmin == 'SI' ? messages['producto.soloadmin.info.si'] : messages['producto.soloadmin.info.no']}"/>
+					</p:column>
+					<p:column styleClass="derecha" sortBy="#{pro.factor}">
+						<f:facet name="header">
+							<h:outputText value="#{messages['producto.factorconversion.corto']}" title="#{messages['producto.factorconversion']} (#{messages['producto.factorconversion.ejemplo']})"/>
+						</f:facet>
+						<h:outputText value="x #{pro.factor}" rendered="#{pro.factor != null}"/>
+					</p:column>
+					<p:column headerText="#{messages['producto.configuracionxtipo']}" sortBy="#{pro.tipo}">
+							<p:outputLabel value="#{messages['producto.tipo']}: "/>
+							<h:outputText value="#{productos.getDescripcionTipoProducto(pro.tipo)}" title="#{messages['producto.tipo']}" styleClass="margen5"/>
+							<br/>
+						<s:fragment id="fragmentFungibles" rendered="#{pro.tipo == 'F'}">
+							<p:outputLabel value="#{messages['producto.categoria']}: "/>
+							<h:outputText value="#{pro.nivel1.nombre}" title="#{messages['producto.categoria']}" styleClass="margen5"/>
+							<br/>
+							<p:outputLabel value="#{messages['producto.controlstock']}: "/>
+							<h:outputText value="#{pro.controlStock}" title="#{messages['producto.controlstock']}" styleClass="margen5"/>
+							<s:fragment id="fragmentStock" rendered="#{pro.controlStock == 'SI'}">
+								<br/>
+								<p:outputLabel value="#{messages['producto.stock']}: "/>
+								<h:outputText value="#{productos.getStockDisponibleByProducto(pro)}" title="#{messages['producto.stock']}" styleClass="margen5"/>
+							</s:fragment>
+							<br/>
+							<p:outputLabel value="#{messages['producto.umedida']}: "/>
+							<h:outputText value="#{pro.unidadMedida.descripcion} (#{pro.unidadMedida.abreviatura})" title="#{messages['producto.umedida']}" styleClass="margen5"/>
+						</s:fragment>
+						<s:fragment id="fragmentReservas" rendered="#{pro.tipo == 'R'}">
+							<p:outputLabel value="#{messages['producto.treservable.corto']}: "/>
+							<h:outputText value="#{pro.tipoReservable.descripcion}"	title="#{messages['producto.treservable']}" styleClass="margen5"/>
+							<br/>
+							<p:outputLabel value="#{messages['producto.tecnico']}: "/>
+							<h:outputText value="#{pro.requiereTecnico}" title="#{messages['producto.tecnico']}" styleClass="margen5" rendered="#{pro.requiereTecnico != 'PR'}"/>
+							<h:outputText value="#{messages['producto.requieretecnico.pr']}" title="#{messages['producto.tecnico']}" styleClass="margen5" rendered="#{pro.requiereTecnico == 'PR'}"/>
+						</s:fragment>
+						<s:fragment id="fragmentPrestaciones" rendered="#{pro.tipo == 'P'}">
+							<p:outputLabel value="#{messages['producto.consumoasociado']}: "/>
+							<h:outputText value="#{pro.consumoAsociado}" title="#{messages['producto.consumoasociado']}" styleClass="margen5"/>
+							<br/>
+							<p:outputLabel value="#{messages['producto.presupuesto']}: "/>
+							<h:outputText value="#{pro.presupuesto}" title="#{messages['producto.presupuesto']}" styleClass="margen5"/>
+						</s:fragment>
+						<s:fragment id="fragmentReservasPrestaciones" rendered="#{pro.tipo == 'R' or pro.tipo =='P'}">
+							<br/>
+							<p:outputLabel value="#{messages['producto.rvalidacion']}: "/>
+							<h:outputText value="#{pro.requiereValidacion}" title="#{messages['producto.rvalidacion']}" styleClass="margen5"/>
+							<br/>
+							<p:outputLabel value="#{messages['producto.requierevalidacionir']}: "/>
+							<h:outputText value="#{pro.requiereValidacionIr}" title="#{messages['producto.requierevalidacionir']}" styleClass="margen5"/>
+							<br/>
+							<p:outputLabel value="#{messages['producto.requierebioseguridad']}: "/>
+							<h:outputText value="#{pro.pedirNivelBioseguridad}" title="#{messages['producto.requierebioseguridad']}" styleClass="margen5"/>
+							<br/>
+							<p:outputLabel value="#{messages['producto.requiereanexo']}:" />
+							<h:outputText value="#{pro.requiereAnexo}" title="#{messages['producto.requiereanexo']}" styleClass="margen5"/>
+						</s:fragment>
+					</p:column>
+					<p:column headerText="#{messages['producto.estado']}" rendered="#{productos.estadoBuscar != 'ALTA'}" sortBy="#{pro.estado}" styleClass="centrado">
+						<h:outputText value="#{pro.estado}" title="#{messages['producto.estado']}"/>
+					</p:column>
+					<p:column headerText="#{messages['value.action']}" styleClass="centrado">
+						<div class="p-grid p-justify-center">
+							<div class="p-col">
+								<p:commandLink title="#{messages['value.edit']}" action="#{productoEdit.establecerProductoEdit(pro)}">
+									<em class="fa fa-pencil-square-o fuente17" />
+								</p:commandLink>
+							</div>
+							<div class="p-col">
+								<p:commandLink id="eliminarProducto" title="#{messages['value.delete']}" action="#{productos.eliminarProducto(pro)}" 
+											   disabled="#{not pro.deleteable}" update="@form, :messages">
+									<em class="fa fa-trash fuente17" />
+									<p:confirm header="#{messages['application.deleting.confirm.title']}" message="#{messages['producto.delete.confirm']}"  icon="ui-icon-alert"/>
+								</p:commandLink>
+								<p:tooltip for="eliminarProducto" rendered ="#{not pro.deleteable}" value="#{messages['productos.nodeleteable']}"/>
+							</div>
+						</div>										
+					</p:column>
+				</p:dataTable>
+			</h:form>
+			<h:form id="formConfirm">
+				<p:confirmDialog id="confirm" global="true" showEffect="fade" hideEffect="fade" >
+   					<p:commandButton label="Si" title="Si" value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton label="Si" title="Si" value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</p:confirmDialog>
+			</h:form>
+		</p:panel>
+	</ui:define>
+</ui:composition>
+
+</html>

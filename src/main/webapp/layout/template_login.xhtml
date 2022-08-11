@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fdw="http://www.um.es/atica/fundeweb">
+	  
+	<h:head>
+		<f:facet name="first">
+			<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+			<meta name="viewport" content="width=device-width, initial-scale=1" />
+			<title><h:outputText value="#{messages['aplicacion.nombre']}" /></title>
+			<link rel="shortcut icon" href="#{request.contextPath}/resources/img/favicon.ico" />
+			<ui:insert name="head-first" />
+		</f:facet>
+	
+		<f:facet name="middle">
+			<ui:insert name="head-middle" />
+		</f:facet>
+	
+		<f:facet name="last">
+			<!--h:outputScript library="fundeweb" name="primefaces/js/primefaces_fix.js" /-->
+			<h:outputScript library="fundeweb" name="primefaces/js/locales.js"/>
+		    <h:outputScript library="fundeweb" name="js/fundeweb.js"/>
+			<h:outputScript library="fundeweb" name="js/fundeweb_login.js"/>
+			
+			<!-- Personalizacion de la aplicacion -->
+			<fdw:outputStylesheet library="css" name="theme_login.css"/>
+			<ui:insert name="head-last" />
+		</f:facet>
+		
+		<ui:insert name="head" />
+	</h:head>
+	
+	<h:body>
+
+		<s:div id="panelBloqueoFundeweb" styleClass="panelBloqueo-first-div">
+			<s:div id="panelBloqueoFundewebDos" styleClass="panelBloqueo-second-div" >&nbsp;</s:div>
+			<s:div id="panelBloqueoFundewebTres" styleClass="panelBloqueo-third-div">
+					<br/>
+					<span class="espere">#{messages['value.wait']}</span>
+					<br/>   
+					<h:graphicImage id="bloqueoFundeWebLoadingImage"
+						library="img" name="loading-white-bg.gif"
+						styleClass="loading-img" 
+						alt="#{messages['application.loading.gif']}" />
+			</s:div>
+		</s:div>
+
+		<s:div id="contenedor">
+
+			<s:div id="capaSombra">
+				<s:div id="capaSombraInferior">
+
+					<s:div id="cabecera">
+						<h1><h:outputLink styleClass="ocultarTexto" value="#{'http://www.um.es/atica/mncs/'}" target="_blank">#{messages['application.header1']}</h:outputLink></h1>
+						<h2><h:outputLink styleClass="ocultarTexto" value="#{'http://www.um.es/'}" target="_blank">#{messages['application.header2']}</h:outputLink></h2>
+					</s:div>
+
+					<s:div id="contenido">
+						<s:div id="cuerpo_login">
+
+							<ui:include src="no_script.xhtml" />
+
+							<s:div id="messagesGlobal">
+								<p:growl id="messages" globalOnly="true" showDetail="true"/>
+							</s:div>
+							<h:form id="ajaxBloqFundeWebForm">
+								<p:ajaxStatus id="ajaxBloqFundeWeb" widgetVar="_ajaxBloqFundeWeb" onstart="inicio_ajax();" oncomplete="fin_ajax();" />
+							</h:form>
+
+							<ui:insert name="body" />
+
+							<s:div styleClass="clearBoth" />
+						</s:div>
+					</s:div>
+				</s:div>
+			</s:div>
+			
+			<ui:include src="pie.xhtml" />
+			<s:fragment rendered="#{init.debug}">
+				<ui:include src="pie_debug.xhtml" />
+			</s:fragment>
+			
+		</s:div>
+
+
+</h:body>
+
+</html>

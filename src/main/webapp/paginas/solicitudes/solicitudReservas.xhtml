@@ -1,0 +1,877 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/layout/template.xhtml">
+
+	<ui:define name="page-header">
+		<s:fragment rendered="#{solicitudReservas.reservaEdit.presupuesto == 'NO'}">
+			<h1>
+				<h:outputText value="#{messages['menu.reservas.title']}"/>
+			</h1>
+			<h2>
+				<h:outputText value="#{solicitudReservas.reservaEdit.cod==null ? messages['menu.reservas.subtitle'] : messages['menu.reservas.subtitle.edicion']}" />
+				<h:outputText value=" #{messages['menu.consumo.subtitle.hijo.add']} #{solicitudReservas.reservaEdit.consumoPadre.cod}" rendered="#{solicitudReservas.reservaEdit.consumoPadre != null}"/>
+			</h2>
+		</s:fragment>	
+		<s:fragment rendered="#{solicitudReservas.reservaEdit.presupuesto == 'SI'}">
+			<h1>
+				<h:outputText value="#{messages['menu.presupuestos.title']}" title="#{messages['menu.presupuestos.title']}"/>
+			</h1>
+			<h2>
+				<h:outputText value="#{solicitudReservas.reservaEdit.cod == null ? messages['menu.presupuestos.subtitle'] : messages['menu.presupuestos.subtitle.edicion']}" />
+				<h:outputText value=" #{messages['menu.presupuestos.subtitle.hijo.add']} #{solicitudReservas.reservaEdit.consumoPadre.cod}" rendered="#{solicitudReservas.reservaEdit.consumoPadre != null}"/>
+			</h2>
+		</s:fragment>
+	</ui:define>
+	<ui:define name="body"> 	
+		<p:panel id="panelReservaEdit">
+			<h:form id="formReservaEdit" styleClass="editFundeweb">			
+				<s:fragment id="fragmentModoEdicion" rendered="#{solicitudReservas.reservaEdit.cod != null}">
+					<div class="p-grid ui-fluid">
+						<div class="p-col-2 p-md-2 ">
+							<p:outputLabel value="#{solicitudReservas.reservaEdit.presupuesto == 'NO' ?  messages['consumos.codigo'] : messages['presupuestos.codigo'] }:" />
+							<br/>
+							<h:outputText value="#{solicitudReservas.reservaEdit.cod}" title="#{messages['consumos.codigo']}" styleClass="margen5" />
+						</div>
+						<div class="p-col-2 p-md-2 ">
+							<p:outputLabel value="#{messages['prestaciones.fechaSolicitud']}:" />
+							<br/>
+							<h:outputText  value="#{solicitudReservas.reservaEdit.fechaSolicitud}" title="#{messages['prestaciones.fechaSolicitud']}" styleClass="margen5" >
+								<f:convertDateTime type="date" pattern="dd/MM/yyyy"/>
+							</h:outputText>
+						</div>
+						<div class="p-col-3 p-md-3 p-lg-2">
+							<p:outputLabel value="#{messages['fungible.service']}:" />
+							<br/>
+							<h:outputText value="#{solicitudReservas.reservaEdit.producto.servicio.nombre}" title="#{messages['fungible.service']}" styleClass="margen5"/>
+						</div>
+						<s:div styleClass="p-col-2 p-md-2" rendered="#{(identity.tienePerfilEnServicio('TECNICO',solicitudReservas.servicioReserva.cod) or identity.tienePerfilEnServicio('SUPERVISOR', solicitudReservas.servicioReserva.cod)) and solicitudReservas.reservaEdit.consumoPadre == null}">
+							<p:outputLabel value="#{messages['fungibles.interno']}:" />
+							<br/>
+							<h:outputText value="#{solicitudReservas.reservaEdit.interno}" title="#{messages['fungibles.interno']}" styleClass="margen5"/>
+						</s:div>
+						<s:div styleClass="p-md-3" rendered="#{solicitudReservas.reservaEdit.organizacion != null}">
+							<p:outputLabel value="#{messages['fungibles.numPedido']}:" />
+							<br/>
+							<h:outputText value="#{solicitudReservas.reservaEdit.organizacion}" title="#{messages['fungibles.numPedido']}" styleClass="margen5"/>
+						</s:div>
+						<s:div styleClass="p-col-1 p-md-1" rendered="#{solicitudReservas.reservaEdit.presupuesto == 'NO'}">
+							<p:outputLabel value="#{messages['prestaciones.estado']}:" />
+							<br/>
+							<h:outputText title="#{messages['prestaciones.estado']}" value="#{solicitudReservas.reservaEdit.estado}" styleClass="margen5 negrita #{solicitudReservas.getColorEstado()}"/>
+						</s:div>					
+					</div>
+					<s:div styleClass="p-grid ui-fluid" >
+						<div class="p-col-3 p-md-3">
+							<p:outputLabel value="#{messages['fungibles.usuarioSol']}:" />
+							<br/>
+							<h:outputText value="#{solicitudReservas.reservaEdit.usuarioSolicitante.datosUsuario.nombreCompleto}" styleClass="margen5" title="#{messages['fungibles.usuarioSol']}"/>
+						</div>
+						<s:div styleClass="p-col-3 p-md-3" rendered="#{solicitudReservas.reservaEdit.interno == 'NO'}">
+							<p:outputLabel value="#{messages['fungibles.investigador']}:" />
+							<br/>
+							<h:outputText value="#{solicitudReservas.reservaEdit.usuarioIrAsociado.datosUsuario.nombreCompleto}" styleClass="margen5" title="#{messages['fungibles.investigador']}"/>
+						</s:div>
+						<s:div styleClass="p-col-3 p-md-3" rendered="#{solicitudReservas.reservaEdit.interno == 'NO'}">
+							<p:outputLabel value="#{messages['fungibles.entidad']}:" />
+							<br/>
+							<h:outputText value="#{solicitudReservas.getDescripcionEntidad(solicitudReservas.reservaEdit.entidadPagadora)}" styleClass="margen5" title="#{messages['fungibles.entidad']}"/>
+						</s:div>
+						<s:div styleClass="p-col-3 p-md-3" rendered="#{solicitudReservas.reservaEdit.interno == 'NO'}">
+							<p:outputLabel value="#{messages['fungibles.grupoinvestigacion']}:" />
+							<br/>
+							<h:outputText value="#{solicitudReservas.reservaEdit.grupoInvestigacion.grupoInvestigacionDatos.nombre}" styleClass="margen5" title="#{messages['fungibles.grupoInvestigacion']}"/>
+						</s:div>	
+					</s:div>
+					<div class="p-grid ui-fluid">
+						<div class="p-col-2 p-md-2 ">
+							<p:outputLabel value="#{messages['reservas.tiporeservable']}:"/>
+							<br/>
+							<h:outputText value="#{solicitudReservas.reservaEdit.producto.descripcion}" title="#{messages['reservas.tiporeservable']}" styleClass="margen5"/>
+						</div>
+						<s:div styleClass="p-col-2 p-md-2" rendered="#{solicitudReservas.reservaEdit.producto.requiereProyecto == 'SI'}">
+							<p:outputLabel value="#{messages['proyecto.label']}:"/>
+							<br/>
+							<h:outputText value="#{solicitudReservas.reservaEdit.proyecto.nombre}" rendered="#{solicitudReservas.reservaEdit.proyecto != null}" title="#{messages['proyecto.label']}" styleClass="margen5"/>
+						</s:div>
+						<s:div styleClass="p-col-3 p-md-3" rendered="#{solicitudReservas.reservaEdit.producto.preguntaPersonalizada != null}">
+							<p:outputLabel for="preguntaPersonalizadaEdicion" value="#{solicitudReservas.reservaEdit.producto.preguntaPersonalizada}:" />
+							<br/>
+							<p:inputTextarea id="preguntaPersonalizadaEdicion" required="true" requiredMessage="#{messages['prestaciones.pregunta.required']}" value="#{solicitudReservas.reservaEdit.observaciones}"
+											 maxlength="4000" rows="2" cols="30" title="#{solicitudReservas.reservaEdit.producto.preguntaPersonalizada}" disabled="#{!solicitudReservas.operacionModificar()}">
+								<p:ajax event="change" process="@this"/>							
+							</p:inputTextarea>	
+							<p:message for="preguntaPersonalizadaEdicion" />
+						</s:div>
+						<s:div styleClass="p-col-3 p-md-3" rendered="#{solicitudReservas.reservaEdit.producto.requiereTecnico == 'PR' and !solicitudReservas.operacionModificar()}">
+							<p:outputLabel value="#{messages['reservas.solicitudtecnico']}:" />
+							<br/>
+							<h:outputText value="#{solicitudReservas.getDescripcionSolicitudTecnico()}" styleClass="margen5"/>
+						</s:div>
+						<s:div styleClass="p-col-4 p-md-4" rendered="#{solicitudReservas.reservaEdit.producto.requiereTecnico == 'PR' and solicitudReservas.operacionModificar()}">
+							<p:outputLabel for="solicitudTecnicoEdit" value="#{messages['reservas.solicitudtecnico']}:" />
+							<br/>
+							<p:selectOneMenu id="solicitudTecnicoEdit" required="true" requiredMessage="#{messages['reservas.solicitudtecnico.required']}"							
+											 value="#{solicitudReservas.reservaEdit.solicitudTecnico}" styleClass="ancho100"	>
+								<f:selectItem itemLabel="#{messages['reservas.solicitudtecnico.seleccion']}" itemValue=""/>
+								<f:selectItems value="#{solicitudReservas.listaOpcionesSolicitudTecnico}" var="ost" itemLabel="#{ost.descripcion}" itemValue="#{ost.codigo}" />
+								<p:ajax event="valueChange" update="@form" process="@this" listener="#{solicitudReservas.seleccionadoSolicitudTecnico}"/>
+							</p:selectOneMenu>
+						</s:div>				
+						<s:div styleClass="p-col-3 p-md-3" rendered="#{solicitudReservas.reservaEdit.producto.requiereTecnico == 'SI' or (solicitudReservas.reservaEdit.producto.requiereTecnico == 'PR' and solicitudReservas.reservaEdit.solicitudTecnico != 'NO')}">
+							<s:fragment rendered="#{!identity.tienePerfilEnServicio('SUPERVISOR', solicitudReservas.reservaEdit.producto.servicio.cod) or !solicitudReservas.operacionModificar()}">
+								<p:outputLabel value="#{messages['prestaciones.tecnico']}:" />
+								<br/>
+								<h:outputText value="#{solicitudReservas.reservaEdit.usuarioTecnicoAsignado.datosUsuario.nombreCompleto}" styleClass="margen5"/>
+							</s:fragment>
+							<s:fragment rendered="#{identity.tienePerfilEnServicio('SUPERVISOR', solicitudReservas.reservaEdit.producto.servicio.cod) and solicitudReservas.operacionModificar()}">
+								<p:outputLabel for="tecnicoAsignado" value="#{messages['prestaciones.tecnico']}:" />
+								<br/>
+								<p:selectOneMenu id="tecnicoAsignado"  value="#{solicitudReservas.reservaEdit.usuarioTecnicoAsignado}" 
+											     required="#{solicitudReservas.reservaEdit.presupuesto == 'NO' and (solicitudReservas.reservaEdit.estado == 'Aceptado' or solicitudReservas.reservaEdit.estado == 'Finalizado')}">
+									<f:selectItem itemLabel="Seleccione un tecnico" itemValue="" />
+									<f:selectItems value="#{solicitudReservas.listaUsuariosTecnicos}" var="_tec" itemLabel="#{_tec.datosUsuario.nombreCompleto}" itemValue="#{_tec}" />
+									<p:ajax event="valueChange" process="@this" update="@form"  />
+									<s:convertEntity/>
+								</p:selectOneMenu>
+								<p:message for="tecnicoAsignado"/>
+							</s:fragment>	
+						</s:div>
+					</div>
+					<s:div styleClass="p-grid ui-fluid" rendered="#{solicitudReservas.reservaEdit.producto.pedirNivelBioseguridad == 'SI'}">
+						<s:fragment id="fragmentModificarBioseguridad" rendered="#{solicitudReservas.operacionModificar()}">
+							<div class="p-col-4 p-md-4" >
+								<p:outputLabel for="nivelBioseguridadEdicion" value="#{messages['reservas.nivelbioseguridad']}:" />
+								<br/>
+								<p:selectOneMenu id="nivelBioseguridadEdicion" required="true" requiredMessage="#{messages['reservas.nivelbioseguridad.required']}"							
+												 value="#{solicitudReservas.reservaEdit.nivelBioseguridad}" styleClass="ancho100" title="#{messages['reservas.nivelbioseguridad']}">
+									<f:selectItem itemLabel="#{messages['reservas.nivelbioseguridad.seleccion']}" itemValue=""/>
+									<f:selectItem itemLabel="#{messages['reservas.nivelbioseguridad.no']}" itemValue="NO"/>
+									<f:selectItem itemLabel="#{messages['reservas.nivelbioseguridad.ncb1']}" itemValue="NCB1"/>
+									<f:selectItem itemLabel="#{messages['reservas.nivelbioseguridad.ncb2']}" itemValue="NCB2"/>
+									<f:selectItem itemLabel="#{messages['reservas.nivelbioseguridad.ncb3']}" itemValue="NCB3" itemDisabled="true"/>
+									<p:ajax event="valueChange" update="@form" process="@this" listener="#{solicitudReservas.seleccionadoNivelBioseguridad}"/>
+								</p:selectOneMenu>
+								<p:message for="nivelBioseguridadEdicion"/>
+								<h:outputText value="#{messages['reservas.nivelbioseguridad.info']}" styleClass="fuente07"/>
+							</div>
+							<s:fragment rendered="#{solicitudReservas.requiereAnexoNivelBioseguridad()}">
+								<s:fragment rendered="#{solicitudReservas.anexoBioseguridadCompletado == null}">
+									<div class="p-col-4 p-md-4"> 
+										<p:outputLabel value="#{messages['prestaciones.anexo.bioseguridad.descargar']}:" /> 
+										<br/> 
+										<p:commandLink value="#{solicitudReservas.anexoBioseguridadRellenar.nomDocumento}"
+													   title="#{solicitudReservas.anexoBioseguridadRellenar.nomDocumento}"
+													   ajax="false" immediate="true" update=":messages" styleClass="margen5 enlaceTexto">
+											<p:fileDownload value="#{solicitudReservas.descargarFicheroAnexo(solicitudReservas.anexoBioseguridadRellenar)}" />
+										</p:commandLink>	
+									</div>
+									<div class="p-col-4 p-md-4" > 
+										<p:outputLabel for="anexoBioseguridadEdicion" value="#{messages['prestaciones.anexo.bioseguridad.adjuntar']}:" />
+										<br/>
+										<p:fileUpload id="anexoBioseguridadEdicion" label="#{messages['reservas.anexo.seleccionar.fichero']}" required="true"
+										  			  value="#{solicitudReservas.ficheroAnexoBioseguridad}" process="@this" fileUploadListener="#{solicitudReservas.subidoFicheroAnexoBioseguridad}" 
+										  			  requiredMessage="#{messages['prestaciones.reqMessage']}" converterMessage="#{messages['anexos.fileallowed']}"
+										  			  invalidFileMessage="#{messages['anexos.fileallowed']}" auto="true" 
+										  			  update="@form" mode="advanced" skinSimple="true" allowTypes="/(\.|\/)(xls|docx|doc|pdf|ppt|pptx|xlsx|tiff|txt|zip|rar)$/"/>
+										<p:messages for="anexoBioseguridadEdicion" showDetail="true" />
+										<h:outputText value="#{solicitudReservas.ficheroAnexoBioseguridad.fileName}" rendered="#{solicitudReservas.ficheroAnexoBioseguridad != null}"/>
+									</div>
+								</s:fragment>
+								<s:div styleClass="p-col-4 p-md-4" rendered="#{solicitudReservas.anexoBioseguridadCompletado != null}">
+									<p:outputLabel value="#{messages['prestaciones.anexo.bioseguridad.adjuntado']}:" />
+									<br/>
+									<p:commandLink title="#{solicitudReservas.anexoBioseguridadCompletado.nomDocumento}" value="#{solicitudReservas.anexoBioseguridadCompletado.nomDocumento}" ajax="false" immediate="true" styleClass="enlaceTexto margen5">
+										<p:fileDownload value="#{solicitudReservas.descargarFicheroAnexo(solicitudReservas.anexoBioseguridadCompletado)}" />
+									</p:commandLink>
+									<p:commandLink action="#{solicitudReservas.eliminarAnexoBioseguridadCompletado()}" process="@this" styleClass="margen5" 
+									   			   update="@form, :messages" title="#{messages['value.delete']}" ariaLabel="#{messages['value.delete']}"
+									   			   rendered="#{identity.tienePerfilEnServicio('SUPERVISOR', solicitudReservas.reservaEdit.producto.servicio.cod)}">
+										<em class="fa fa-trash fuente17" />
+										<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['prestaciones.anexo.del.confirm']}"/>
+									</p:commandLink>
+								</s:div>
+							</s:fragment>
+						</s:fragment>
+						<s:fragment id="fragmentNoModificarBioseguridad" rendered="#{!solicitudReservas.operacionModificar()}">
+							<div class="p-col-4 p-md-4" >
+								<p:outputLabel value="#{messages['reservas.nivelbioseguridad']}:" />
+								<br/>
+								<h:outputText value="#{solicitudReservas.reservaEdit.nivelBioseguridad}" styleClass="margen5"/>
+								<br/>
+								<h:outputText value="#{messages['reservas.nivelbioseguridad.info']}" styleClass="fuente07"/>
+							</div>		
+							<s:div styleClass="p-col-4 p-md-4" rendered="#{solicitudReservas.requiereAnexoNivelBioseguridad()}">
+								<p:outputLabel value="#{messages['prestaciones.anexo.bioseguridad.adjuntado']}:" />
+								<br/>
+								<p:commandLink title="#{solicitudReservas.anexoBioseguridadCompletado.nomDocumento}" value="#{solicitudReservas.anexoBioseguridadCompletado.nomDocumento}" ajax="false" immediate="true" styleClass="enlaceTexto margen5">
+									<p:fileDownload value="#{solicitudReservas.descargarFicheroAnexo(solicitudReservas.anexoBioseguridadCompletado)}" />
+								</p:commandLink>
+							</s:div>
+						</s:fragment>
+					</s:div>
+				</s:fragment>
+				<s:fragment id="fragmentModoAlta" rendered="#{solicitudReservas.reservaEdit.cod == null}">				
+					<div class="p-grid ui-fluid" >
+						<s:div styleClass="p-col-4 p-md-3 p-lg-2" rendered="#{solicitudReservas.reservaEdit.consumoPadre == null}">
+							<p:outputLabel for="servicio" value="#{messages['fungible.service']}:" />
+							<br/>
+							<p:selectOneMenu id="servicio" value="#{solicitudReservas.servicioReserva}" required="true" title="#{messages['fungible.service']}" >
+								<f:selectItem itemLabel="#{messages['servicio.seleccion']}" itemValue="" />
+								<f:selectItems value="#{solicitudReservas.listaServicios}" var="_ser" itemLabel="#{_ser.nombre}" itemValue="#{_ser}" />
+								<p:ajax event="valueChange" update="@form" process="@this" listener="#{solicitudReservas.seleccionadoServicio}" />
+								<s:convertEntity />
+							</p:selectOneMenu>
+							<p:message for="servicio"/>
+						</s:div>
+						<s:div styleClass="p-col-3 p-md-3 p-lg-2" rendered="#{solicitudReservas.reservaEdit.consumoPadre != null}">
+							<p:outputLabel value="#{messages['fungible.service']}:" />
+							<br/>
+							<h:outputText value="#{solicitudReservas.servicioReserva.nombre}" title="#{messages['fungible.service']}" styleClass="margen5"/>
+						</s:div>
+						<s:div class="p-col-2 p-md-2" rendered="#{solicitudReservas.servicioReserva!= null and (identity.tienePerfilEnServicio('TECNICO',solicitudReservas.servicioReserva.cod) or identity.tienePerfilEnServicio('SUPERVISOR', solicitudReservas.servicioReserva.cod)) and solicitudReservas.reservaEdit.consumoPadre == null}">
+							<p:outputLabel for="consumoInterno" value="#{messages['fungibles.interno']}:" />
+							<br/>
+							<p:selectOneMenu id="consumoInterno" styleClass="ancho100" value="#{solicitudReservas.reservaEdit.interno}" title="#{messages['fungibles.interno']}" required="true">
+								<f:selectItem itemLabel="SI" itemValue="SI" />
+								<f:selectItem itemLabel="NO" itemValue="NO" />
+								<p:ajax event="valueChange" update="@form" listener="#{solicitudReservas.seleccionadoConsumoInterno}" />
+							</p:selectOneMenu>
+							<p:message for="consumoInterno"/>
+						</s:div>
+						<s:div styleClass="p-col-4 p-md-3" rendered="#{solicitudReservas.servicioReserva!= null and solicitudReservas.reservaEdit.interno == 'NO'}">
+							<p:outputLabel for="numPedido" value="#{messages['fungibles.numPedido']}:" />
+							<br/>
+							<p:inputText id="numPedido" value="#{solicitudReservas.reservaEdit.organizacion}" title="#{messages['fungibles.numPedido']}" maxlength="40">
+								<p:ajax event="blur" process="@this" />
+							</p:inputText>
+							<br/>
+							<h:outputText value="#{messages['fungibles.notaPedido']}" styleClass="fuente07"/>
+						</s:div>
+					</div>
+					<s:div id="divConsumoNoInterno" styleClass="p-grid ui-fluid" rendered="#{solicitudReservas.servicioReserva!= null and solicitudReservas.reservaEdit.consumoPadre == null and solicitudReservas.reservaEdit.interno == 'NO'}">
+						<s:div styleClass="p-col-4 p-md-4 p-lg-3" rendered="#{(identity.tienePerfilEnServicio('TECNICO',solicitudReservas.servicioReserva.cod) or identity.tienePerfilEnServicio('SUPERVISOR', solicitudReservas.servicioReserva.cod))}">
+							<p:outputLabel for="usuarioSolicitante" value="#{messages['fungibles.usuarioSol']}:" />
+							<p:selectOneMenu id="usuarioSolicitante" value="#{solicitudReservas.reservaEdit.usuarioSolicitante}" 
+											 filter="true" filterMatchMode="contains" title="#{messages['fungibles.usuarioSol']}" required="true">
+								<f:selectItem itemLabel="#{messages['usuario.seleccion']}" itemValue="" />
+								<f:selectItems value="#{solicitudReservas.listaUsuariosSolicitantes}" var="_usu" itemLabel="#{_usu.datosUsuario.nombreCompleto}" itemValue="#{_usu}" />
+								<p:ajax event="valueChange" process="@this" update="@form :messages" listener="#{solicitudReservas.seleccionadoUsuarioSolicitante}" />
+								<s:convertEntity />
+							</p:selectOneMenu>
+							<p:message for="usuarioSolicitante"/>
+						</s:div>
+						<div class="p-col-4 p-md-4 p-lg-3">
+							<p:outputLabel for="usuarioIr" value="#{messages['fungibles.investigador']}:" />
+							<br/>
+							<p:selectOneMenu id="usuarioIr" value="#{solicitudReservas.reservaEdit.usuarioIrAsociado}" title="#{messages['fungibles.investigador']}"
+											 filter="true" filterMatchMode="contains" required="true" requiredMessage="#{messages['prestaciones.investigador.required']}">
+								<f:selectItem itemLabel="#{messages['usuario.perfil.ir.seleccion']}" itemValue="" />
+								<f:selectItems value="#{solicitudReservas.listaUsuariosIr}" var="_inv" itemLabel="#{_inv.datosUsuario.nombreCompleto}" itemValue="#{_inv}" />
+								<p:ajax event="valueChange" update="@form" process="@this" listener="#{solicitudReservas.seleccionadoUsuarioIr}" />
+								<s:convertEntity />
+							</p:selectOneMenu>
+							<p:message for="usuarioIr" />
+						</div>
+						<div class="p-col-4 p-md-5">
+							<p:outputLabel for="entidad" value="#{messages['fungibles.entidad']}:" />
+							<br/>
+							<p:selectOneMenu id="entidad" required="true" requiredMessage="#{messages['prestaciones.entidad.required']}"						
+											 value="#{solicitudReservas.reservaEdit.entidadPagadora}" filter="true" filterMatchMode="contains" title="#{messages['fungibles.entidad']}">
+								<f:selectItem itemLabel="#{messages['entidadpagadora.seleccion']}" itemValue="" />
+								<f:selectItems value="#{solicitudReservas.listaEntidades}" var="_ent" itemLabel="#{solicitudReservas.getDescripcionEntidad(_ent)}" itemValue="#{_ent}" />
+								<p:ajax event="valueChange" update="@form" process="@this" listener="#{solicitudReservas.seleccionadaEntidadPagadora}"/>
+								<s:convertEntity />
+							</p:selectOneMenu>
+							<p:message for="entidad" />
+						</div>
+						<s:div styleClass="p-col-4 p-md-5" rendered="#{solicitudReservas.reservaEdit.entidadPagadora != null and solicitudReservas.listaGruposInvestigacion.size() > 1}">
+							<p:outputLabel for="grupoInvestigacion" value="#{messages['fungibles.grupoinvestigacion']}:" />
+							<br/>
+							<p:selectOneMenu id="grupoInvestigacion" required="true" requiredMessage="#{messages['required.field']}"						
+											 value="#{solicitudReservas.reservaEdit.grupoInvestigacion}" title="#{messages['fungibles.grupoinvestigacion']}">
+								<f:selectItem itemLabel="#{messages['grupoinvestigacion.seleccion']}" itemValue="" />
+								<f:selectItems value="#{solicitudReservas.listaGruposInvestigacion}" var="gi" itemLabel="#{gi.grupoInvestigacionDatos.nombre}" itemValue="#{gi}" />
+								<p:ajax event="valueChange" process="@this" />
+								<s:convertEntity />
+							</p:selectOneMenu>
+							<p:message for="grupoInvestigacion" />
+						</s:div>
+					</s:div>
+				</s:fragment>	
+				<s:div styleClass="p-grid ui-fluid" rendered="#{solicitudReservas.servicioReserva != null}">
+					<s:div styleClass="p-col-2 p-md-2" rendered="#{solicitudReservas.reservaEdit.presupuesto == 'NO' and solicitudReservas.preguntarEnvioMailUsuario()}">
+						<p:outputLabel for="enviaEmail" value="#{messages['fungibles.email']}:" />
+						<br/>
+						<p:selectOneMenu id="enviaEmail" styleClass="ancho100" value="#{solicitudReservas.enviaEmail}" title="#{messages['fungibles.email']}" required="true">
+							<f:selectItem itemLabel="NO" itemValue="NO" />
+							<f:selectItem itemLabel="SI" itemValue="SI" />
+							<p:ajax event="valueChange" process="@this" />
+						</p:selectOneMenu>
+						<p:message for="enviaEmail"/>
+					</s:div>
+					<s:div styleClass="p-col-12 p-md-4" rendered="#{solicitudReservas.reservaEdit.cod == null}">
+						<p:outputLabel for="comentario" value="#{messages['fungibles.obervaciones']}:" />
+						<p:inputTextarea id="comentario" value="#{solicitudReservas.comentarioAdd}" rows="2" maxlength="4000" cols="30" title="#{messages['fungibles.obervaciones']}">
+							<p:ajax event="blur"/>
+						</p:inputTextarea>
+					</s:div>
+					<s:div styleClass="p-col-12 p-md-4" rendered="#{solicitudReservas.operacionComentarFacturacion()}">
+						<p:outputLabel for="comentarioFacturacion" value="#{messages['fungibles.comentariofacturacion']}:" />
+						<p:inputTextarea id="comentarioFacturacion" value="#{solicitudReservas.reservaEdit.comentarioFacturacion}" rows="2" maxlength="4000" cols="30" title="#{messages['fungibles.comentariofacturacion']}"
+										 disabled="#{solicitudReservas.reservaEdit.cod != null and !solicitudReservas.operacionModificar()}">
+							<p:ajax event="blur"/>
+						</p:inputTextarea>
+					</s:div>
+				</s:div>	
+				<s:div styleClass="p-grid ui-fluid" rendered="#{solicitudReservas.reservaEdit.cod == null and solicitudReservas.servicioReserva != null}">						
+					<div class="p-col-3 p-md-3">
+						<p:outputLabel for="producto" value="#{messages['reservas.tiporeservable']}:" />
+						<br/>
+						<p:selectOneMenu id="producto" required="true" requiredMessage="#{messages['reservas.reserva.required']}"							
+										 value="#{solicitudReservas.reservaEdit.producto}" filter="true" filterMatchMode="contains" styleClass="ancho100"	>
+							<f:selectItem itemLabel="#{messages['reservas.tiporeservable.seleccion']}" itemValue=""/>
+							<f:selectItems value="#{solicitudReservas.listaProductos}" var="_prod" itemLabel="#{_prod.descripcion}" itemValue="#{_prod}" />
+							<p:ajax event="valueChange" update="@form :messages" process="@this" listener="#{solicitudReservas.seleccionadoProducto}" />
+							<s:convertEntity />
+						</p:selectOneMenu>
+					</div>	
+					<s:div styleClass="p-col-3 p-md-3" rendered="#{solicitudReservas.reservaEdit.usuarioIrAsociado != null and solicitudReservas.reservaEdit.producto != null and solicitudReservas.reservaEdit.producto.requiereProyecto == 'SI'}">
+						<p:outputLabel for="proyecto" value="#{messages['proyecto.label']}:" />
+						<br/>
+						<p:selectOneMenu id="proyecto" value="#{solicitudReservas.reservaEdit.proyecto}" required="true" title="#{messages['proyecto.label']}">
+							<f:selectItem itemLabel="#{messages['proyecto.seleccion']}" itemValue="" />
+							<f:selectItems value="#{solicitudReservas.listaProyectos}" var="proy" itemLabel="#{proy.nombre}"  itemValue="#{proy}" />
+							<p:ajax event="valueChange" process="@this"/>
+							<s:convertEntity />
+						</p:selectOneMenu>
+						<p:message for="proyecto"/>
+					</s:div>
+					<s:div styleClass="p-col-3 p-md-3" rendered="#{solicitudReservas.reservaEdit.producto.preguntaPersonalizada != null}">
+						<p:outputLabel for="preguntaPersonalizadaAlta" value="#{solicitudReservas.reservaEdit.producto.preguntaPersonalizada}:" />
+						<br/>
+						<p:inputTextarea id="preguntaPersonalizadaAlta" required="true" requiredMessage="#{messages['prestaciones.pregunta.required']}" value="#{solicitudReservas.reservaEdit.observaciones}"
+										 maxlength="4000" rows="2" cols="30" title="#{solicitudReservas.reservaEdit.producto.preguntaPersonalizada}" >
+							<p:ajax event="change" process="@this"/>							
+						</p:inputTextarea>	
+						<p:message for="preguntaPersonalizadaAlta" />
+					</s:div>
+					<s:div styleClass="p-col-4 p-md-4" rendered="#{solicitudReservas.reservaEdit.producto.requiereTecnico == 'PR'}">
+						<p:outputLabel for="solicitudTecnico" value="#{messages['reservas.solicitudtecnico']}:" />
+						<br/>
+						<p:selectOneMenu id="solicitudTecnico" required="true" requiredMessage="#{messages['reservas.solicitudtecnico.required']}"							
+										 value="#{solicitudReservas.reservaEdit.solicitudTecnico}" styleClass="ancho100"	>
+							<f:selectItem itemLabel="#{messages['reservas.solicitudtecnico.seleccion']}" itemValue=""/>
+							<f:selectItems value="#{solicitudReservas.listaOpcionesSolicitudTecnico}" var="ost" itemLabel="#{ost.descripcion}" itemValue="#{ost.codigo}" />
+							<p:ajax event="valueChange" update="@form" process="@this" listener="#{solicitudReservas.seleccionadoSolicitudTecnico}"/>
+						</p:selectOneMenu>
+						<p:message for="solicitudTecnico"/>
+					</s:div>
+					<s:div styleClass="p-col-4 p-md-4" rendered="#{solicitudReservas.reservaEdit.producto.pedirNivelBioseguridad == 'SI'}">
+						<p:outputLabel for="nivelBioseguridad" value="#{messages['reservas.nivelbioseguridad']}:" />
+						<br/>
+						<p:selectOneMenu id="nivelBioseguridad" required="true" requiredMessage="#{messages['reservas.nivelbioseguridad.required']}"							
+										 value="#{solicitudReservas.reservaEdit.nivelBioseguridad}" styleClass="ancho100" title="#{messages['reservas.nivelbioseguridad']}">
+							<f:selectItem itemLabel="#{messages['reservas.nivelbioseguridad.seleccion']}" itemValue=""/>
+							<f:selectItem itemLabel="#{messages['reservas.nivelbioseguridad.no']}" itemValue="NO"/>
+							<f:selectItem itemLabel="#{messages['reservas.nivelbioseguridad.ncb1']}" itemValue="NCB1"/>
+							<f:selectItem itemLabel="#{messages['reservas.nivelbioseguridad.ncb2']}" itemValue="NCB2"/>
+							<f:selectItem itemLabel="#{messages['reservas.nivelbioseguridad.ncb3']}" itemValue="NCB3" itemDisabled="true"/>
+							<p:ajax event="valueChange" update="@form" process="@this" listener="#{solicitudReservas.seleccionadoNivelBioseguridad}"/>
+						</p:selectOneMenu>
+						<p:message for="nivelBioseguridad"/>
+						<h:outputText value="#{messages['reservas.nivelbioseguridad.info']}" styleClass="fuente07"/>
+					</s:div>				
+				</s:div>	
+				<s:div styleClass="p-grid ui-fluid" rendered="#{solicitudReservas.reservaEdit.cod == null and solicitudReservas.requiereAnexoNivelBioseguridad() and solicitudReservas.anexoBioseguridadRellenar != null}">
+					<div class="p-col-4 p-md-4"> 
+						<p:outputLabel value="#{messages['prestaciones.anexo.bioseguridad.descargar']}:" /> 
+						<br/> 
+						<p:commandLink value="#{solicitudReservas.anexoBioseguridadRellenar.nomDocumento}"
+									   title="#{solicitudReservas.anexoBioseguridadRellenar.nomDocumento}"
+									   ajax="false" immediate="true" update=":messages" styleClass="margen5 enlaceTexto">
+							<p:fileDownload value="#{solicitudReservas.descargarFicheroAnexo(solicitudReservas.anexoBioseguridadRellenar)}" />
+						</p:commandLink>	
+					</div>
+					<div class="p-col-4 p-md-4"> 
+						<p:outputLabel for="anexoBioseguridad" value="#{messages['prestaciones.anexo.bioseguridad.adjuntar']}:" />
+						<br/>
+						<p:fileUpload id="anexoBioseguridad" label="#{messages['reservas.anexo.seleccionar.fichero']}" required="true"
+									  value="#{solicitudReservas.ficheroAnexoBioseguridad}" process="@this" fileUploadListener="#{solicitudReservas.subidoFicheroAnexoBioseguridad}" 
+									  requiredMessage="#{messages['prestaciones.reqMessage']}" converterMessage="#{messages['anexos.fileallowed']}"
+									  invalidFileMessage="#{messages['anexos.fileallowed']}" auto="true" 
+									  update="@form" mode="advanced" skinSimple="true" allowTypes="/(\.|\/)(xls|docx|doc|pdf|ppt|pptx|xlsx|tiff|txt|zip|rar)$/"/>
+						<p:messages for="anexoBioseguridad" showDetail="true" />
+						<h:outputText value="#{solicitudReservas.ficheroAnexoBioseguridad.fileName}" rendered="#{solicitudReservas.ficheroAnexoBioseguridad != null}"/>
+					</div>
+				</s:div>
+				<s:div styleClass="p-grid ui-fluid" rendered="#{solicitudReservas.reservaEdit.producto != null}">	
+					<s:div styleClass="p-col-1 p-md-1" rendered="#{solicitudReservas.reservaEdit.presupuesto == 'SI'}">
+						<s:fragment rendered="#{solicitudReservas.reservaEdit.cod == null or solicitudReservas.operacionModificar()}">
+							<p:outputLabel for="cantidad" value="#{messages['fungibles.cantidad']}:" />
+							<br/>
+							<p:inputNumber id="cantidad" value="#{solicitudReservas.reservaEdit.cantidad}" maxlength="6" decimalPlaces="2" title="#{messages['fungibles.cantidad']}" required="true">
+								<f:validateDoubleRange minimum="0.1" maximum="999.1"/>
+								<p:ajax event="change" process="@this"/>
+							</p:inputNumber>
+							<p:message for="cantidad" />													
+						</s:fragment>
+						<s:fragment rendered="#{solicitudReservas.reservaEdit.cod != null and !solicitudReservas.operacionModificar()}">
+							<p:outputLabel value="#{messages['fungibles.cantidad']}:" />
+							<br/>
+							<h:outputText value="#{solicitudReservas.reservaEdit.cantidad}" styleClass="margen5"/>
+						</s:fragment>
+					</s:div>
+					<s:fragment id="fragmentAnexosAlta" rendered="#{solicitudReservas.reservaEdit.cod == null and solicitudReservas.reservaEdit.producto.requiereAnexo == 'SI' and not empty solicitudReservas.reservaEdit.producto.anexos}">
+						<div class="p-col-4 p-md-4"> 
+ 							<p:outputLabel value="#{messages['reservas.anexo.producto']}:" /> 
+ 							<br/> 
+							<p:commandLink value="#{solicitudReservas.reservaEdit.producto.anexos.get(0).nomDocumento}"
+										   title="#{solicitudReservas.reservaEdit.producto.anexos.get(0).nomDocumento}"
+										   ajax="false" immediate="true" update=":messages" styleClass="margen5 enlaceTexto">
+								<p:fileDownload value="#{solicitudReservas.descargarFicheroAnexo(solicitudReservas.reservaEdit.producto.anexos.get(0))}" />
+							</p:commandLink>	
+						</div>
+						<div class="p-col-4 p-md-4"> 
+							<p:outputLabel for="anexoReserva" value="#{messages['reservas.anexo.reserva.adjuntar']}:" />
+							<br/>
+							<p:fileUpload id="anexoReserva" label="#{messages['reservas.anexo.seleccionar.fichero']}" required="true"
+										  value="#{solicitudReservas.ficheroAnexoReserva}" process="@this" fileUploadListener="#{solicitudReservas.subidoFicheroAnexoReserva}" 
+										  requiredMessage="#{messages['prestaciones.reqMessage']}" converterMessage="#{messages['anexos.fileallowed']}"
+										  invalidFileMessage="#{messages['anexos.fileallowed']}" auto="true" 
+										  update="@form" mode="advanced" skinSimple="true" allowTypes="/(\.|\/)(xls|docx|doc|pdf|ppt|pptx|xlsx|tiff|txt|zip|rar)$/"/>
+							<p:messages for="anexoReserva" showDetail="true" />
+							<h:outputText value="#{solicitudReservas.ficheroAnexoReserva.fileName}" rendered="#{solicitudReservas.ficheroAnexoReserva != null}"/>
+						</div>
+					</s:fragment>
+					<s:div id="divAnexosEdicion" styleClass="p-col-4 p-md-4" rendered="#{solicitudReservas.reservaEdit.cod != null and not empty solicitudReservas.getAnexosReserva()}">
+						<p:outputLabel value="#{messages['reservas.anexo.reserva.adjuntado']}:" />
+						<br/>
+						<p:commandLink value="#{solicitudReservas.getAnexosReserva().get(0).nomDocumento}"
+									   title="#{solicitudReservas.getAnexosReserva().get(0).nomDocumento}"
+									   ajax="false" immediate="true" update=":messages" styleClass="margen5 enlaceTexto" >
+							<p:fileDownload value="#{solicitudReservas.descargarFicheroAnexo(solicitudReservas.getAnexosReserva().get(0))}" />
+						</p:commandLink>	
+					</s:div>
+				</s:div>
+				<br/>
+				<s:div styleClass="p-grid" rendered="#{solicitudReservas.reservaEdit.cod != null}">
+					<s:div styleClass="p-col-5 p-md-5" rendered="#{solicitudReservas.reservaEdit.bitacoraUsuario != null}">
+						<p:panel id="panelHistorico" header="#{messages['prestaciones.historico']}" >
+							<h:outputText title="#{messages['prestaciones.historico']}" value="#{solicitudReservas.reservaEdit.bitacoraUsuario}" escape="false" styleClass="fuente08"/>
+						</p:panel>
+					</s:div>
+					<s:div styleClass="p-col-5 p-md-5 " rendered="#{solicitudReservas.reservaEdit.bitacora != null and (identity.tienePerfilEnServicio('SUPERVISOR',solicitudReservas.servicioReserva.cod) or solicitudReservas.esTecnicoSolicitud())}">
+						<p:panel id="panelHistoricoPriv" header="#{messages['prestaciones.historicoPriv']}"  >
+							<h:outputText title="#{messages['prestaciones.historicoPriv']}" value="#{solicitudReservas.reservaEdit.bitacora}" escape="false" styleClass="fuente08"/>
+						</p:panel>
+					</s:div>
+					<s:div styleClass="p-col-2 p-md-2" rendered="#{solicitudReservas.operacionComentar()}">
+						<p:commandButton id="buttonAddComentario" ajax="true" title="#{messages['reservas.comentario.add']}" ariaLabel="#{messages['reservas.comentario.add']}"
+										 icon="fa fa-plus" value="#{messages['reservas.comentario.add']}" onclick="PF('dialogComentario').show();saveLastFocus(event);"
+										 process="@this"/>		
+					</s:div>
+					<br/> 
+				</s:div>
+				
+				<s:fragment rendered="#{solicitudReservas.reservaEdit.presupuesto == 'NO'}">
+					<s:div styleClass="p-grid" rendered="#{solicitudReservas.reservaEdit.cod == null and solicitudReservas.reservaEdit.producto != null and solicitudReservas.reservaEdit.producto.tipoReservable != null and not empty solicitudReservas.reservaEdit.producto.tipoReservable.reservables and not empty solicitudReservas.reservaEdit.producto.tipoReservable.reservableHorarios and solicitudReservas.requerimientosTecnicoValidos() and solicitudReservas.mostrarBotonAddReservas}">
+						<div class="p-col-2 col-md-2">
+							<p:commandButton id="buttonShowAddReservas" value="#{messages['reservas.add.reservas.more']}" action="#{solicitudReservas.mostrarAddReservas}" 
+											 process="@this" update="@form" icon="fa fa-plus" />
+						</div>
+					</s:div>						 	
+					<p:tabView id="tabViewAltaReserva" rendered="#{solicitudReservas.reservaEdit.cod == null and solicitudReservas.reservaEdit.producto != null and solicitudReservas.reservaEdit.producto.tipoReservable != null and not empty solicitudReservas.reservaEdit.producto.tipoReservable.reservables and not empty solicitudReservas.reservaEdit.producto.tipoReservable.reservableHorarios and solicitudReservas.requerimientosTecnicoValidos() and not solicitudReservas.mostrarBotonAddReservas}" activeIndex="#{solicitudReservas.tabActivo}">
+						<p:ajax event="tabChange" listener="#{solicitudReservas.onTabChange}" />
+						<p:tab id="tabReservaOrdinaria" title="Añadir reserva en calendario">				
+							<div class="p-grid ui-fluid">
+								<div class="p-col-1 p-md-1 derecha">
+									<p:commandLink action="#{solicitudReservas.cambiadaSemana(-7)}" title="#{messages['reservas.retroceder.semana']}" ariaLabel="#{messages['reservas.retroceder.semana']}"
+												   process="@this" ajax="true" update="@form, :messages">
+										<em class="fa fa-arrow-circle-left fa-2x textoGreen" />
+									</p:commandLink>
+								</div>
+								<div class="p-col-1 p-md-1">
+									<p:calendar id="fechaSeleccionada" title="#{solicitudReservas.fechaCalendario}" value="#{solicitudReservas.fechaCalendario}" pattern="dd/MM/yyyy" mindate="#{solicitudReservas.fechaHoy}" readonlyInput="true">
+										<p:ajax listener="#{solicitudReservas.cambiadaFechaCalendario}" event="dateSelect" update="@form, :messages"/>								
+									</p:calendar>
+								</div>
+								<div class="p-col-1 p-md-1">
+									<p:commandLink action="#{solicitudReservas.cambiadaSemana(7)}" title="#{messages['reservas.avanzar.semana']}" ariaLabel="#{messages['reservas.avanzar.semana']}"
+												   process="@this" ajax="true" update="@form, :messages">
+										<em class="fa fa-arrow-circle-right fa-2x textoGreen" />
+									</p:commandLink>
+								</div>
+							</div>
+							<br/>	
+							<p:dataGrid var="thf" value="#{solicitudReservas.listaTiposhorarioFechaCalendario}" columns="7"  
+										tableStyle="vertical-align:top;" style="max-width:max-content;" layout="grid">
+								<p:dataTable var="tur" value="#{solicitudReservas.getTurnosFecha(thf, true)}" rowHover="true" emptyMessage=""
+											 tableStyleClass="fuente08" style="vertical-align:top;">
+									<p:column styleClass="centrado sinPaddingVerticalTh">	
+										<f:facet name="header">
+											<h:outputLabel value="#{solicitudReservas.getNombreDiaSemanaByFecha(thf.fecha)}"/>	
+											<br/>
+											<h:outputLabel value="#{thf.fecha}">
+												<s:convertDateTime pattern="dd/MM/yyyy"/>
+											</h:outputLabel>	
+										</f:facet>						
+										<p:commandButton id="buttonAddReserva" ajax="true" rendered="#{!tur.ocupado}" style="max-width: max-content;"																		
+														 title="Reservar a las #{solicitudReservas.getHoraByFecha(tur.fechaInicio)}" action="#{solicitudReservas.seleccionadoTurno(tur, thf)}"
+														 value="#{solicitudReservas.getHoraByFecha(tur.fechaInicio)}" oncomplete="PF('dialogReserva').show();saveLastFocus(event);"
+														 process="@this" update="formReservable, messages"/>		
+										<p:commandButton id="buttonDisabledOcupado" rendered="#{tur.ocupado}" disabled="true" value="#{solicitudReservas.getHoraByFecha(tur.fechaInicio)}"
+														 title="#{tur.motivoOcupado}" icon="#{tur.iconoMotivoOcupado}" style="max-width: max-content; cursor: default !important;"/>
+										<p:dataTable rowStyleClass="#{solicitudReservas.obtieneColor(_res)}" rendered="#{not empty tur.listaReservasExistentes}"
+													 id="tablaReservasExistentes" var="_res" reflow="true" styleClass="tablaSinHeader tablaSinBordes" 
+													 tableStyleClass="fuente07 tablaAuto" style="margin-bottom:0em;" 
+													 value="#{tur.listaReservasExistentes}">													
+											<p:column styleClass="sinPaddingVertical">
+												<h:outputText value="#{_res.usuario.datosUsuario.email}" title="#{messages['reservas.avisame.usuario']}" />
+												<br/>
+												<h:outputText value="#{_res.reservable.descripcion}"  title="#{messages['reservas.avisame.reservable']}"/>
+											</p:column>
+											<p:column styleClass="fuente14 sinPaddingVertical">
+												<p:commandLink id="btnAvisame" rendered="#{solicitudReservas.mostrarSolicitudAvisoAnulacion(_res)}"
+															   title="#{messages['reservas.avisame']}" ariaLabel="#{messages['reservas.avisame']}"
+															   action="#{solicitudReservas.solicitarAvisoAnulacion(_res)}" process="@this" update="@form :messages">
+													<em class="fa fa-envelope-o fuente17" />
+													<p:confirm header="#{messages['reservas.confirmar.aviso']}" message="#{messages['reservas.crearreservaespera.confirm']}"
+															   icon="ui-icon-alert" />
+												</p:commandLink>
+												<s:fragment rendered="#{!solicitudReservas.mostrarSolicitudAvisoAnulacion(_res)}">
+													<em class="fa fa-check-circle-o fuente17" title="#{messages['reservas.yaAviso']}"/>
+												</s:fragment> 
+											</p:column>
+										</p:dataTable>																					
+									</p:column>
+								</p:dataTable>
+							</p:dataGrid>
+						</p:tab>
+						<p:tab id="tabReservaEspecial" title="Añadir reserva múltiple">
+							<div class="p-grid ui-fluid">
+								<div class="p-col-4 p-md-4 p-lg-3">
+									<p:outputLabel for="reservableREAdd" value="#{messages['reservas.reservable']}:" />
+									<br/>
+									<p:selectOneMenu id="reservableREAdd" required="true" value="#{solicitudReservas.reservableReservaEspecialAdd}">
+										<f:selectItem itemLabel="#{messages['reservas.reservable.seleccion']}" itemValue="" />
+										<f:selectItems value="#{solicitudReservas.listaReservables}" var="_eq" itemLabel="#{_eq.descripcion}" itemValue="#{_eq}" />
+										<p:ajax event="valueChange" immediate="true" process="@this" />
+										<s:convertEntity />
+									</p:selectOneMenu>
+									<p:message for="reservableREAdd"/>
+								</div>
+								<div class="p-col-2 p-md-2 p-lg-1">
+									<p:outputLabel for="fechaInicioREAdd" value="#{messages['reservas.fechadesde']}:" />
+									<br/>
+									<p:calendar id="fechaInicioREAdd" required="true" title="#{messages['reservas.fechadesde']}"
+												value="#{solicitudReservas.fechaDesdeReservaEspecialAdd}" pattern="dd/MM/yyyy" mask="99/99/9999" mindate="#{solicitudReservas.fechaHoy}" size="10" maxlength="10"/>
+									<p:message for="fechaInicioREAdd"/>			
+								</div>
+								<div class="p-col-2 p-md-2 p-lg-1">
+									<p:outputLabel for="fechaFinREAdd" value="#{messages['reservas.fechahasta']}:" />
+									<br/>
+									<p:calendar id="fechaFinREAdd" required="true" title="#{messages['reservas.fechahasta']}"
+												value="#{solicitudReservas.fechaHastaReservaEspecialAdd}" pattern="dd/MM/yyyy" mask="99/99/9999" mindate="#{solicitudReservas.fechaHoy}" size="10" maxlength="10"/>
+									<p:message for="fechaFinREAdd"/>			
+								</div>
+							</div>
+							<div class="p-grid ui-fluid">	
+								<div class="p-col-2 p-md-2 p-lg-1">
+									<p:outputLabel for="horaIniREAdd" value="#{messages['reservas.hora.ini']}:" />
+									<br/>
+									<p:selectOneMenu id="horaIniREAdd" required="true" value="#{solicitudReservas.horaInicioReservaEspecialAdd}" title="#{messages['reservas.hora.ini']}">
+										<f:selectItem itemLabel="Seleccione Hora" itemValue="" />
+										<f:selectItems value="#{solicitudReservas.listaHorasInicio}" var="_eq"/>
+									</p:selectOneMenu>
+									<p:message for="horaIniREAdd"/>
+								</div>
+								<div class="p-col-2 p-md-2 p-lg-1">
+									<p:outputLabel for="horaFinREAdd" value="#{messages['reservas.hora.fin']}:" />
+									<p:selectOneMenu id="horaFinREAdd" required="true" value="#{solicitudReservas.horaFinReservaEspecialAdd}" title="#{messages['reservas.hora.fin']}" >
+										<f:selectItem itemLabel="Seleccione Hora" itemValue="" />
+										<f:selectItems value="#{solicitudReservas.listaHorasFin}" var="_eq"	/>
+									</p:selectOneMenu>
+									<p:message for="horaFinREAdd"/>
+								</div>
+								<div class="p-col-3 p-md-3">
+									<p:outputLabel for="diasSemanaREAdd" value="#{messages['reservas.dias.semana']}:" />
+									<br/>
+			        				<p:selectCheckboxMenu id="diasSemanaREAdd" value="#{solicitudReservas.diasSeleccionadosReservaEspecialAdd}" updateLabel="true" filter="false"
+		        									  label="Seleccione días" required="true" requiredMessage="#{messages['reserva.addlinea.error.dias']}">
+										<f:selectItems value="#{solicitudReservas.listaDiasSemana}" var="dia" itemLabel=" #{solicitudReservas.getNombreDiaSemana(dia)}" itemValue="#{dia}"/>						
+			   	  					</p:selectCheckboxMenu>
+		   							<p:message for="diasSemanaREAdd"/>
+								</div>
+							</div>	
+							<br/>
+							<div class="p-grid">
+								<div class="p-col-12">
+									<p:commandButton id="buttonAñadirHoras" title="#{messages['reservas.add.reservas']}" ariaLabel="#{messages['reservas.anyadir.horas']}"
+													 value="#{messages['reservas.anyadir.horas']}" process="@form" ajax="true" update="@form :messages"
+													 icon="fa fa-plus" action="#{solicitudReservas.addReservasEspeciales}" />
+								</div>
+							</div>	
+						</p:tab>
+					</p:tabView>
+					<br/>
+					<s:fragment id="fragmentListaReservas" rendered="#{not empty solicitudReservas.listaReservas}">	
+						<s:div class="p-grid" rendered="#{solicitudReservas.reservaEdit.cod == null}">
+							<div class="p-col-12 p-md-12">
+								<p:outputLabel style="color: #cb4335;" title="#{messages['reservas.mensaje']}" value="#{messages['reservas.mensaje']}" />
+							</div>
+						</s:div> 
+	 					<div class="p-grid">
+							<div class="p-col-7 p-md-7">		
+								<p:dataTable id="dtListaReservas" var="_res" value="#{solicitudReservas.listaReservas}"
+											tableStyleClass="tablaAuto fuente08" sortBy="#{_res.fechaInicio}">						
+									<f:facet name="header">
+										<h:outputText value="#{messages['reservas.lineas']}"/>
+									</f:facet>
+									<p:column headerText="#{messages['reservas.fecha']}" styleClass="centrado">
+										<h:outputText value="#{_res.fechaInicio}" >
+											<s:convertDateTime pattern="dd/MM/yyyy"/>
+										</h:outputText>
+									</p:column>
+									<p:column headerText="#{messages['reservas.hora']}" styleClass="centrado">
+										<h:outputText value="De " />
+										<h:outputText value="#{_res.fechaInicio}">
+											<s:convertDateTime pattern="HH:mm"/>
+										</h:outputText>
+										<h:outputText value=" a "/>
+										<h:outputText value="#{_res.fechaFin}">
+											<s:convertDateTime pattern="HH:mm"/>
+										</h:outputText>
+									</p:column>
+									<p:column headerText="#{messages['reservas.hora.tecnico']}" rendered="#{solicitudReservas.requiereTecnico()}" styleClass="centrado">
+										<h:outputText value="De " />
+										<h:outputText value="#{_res.fechaInicioTecnico}">
+											<s:convertDateTime pattern="HH:mm"/>
+										</h:outputText>
+										<h:outputText value=" a "/>
+										<h:outputText value="#{_res.fechaFinTecnico}">
+											<s:convertDateTime pattern="HH:mm"/>
+										</h:outputText>
+									</p:column>										
+																			
+									<p:column headerText="#{messages['reservas.equipo']}" >
+										<h:outputText value="#{_res.reservable.descripcion}" />
+									</p:column>
+									<p:column headerText="#{messages['prestaciones.estado']}" styleClass="centrado">
+										<h:outputText value="#{_res.estado}" styleClass="negrita #{solicitudReservas.getColorEstadoReserva(_res.estado)}"/>
+									</p:column>
+									<p:column headerText="#{messages['reservas.asiste']}" rendered="#{solicitudReservas.reservaEdit.cod != null}" styleClass="centrado">
+										<h:outputText value="#{_res.confirmarAsistencia}" />
+									</p:column>
+									<p:column headerText="#{messages['reservas.asistencia']}" styleClass="centrado" rendered="#{solicitudReservas.reservaEdit.cod != null and (identity.tienePerfilEnServicio('SUPERVISOR',solicitudReservas.servicioReserva.cod) or solicitudReservas.esTecnicoSolicitud()) and solicitudReservas.operacionModificar()}">
+										<div class="p-grid p-justify-center">
+											<div class="p-col">
+												<p:commandLink rendered="#{_res.confirmarAsistencia == null or _res.confirmarAsistencia == 'NO'}" 
+															   action="#{solicitudReservas.confirmaAsistencia(_res, 'SI')}" process="@this" 
+													   		   title="#{messages['reservas.asiste']}" ariaLabel="#{messages['reservas.asiste']}"										   
+													   		   update="@form :messages" oncomplete="haCambiado=true;">
+													<em class="fa fa-check fuente17"/>																
+												</p:commandLink>
+												<p:commandLink rendered="#{_res.confirmarAsistencia == null or _res.confirmarAsistencia == 'SI'}"
+												               action="#{solicitudReservas.confirmaAsistencia(_res, 'NO')}" process="@this" 
+															   ariaLabel="#{messages['reservas.noasiste']}"	title="#{messages['reservas.noasiste']}" 
+															   update="@form :messages" oncomplete="haCambiado=true;">
+													<em class="fa fa-times fuente17"/>									
+												</p:commandLink>
+											</div>
+										</div>		
+									</p:column>	
+									<p:column headerText="#{messages['value.delete']}" styleClass="centrado" rendered="#{(solicitudReservas.reservaEdit.cod == null or solicitudReservas.reservaEdit.factura == null) and solicitudReservas.operacionModificar()}">
+										<p:commandLink action="#{solicitudReservas.eliminarReserva(_res)}" rendered="#{solicitudReservas.permitidoEliminarReserva(_res)}" process="@this" 
+													   title="Eliminar reserva" update="@form :messages" oncomplete="haCambiado=true;">
+											<em class="fa fa-trash fuente17"/>
+											<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['reserva.dellinea.confirm']}" icon="ui-icon-alert" />
+										</p:commandLink>
+									</p:column>
+								</p:dataTable>
+							</div>
+						</div>
+					</s:fragment>
+				</s:fragment>									
+				<br/>
+				<div class="p-grid">					
+					<s:fragment id="fragmentHayReservas" rendered="#{not empty solicitudReservas.listaReservas or (solicitudReservas.reservaEdit.presupuesto == 'SI' and solicitudReservas.reservaEdit.producto != null)}">
+						<s:div styleClass="p-col-12">
+							<p:commandButton id="buttonCrear" action="#{solicitudReservas.crearSolicitud}" process="@form" update="@form :messages"
+											 value="#{solicitudReservas.reservaEdit.presupuesto == 'NO' ? messages['reservas.crear'] : messages['presupuestos.hijo.crear']}" 
+											 title="#{solicitudReservas.reservaEdit.presupuesto == 'NO' ? messages['reservas.crear.detalles'] : messages['presupuestos.hijo.crear.reserva.detalles']}" 
+											 ariaLabel="#{solicitudReservas.reservaEdit.presupuesto == 'NO' ? messages['reservas.crear.detalles'] : messages['presupuestos.hijo.crear.reserva.detalles']}"
+											 styleClass="botonVerde" icon="fa fa-save" oncomplete="haCambiado=false;"
+											 rendered="#{solicitudReservas.reservaEdit.cod == null and solicitudReservas.operacionGuardar()}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{solicitudReservas.reservaEdit.presupuesto == 'NO' ? messages['reservas.crear.confirm'] : messages['presupuestos.hijo.crear.reserva.confirm']}" icon="ui-icon-alert" />
+							</p:commandButton>
+							<p:commandButton id="buttonModificar" action="#{solicitudReservas.modificarSolicitud}" process="@form" update="@form :messages"
+											 value="#{solicitudReservas.reservaEdit.presupuesto == 'NO' ? messages['reservas.modificar'] : messages['presupuestos.hijo.modificar']}" 
+											 title="#{solicitudReservas.reservaEdit.presupuesto == 'NO' ? messages['reservas.modificar.detalles'] : messages['presupuestos.hijo.modificar.detalles']}" 
+											 ariaLabel="#{solicitudReservas.reservaEdit.presupuesto == 'NO' ? messages['reservas.modificar.detalles'] : messages['presupuestos.hijo.modificar.detalles']}"
+											 styleClass="botonVerde" icon="fa fa-save" oncomplete="haCambiado=false;"
+											 rendered="#{solicitudReservas.reservaEdit.cod != null and solicitudReservas.operacionModificar()}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{solicitudReservas.reservaEdit.presupuesto == 'NO' ? messages['reservas.modificar.confirm'] : messages['presupuestos.hijo.modificar.confirm']}" icon="ui-icon-alert" />
+							</p:commandButton>
+							<p:commandButton id="buttonAceptar" action="#{solicitudReservas.validar}" process="@form" title="#{messages['reservas.validar.detalles']}" ariaLabel="#{messages['reservas.validar']}" 	
+											 styleClass="botonVerde" value="#{messages['reservas.validar']}" icon="fa fa-check" update="@form :messages" oncomplete="haCambiado=false;"
+											 rendered="#{solicitudReservas.reservaEdit.cod != null and solicitudReservas.operacionAceptar()}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['reservas.validar.confirm']}" icon="ui-icon-alert" />
+							</p:commandButton>						
+							<p:commandButton id="buttonValidarIr" action="#{solicitudReservas.validarIr}" process="@form" title="#{messages['reservas.validarir.detalles']}" ariaLabel="#{messages['reservas.validarir.detalles']}"
+											 styleClass="botonVerde" value="#{messages['reservas.validarir']}" update="@form :messages" icon="fa fa-check-circle-o" oncomplete="haCambiado=false;"
+											 rendered="#{solicitudReservas.reservaEdit.cod != null and solicitudReservas.operacionValidar()}">
+								<p:confirm header="#{messages['reserva.validar']}" message="#{messages['reservas.validarir.confirm']}" icon="ui-icon-alert" />
+							</p:commandButton>
+							<p:commandButton id="buttonAnularTodas" action="#{solicitudReservas.anularTodas}" process="@this" 
+											 value="#{messages['reservas.anular']}" 
+											 title="#{solicitudReservas.reservaEdit.presupuesto == 'NO' ? messages['reservas.anulartodas.detalles'] : messages['presupuestos.hijo.anular.reserva.detalles']}"
+											 ariaLabel="#{solicitudReservas.reservaEdit.presupuesto == 'NO' ? messages['reservas.anulartodas.detalles'] : messages['presupuestos.hijo.anular.reserva.detalles']}"
+											 styleClass="botonRojo"  icon="fa fa-times" update="@form :messages"
+											 rendered="#{solicitudReservas.reservaEdit.cod != null and solicitudReservas.operacionAnular()}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{solicitudReservas.reservaEdit.presupuesto == 'NO' ? messages['reservas.anulartodas.confirm'] : messages['presupuestos.hijo.anular.reserva.confirm']}" icon="ui-icon-alert" oncomplete="haCambiado=false;"/>
+							</p:commandButton>						
+							<p:commandButton id="buttonRechazarTodas" action="#{solicitudReservas.rechazarTodas}" process="@this" title="#{messages['reservas.rechazartodas.detalles']}" ariaLabel="#{messages['reservas.rechazartodas.detalles']}"
+										     styleClass="botonRojo" value="#{messages['reservas.rechazar']}" icon="fa fa-ban" update="@form :messages"
+										     rendered="#{solicitudReservas.reservaEdit.cod != null and solicitudReservas.operacionRechazar()}">
+								<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['reservas.rechazartodas.confirm']}" icon="ui-icon-alert" oncomplete="haCambiado=false;"/>
+							</p:commandButton>						
+						</s:div>
+					</s:fragment>
+				</div>	
+			</h:form>	
+			<h:form id="formImprimir" target="_blank">
+				<s:div styleClass="p-grid" rendered="#{solicitudReservas.reservaEdit.presupuesto == 'NO'}">
+					<div class="p-col-12">
+						<p:commandButton id="buttonImprimir" rendered="#{solicitudReservas.reservaEdit.cod != null}" action="#{misSolicitudes.obtenerConsumoHtml(solicitudReservas.reservaEdit.cod)}" 
+										 ajax="false" update=":messages" icon="fa fa-print" ariaLabel="#{messages['value.print']}"
+										 title="#{messages['value.print']}" value="#{messages['value.print']}"/>
+					</div>
+				</s:div>	
+			</h:form>
+			<h:form id="formRetorno">
+				<div class="p-grid">	
+					<s:div styleClass="p-col-12" >				
+						<p:commandButton id="buttonVolver" icon="fa fa-reply" action="#{solicitudReservas.volverListado}" ajax="false" process="@this"
+										 value="#{messages['value.return.listado']}" title="#{messages['value.return.listado']}" ariaLabel="#{messages['value.return.listado']}"
+										 onclick="if (haCambiado) {return confirm('Debe pulsar en Guardar Solicitud para guardar los cambios. Si continúa perderá los cambios realizados. ¿Seguro que desea volver?');}"
+										 rendered="#{solicitudReservas.reservaEdit.cod != null and solicitudReservas.accesoDesdeListado}"/>
+						<p:commandButton id="buttonVolverPadre" icon="fa fa-arrow-up" action="#{solicitudReservas.volverConsumoPadre}" ajax="false" process="@this"
+										 value="#{solicitudReservas.reservaEdit.presupuesto == 'NO' ? messages['fungibles.volver.consumopadre'] : messages['presupuestos.volver.consumopadre']}"
+										 title="#{solicitudReservas.reservaEdit.presupuesto == 'NO' ? messages['fungibles.volver.consumopadre'] : messages['presupuestos.volver.consumopadre']}" 
+										 ariaLabel="#{solicitudReservas.reservaEdit.presupuesto == 'NO' ? messages['fungibles.volver.consumopadre'] : messages['presupuestos.volver.consumopadre']}"
+										 onclick="if (haCambiado) {return confirm('Debe pulsar en Guardar Solicitud para guardar los cambios. Si continúa perderá los cambios realizados. ¿Seguro que desea volver?');}"
+										 rendered="#{solicitudReservas.reservaEdit.consumoPadre != null}"/>
+					</s:div>
+				</div>		
+			</h:form>						
+
+			<h:form id="formConfirm">
+				<p:confirmDialog id="confirmDialog" global="true" showEffect="fade" hideEffect="fade">
+					<p:commandButton value="#{messages['value.yes']}" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton value="#{messages['value.no']}" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</p:confirmDialog>
+			</h:form>	
+		</p:panel>
+								
+		
+		<p:dialog header="#{messages['reservas.add.reserva']}" id="dialogReserva" widgetVar="dialogReserva" modal="true" width="30%" onHide="goToLastFocus();">    																	
+			<h:form id="formReservable" styleClass="editFundeweb">
+				<div class="p-grid ui-fluid">				
+					<div class="p-md-4">
+						<p:outputLabel value="#{messages['reservas.fecha']}:" />
+						<br/>
+						<h:outputText title="#{messages['reservas.fecha']}" value="#{solicitudReservas.fechaInicioReservaOrdinariaAdd}" styleClass="margen5">
+							<s:convertDateTime pattern="dd/MM/yyyy"/>
+						</h:outputText>
+					</div>
+					<div class="p-md-4">
+						<p:outputLabel value="#{messages['reservas.hora.ini']}:" />
+						<br/>
+						<h:outputText title="#{messages['reservas.hora.ini']}" value="#{solicitudReservas.fechaInicioReservaOrdinariaAdd}" styleClass="margen5">
+							<s:convertDateTime pattern="HH:mm"/>
+						</h:outputText>
+					</div>					
+					<div class="p-md-4">
+						<p:outputLabel for="fechaFin" value="#{messages['reservas.hora.fin']}:" />
+						<br/>
+						<p:selectOneMenu id="fechaFin" required="true" appendTo="@this"	value="#{solicitudReservas.horaFinReservaOrdinariaAdd}">
+							<f:selectItem itemLabel="#{messages['reservas.seleccione.hora']}" itemValue="" />
+							<f:selectItems value="#{solicitudReservas.listaFechasFinReservaOrdinariaAdd}" var="_fecha" itemLabel="#{solicitudReservas.getHoraByFecha(_fecha)}" itemValue="#{solicitudReservas.getHoraByFecha(_fecha)}" />
+							<p:ajax event="valueChange" listener="#{solicitudReservas.seleccionadaHoraFinReservaOrdinaria()}" update="@form :messages"/>
+						</p:selectOneMenu>						
+						<p:messages for="fechaFin" />
+					</div>
+				</div>	
+				<div class="p-grid ui-fluid">
+					<div class="p-col-12 p-md-12">
+						<p:outputLabel for="reservables" value="#{messages['reservas.seleccione']}:"/>
+						<br/>
+						<p:selectOneMenu id="reservables" required="true" value="#{solicitudReservas.reservableReservaOrdinariaAdd}">
+							<f:selectItem itemLabel="Seleccione un reservable" itemValue="" />
+								<f:selectItems value="#{solicitudReservas.listaReservablesReservaOrdinariaAdd}" itemLabel="#{_res.descripcion}" itemValue="#{_res}" var="_res"/>
+								<s:convertEntity />
+						</p:selectOneMenu>
+						<p:message for="reservables" />
+					</div>					
+				</div>
+				<br/>
+				<div class="p-grid">
+					<div class="p-col-12">
+						<p:commandButton id="btnAddReservable" title="#{messages['value.anyadir']}" ariaLabel="#{messages['value.anyadir']}"
+		  	 							 value="#{messages['value.anyadir']}" process="@form" action="#{solicitudReservas.addReservaOrdinaria}"
+										 oncomplete="comprobarArgsModal(xhr, status, args, 'dialogReserva'); haCambiado=true;"
+										 update="@form :formReservaEdit :messages" icon="fa fa-plus"/>							
+						<p:commandButton id="btnClose" title="#{messages['label.cancel']}" ariaLabel="#{messages['label.cancel']}"
+										 value="#{messages['label.cancel']}" type="button" onclick="PF('dialogReserva').hide();" 
+										 icon="fa fa-times"/>
+					</div>
+				</div>	
+			</h:form>
+		</p:dialog>			
+
+		<p:dialog id="dialogComentario" header="#{messages['reservas.comentario.add']}" widgetVar="dialogComentario" modal="true" width="60%" onHide="goToLastFocus();">    																	
+			<h:form id="formAddComentario" styleClass="editFundeweb">
+				<div class="p-grid ui-fluid">
+					<div class="p-col-12 p-md-12 ">
+						<p:outputLabel for="comentarioDlg" value="#{messages['fungibles.comentario']}:" />
+						<br/>
+						<p:inputTextarea id="comentarioDlg" value="#{solicitudReservas.comentarioAdd}" title="#{messages['fungibles.comentario']}" required="true" rows="2" maxlength="4000"/>
+					</div>
+				</div>	
+				<br/>
+				<div class="p-grid ui-fluid">
+					<div class="p-col-12">
+						<p:commandButton id="buttonGuardarBitacora" icon="fa fa-save" ajax="true" process="@form" update="@form :formReservaEdit :messages"
+										 value="#{messages['prestaciones.guardarCom']}" title="#{messages['prestaciones.guardarCom']}" ariaLabel="#{messages['prestaciones.guardarCom']}"
+										 action="#{solicitudReservas.guardarBitacoraUsuario()}" oncomplete="comprobarArgsModal(xhr, status, args, 'dialogComentario'); haCambiado=false;">
+							<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['reservas.comentario.add.confirm']}" icon="ui-icon-alert" />
+						</p:commandButton>				 
+						<p:commandButton id="buttonGuardarBitacoraMail" icon="fa fa-envelope-o" ajax="true" process="@form" update="@form :formReservaEdit :messages"
+										 value="#{messages['prestaciones.guardarComMail']}" title="#{messages['prestaciones.guardarComMail']}" ariaLabel="#{messages['prestaciones.guardarComMail']}"
+										 action="#{solicitudReservas.guardarBitacoraMail()}" oncomplete="comprobarArgsModal(xhr, status, args, 'dialogComentario'); haCambiado=false;"
+										 rendered="#{identity.tienePerfilEnServicio('SUPERVISOR',solicitudReservas.servicioReserva.cod) or solicitudReservas.esTecnicoSolicitud()}">
+							<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['reservas.comentario.email.add.confirm']}" icon="ui-icon-alert" />
+						</p:commandButton>
+						<p:commandButton id="buttonGuardarBitacoraPrivada" icon="fa fa-user-secret" ajax="true" process="@form" update="@form :formReservaEdit :messages"
+										 value="#{messages['prestaciones.guardarComPriv']}" title="#{messages['prestaciones.guardarComPriv']}" ariaLabel="#{messages['prestaciones.guardarComPriv']}"
+										 action="#{solicitudReservas.guardarBitacora()}" oncomplete="comprobarArgsModal(xhr, status, args, 'dialogComentario'); haCambiado=false;"
+										 rendered="#{identity.tienePerfilEnServicio('SUPERVISOR',solicitudReservas.servicioReserva.cod) or solicitudReservas.esTecnicoSolicitud()}">	
+							<p:confirm header="#{messages['fungibles.confirmar']}" message="#{messages['reservas.comentario.add.confirm']}" icon="ui-icon-alert"/>
+						</p:commandButton>				 
+						<p:commandButton id="buttonCancelarAddComentario" icon="fa fa-times" type="button" value="#{messages['label.cancel']}" title="#{messages['label.cancel']}"
+										 process="@this" ariaLabel="#{messages['label.cancel']}" onclick="PF('dialogComentario').hide();" />
+					</div>
+				</div>				
+			</h:form>
+		</p:dialog>	
+	</ui:define>
+</ui:composition>
+</html>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<weblogic-web-app
+	xmlns="http://xmlns.oracle.com/weblogic/weblogic-web-app"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+		http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd
+		http://xmlns.oracle.com/weblogic/weblogic-web-app http://xmlns.oracle.com/weblogic/weblogic-web-app/1.9/weblogic-web-app.xsd">
+ 
+    <weblogic-version>12.2.1</weblogic-version>
+<!-- No es necesario, lo obtiene del fichero application.xml
+    <context-root>sai</context-root>
+-->
+
+	<!-- <library-ref>
+        <library-name>chemistry-opencmis-fdw2</library-name>
+        <specification-version>1.1</specification-version>
+        <implementation-version>1.1.UMU</implementation-version>
+        <exact-match>true</exact-match>
+    </library-ref>
+    
+     <library-ref>
+        <library-name>clave-fdw2</library-name>
+        <specification-version>1.0</specification-version>
+        <implementation-version>1.0.UMU</implementation-version>
+        <exact-match>true</exact-match>
+    </library-ref>
+    
+    <library-ref>
+        <library-name>jose4j-fdw2</library-name>
+        <specification-version>0</specification-version>
+        <implementation-version>0.UMU</implementation-version>
+        <exact-match>true</exact-match>
+    </library-ref> -->
+
+	<container-descriptor>
+		<prefer-web-inf-classes>true</prefer-web-inf-classes>
+	</container-descriptor>
+
+	<session-descriptor>
+		<url-rewriting-enabled>false</url-rewriting-enabled>
+	</session-descriptor>
+</weblogic-web-app>

@@ -1,0 +1,611 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<parent>
+		<groupId>es.um.atica.fundeweb</groupId>
+		<artifactId>sai</artifactId>
+		<version>0.0.1</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>es.um.atica.fundeweb.sai</groupId>
+	<artifactId>sai-web</artifactId>
+	<name>sai-web</name>
+	<packaging>war</packaging>
+	<description>Proyecto de generacion del WAR de la Aplicacion sai de FundeWeb 2</description>
+
+	<properties>
+		<yuicompressor-maven-plugin.skip>false</yuicompressor-maven-plugin.skip>
+	</properties>
+
+	<build>
+		<finalName>sai-web</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<webResources>
+						<resource>
+							<directory>src/main/webapp</directory>
+							<excludes>
+								<exclude>WEB-INF/.pages.xml.spdia</exclude>
+								<exclude>WEB-INF/.faces-config.xml.jsfdia</exclude>
+								<exclude>layout/template.xhtml</exclude>
+								<exclude>WEB-INF/pages.xml</exclude>
+								<exclude>WEB-INF/web.xml</exclude>
+								<exclude>login.page.xml</exclude>
+								<exclude>index.html</exclude>
+							</excludes>
+							<filtering>false</filtering>
+						</resource>
+						<resource>
+							<directory>src/main/webapp</directory>
+							<includes>
+								<include>layout/template.xhtml</include>
+								<include>WEB-INF/pages.xml</include>
+								<include>WEB-INF/web.xml</include>
+								<include>login.page.xml</include>
+								<include>index.html</include>
+							</includes>
+							<filtering>true</filtering>
+						</resource>
+						<resource>
+							<directory>src/main/web_resources</directory>
+							<filtering>false</filtering>
+						</resource>
+					</webResources>
+					<attachClasses>true</attachClasses>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skip>${maven.test.skip}</skip>
+					<testFailureIgnore>true</testFailureIgnore>
+					<parallel>true</parallel>
+					<threadCount>2</threadCount>
+					<!-- "child first" classloading, like a web application -->
+					<childDelegation>true</childDelegation>
+				</configuration>
+			</plugin>
+
+		</plugins>
+
+		<filters>
+			<filter>src/main/filters/filtro-${entorno}.properties</filter>
+		</filters>
+
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<!--excludes> <exclude>components.properties</exclude> <exclude>log4j.xml</exclude> 
+					</excludes -->
+				<excludes>
+					<exclude>components.properties</exclude>
+					<exclude>log4j.xml</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>components.properties</include>
+					<include>log4j.xml</include>
+				</includes>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+	</build>
+
+	<!-- Dependency list -->
+	<dependencies>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.el</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.web</groupId>
+			<artifactId>javax.servlet.jsp.jstl</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.el</groupId>
+			<artifactId>jboss-el</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.transaction</groupId>
+			<artifactId>javax.transaction-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.ejb</groupId>
+			<artifactId>javax.ejb-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.jms</groupId>
+			<artifactId>javax.jms-api</artifactId>
+		</dependency>
+
+		<!-- JSF 2.x -->
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.faces</artifactId>
+		</dependency>
+		<!-- FIN - JSF -->
+
+		<!-- Bean Validation 1.x -->
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.logging</groupId>
+			<artifactId>jboss-logging</artifactId>
+		</dependency>
+		<!-- FIN - Bean Validation -->
+
+		<!-- JPA 2.x -->
+		<dependency>
+			<groupId>org.hibernate.javax.persistence</groupId>
+			<artifactId>hibernate-jpa-2.0-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>antlr</groupId>
+			<artifactId>antlr</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.javassist</groupId>
+			<artifactId>javassist</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate.common</groupId>
+			<artifactId>hibernate-commons-annotations</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-infinispan</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.infinispan</groupId>
+			<artifactId>infinispan-tree</artifactId>
+		</dependency>
+
+		<!-- <dependency>
+			<groupId>org.jgroups</groupId>
+			<artifactId>jgroups</artifactId>
+		</dependency> -->
+
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>jdbc.driver</artifactId>
+		</dependency>
+		<!-- FIN - JPA 2.x -->
+
+
+		<!-- Java Mail API -->
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
+		</dependency>
+		<!-- FIN - Java Mail API -->
+
+		<!-- Primefaces -->
+		<dependency>
+			<groupId>org.primefaces</groupId>
+			<artifactId>primefaces</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.primefaces.themes</groupId>
+			<artifactId>all-themes</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>rome</groupId>
+			<artifactId>rome</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>net.glxn</groupId>
+			<artifactId>qrgen</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>javase</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sf.barcode4j</groupId>
+			<artifactId>barcode4j-light</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.primefaces.extensions</groupId>
+			<artifactId>primefaces-extensions</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.primefaces.extensions</groupId>
+			<artifactId>resources-ckeditor</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+		</dependency>
+
+		<!-- FIN - Primefaces -->
+
+		<!-- Logging -->
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>apache-log4j-extras</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+		</dependency>
+		<!-- Puede tener un impacto negativo en el rendimiento <dependency> <groupId>org.slf4j</groupId> 
+			<artifactId>jul-to-slf4j</artifactId> </dependency> -->
+		<!-- FIN - Logging -->
+
+		<!-- Servicios Soap -->
+		<dependency>
+			<groupId>javax.xml.ws</groupId>
+			<artifactId>jaxws-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.metro</groupId>
+			<artifactId>webservices-rt</artifactId>
+		</dependency>
+		<!-- FIN - Servicios Soap -->
+
+		<!-- Servicios Rest / Jersey / Jackson -->
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>jsr311-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-client</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-json</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.jersey.contribs</groupId>
+			<artifactId>jersey-multipart</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-server</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-servlet</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-jaxrs</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-xc</artifactId>
+		</dependency>
+		<!-- FIN - Servicios Rest / Jersey / Jackson -->
+
+		<!-- Apache Commons -->
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+		<!-- FIN - Apache Commons -->
+
+		<!-- JBoss Seam 2.3.x -->
+		<dependency>
+			<groupId>org.jboss.seam</groupId>
+			<artifactId>jboss-seam</artifactId>
+			<!-- <classifier>ejb</classifier> -->
+		</dependency>
+
+		<dependency>
+			<groupId>org.jbpm.jbpm3</groupId>
+			<artifactId>jbpm-jpdl</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.seam</groupId>
+			<artifactId>jboss-seam-mail</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.seam</groupId>
+			<artifactId>jboss-seam-pdf</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.lowagie</groupId>
+			<artifactId>itext</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.lowagie</groupId>
+			<artifactId>itext-rtf</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jfree</groupId>
+			<artifactId>jfreechart</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.seam</groupId>
+			<artifactId>jboss-seam-remoting</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.seam</groupId>
+			<artifactId>jboss-seam-ui</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.seam</groupId>
+			<artifactId>jboss-seam-debug</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.seam</groupId>
+			<artifactId>jboss-seam-excel</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sourceforge.jexcelapi</groupId>
+			<artifactId>jxl</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.seam</groupId>
+			<artifactId>jboss-seam-rss</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sourceforge.yarfraw</groupId>
+			<artifactId>yarfraw</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.tuckey</groupId>
+			<artifactId>urlrewritefilter</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+		</dependency>
+		<!-- FIN - JBoss Seam 2.3.x -->
+
+		<!-- Librerias FundeWeb -->
+		<dependency>
+			<groupId>es.um.atica.fundeweb</groupId>
+			<artifactId>fundeweb-commons</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>es.um.atica.fundeweb</groupId>
+			<artifactId>fundeweb-environment-info</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>es.um.atica.fundeweb</groupId>
+			<artifactId>fundeweb-hibernate</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>es.um.atica.fundeweb</groupId>
+			<artifactId>fundeweb-jaxrs</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>es.um.atica.fundeweb</groupId>
+			<artifactId>fundeweb-jaxws</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>es.um.atica.fundeweb</groupId>
+			<artifactId>fundeweb-jdbc</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>es.um.atica.fundeweb</groupId>
+			<artifactId>fundeweb-jpa</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>es.um.atica.fundeweb</groupId>
+			<artifactId>fundeweb-log4j</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>es.um.atica.fundeweb</groupId>
+			<artifactId>fundeweb-seam-components</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>es.um.atica.fundeweb</groupId>
+			<artifactId>fundeweb-server-info</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>es.um.atica.fundeweb</groupId>
+			<artifactId>fundeweb-tags</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>es.um.atica.fundeweb</groupId>
+			<artifactId>fundeweb-xml</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.um.atica</groupId>
+			<artifactId>ejb_interfaces</artifactId>
+		</dependency>
+		<!-- FIN - Librerias FundeWeb -->
+
+		<!-- CAS -->
+		<dependency>
+			<groupId>org.jasig.cas.client</groupId>
+			<artifactId>cas-client-support-saml</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.santuario</groupId>
+			<artifactId>xmlsec</artifactId>
+		</dependency>
+		<!-- FIN - CAS -->
+
+	</dependencies>
+
+	<profiles>
+
+		<profile>
+			<id>weblogic12</id>
+
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+
+			<dependencies>
+				<dependency>
+					<groupId>es.um.atica.fundeweb.weblogic</groupId>
+					<artifactId>fundeweb-java-services-config</artifactId>
+				</dependency>
+
+				<dependency>
+					<groupId>es.um.atica.fundeweb.weblogic</groupId>
+					<artifactId>fundeweb-jersey</artifactId>
+				</dependency>
+			</dependencies>
+
+		</profile>
+		<!-- <profile> <id>preproduccion</id> <build> <plugins> <plugin> <groupId>org.codehaus.mojo</groupId> 
+			<artifactId>build-helper-maven-plugin</artifactId> <executions> <execution> 
+			<id>add-web-resource</id> <phase>generate-resources</phase> <goals> <goal>add-resource</goal> 
+			</goals> <configuration> <resources> <resource> <directory>/src/main/weblogic</directory> 
+			<targetPath>${project.build.directory}/${project.build.finalName}</targetPath> 
+			<includes> <include>WEB-INF/weblogic-ejb-jar.xml</include> </includes> </resource> 
+			</resources> </configuration> </execution> </executions> </plugin> </plugins> 
+			</build> </profile> <profile> <id>produccion</id> <build> <plugins> <plugin> 
+			<groupId>org.codehaus.mojo</groupId> <artifactId>build-helper-maven-plugin</artifactId> 
+			<executions> <execution> <id>add-web-resource</id> <phase>generate-resources</phase> 
+			<goals> <goal>add-resource</goal> </goals> <configuration> <resources> <resource> 
+			<directory>/src/main/weblogic</directory> <targetPath>${project.build.directory}/${project.build.finalName}</targetPath> 
+			<includes> <include>WEB-INF/weblogic-ejb-jar.xml</include> </includes> </resource> 
+			</resources> </configuration> </execution> </executions> </plugin> </plugins> 
+			</build> </profile> -->
+	</profiles>
+
+</project>
